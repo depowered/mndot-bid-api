@@ -1,0 +1,14 @@
+# ignore settings
+.vscode
+
+# ignore example code folders
+/example
+
+# ignore compiled
+__pycache__
+
+# Ignore macOS
+.DS_Store
+
+# Ignore database
+*.db
