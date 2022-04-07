@@ -42,4 +42,10 @@ def create_bidder(data: BidderCreateData) -> BidderResult:
 
 
 def update_bidder(bidder_id: int, data: BidderUpdateData) -> BidderResult:
-    raise NotImplementedError
+    with DBSession() as session:
+        bidder: DBBidder = session.get(DBBidder, bidder_id)
+        for key, value in data.dict(exclude_none=True).items():
+            setattr(bidder, key, value)
+
+        session.commit()
+        return BidderResult(**to_dict(bidder))

@@ -1,8 +1,12 @@
 from fastapi import APIRouter
 
-from mndot_bid_api.operations.bidders import create_bidder, read_bidder
+from mndot_bid_api.operations.bidders import create_bidder, read_bidder, update_bidder
 from mndot_bid_api.operations.bidders import read_all_bidders
-from mndot_bid_api.operations.models import BidderCreateData, BidderResult
+from mndot_bid_api.operations.models import (
+    BidderCreateData,
+    BidderResult,
+    BidderUpdateData,
+)
 
 
 router = APIRouter()
@@ -21,3 +25,8 @@ def api_read_bidder(bidder_id: int) -> BidderResult:
 @router.post("/bidder")
 def api_create_bidder(bidder: BidderCreateData) -> BidderResult:
     return create_bidder(bidder)
+
+
+@router.post("/bidder/{bidder_id}")
+def api_update_bidder(bidder_id: int, bidder: BidderUpdateData) -> BidderResult:
+    return update_bidder(bidder_id, bidder)
