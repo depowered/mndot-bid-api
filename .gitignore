@@ -6,6 +6,7 @@
 
 # ignore compiled
 __pycache__
+.pytest_cache
 
 # Ignore macOS
 .DS_Store
