@@ -27,6 +27,6 @@ def api_create_bidder(bidder: BidderCreateData) -> BidderResult:
     return create_bidder(bidder)
 
 
-@router.post("/bidder/{bidder_id}")
+@router.put("/bidder/{bidder_id}")
 def api_update_bidder(bidder_id: int, bidder: BidderUpdateData) -> BidderResult:
     return update_bidder(bidder_id, bidder)
