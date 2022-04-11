@@ -61,7 +61,7 @@ def test_api_update_bid():
     new_quantity = randint(1, 500)
     bid_update = BidUpdateData(quantity=new_quantity)
     payload = bid_update.dict()
-    response = client.put("/bid/3", json=payload)
+    response = client.patch("/bid/3", json=payload)
     assert response.status_code == 200
 
     data = response.json()

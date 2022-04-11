@@ -55,7 +55,7 @@ def test_api_update_bidder():
     new_name = f"Contractor No. {str(randint(1_000, 100_000))}"
     bidder_update = BidderUpdateData(name=new_name)
     payload = bidder_update.dict()
-    response = client.put("/bidder/2", json=payload)
+    response = client.patch("/bidder/2", json=payload)
     assert response.status_code == 200
 
     data = response.json()
