@@ -12,21 +12,21 @@ from mndot_bid_api.operations.models import BidCreateData, BidResult, BidUpdateD
 router = APIRouter()
 
 
-@router.get("/bids")
+@router.get("/bids", tags=["bids"])
 def api_read_all_bids():
     return read_all_bids()
 
 
-@router.get("/bid/{bid_id}")
+@router.get("/bid/{bid_id}", tags=["bids"])
 def api_read_bid(bid_id):
     return read_bid(bid_id)
 
 
-@router.post("/bid")
+@router.post("/bid", tags=["bids"])
 def api_create_bid(data: BidCreateData) -> BidResult:
     return create_bid(data)
 
 
-@router.put("/bid/{bid_id}")
+@router.patch("/bid/{bid_id}", tags=["bids"])
 def api_update_bid(bid_id: int, data: BidUpdateData) -> BidResult:
     return update_bid(bid_id, data)
