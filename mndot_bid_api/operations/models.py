@@ -68,3 +68,25 @@ class BidResult(BaseModel):
     contract_id: int
     bidder_id: int
     bidder_rank: int
+
+
+class BidCreateData(BaseModel):
+    item_number: str
+    spec_year: int
+    quantity: float
+    unit_price: int
+    total_price: int
+    contract_id: int
+    bidder_id: int
+    bidder_rank: int
+
+
+class BidUpdateData(BaseModel):
+    item_number: Optional[str]
+    spec_year: Optional[int]
+    quantity: Optional[float]
+    unit_price: Optional[int]
+    total_price: Optional[int]
+    contract_id: Optional[int]
+    bidder_id: Optional[int]
+    bidder_rank: Optional[int]
