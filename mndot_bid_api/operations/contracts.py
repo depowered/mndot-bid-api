@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy import select
 
 from mndot_bid_api.db.engine import DBSession
@@ -29,11 +30,12 @@ def create_contract(data: ContractCreateData) -> ContractResult:
         contract = DBContract(**data.dict())
 
         # verify that contract is not already in the database before adding
-        in_db = session.get(DBContract, contract.id)
-        if in_db:
-            return {
-                "message": f"Contract with ID {contract.id} already exists in the database."
-            }
+        selected_contract = session.get(DBContract, contract.id)
+        if selected_contract:
+            raise HTTPException(
+                status_code=303,
+                detail=f"Contract already exists at ID {selected_contract.id}.",
+            )
 
         session.add(contract)
         session.commit()
@@ -43,6 +45,12 @@ def create_contract(data: ContractCreateData) -> ContractResult:
 def update_contract(contract_id: int, data: ContractUpdateData) -> ContractResult:
     with DBSession() as session:
         contract: DBContract = session.get(DBContract, contract_id)
+
+        if not contract:
+            raise HTTPException(
+                status_code=404, detail=f"Contract with ID {contract_id} not found."
+            )
+
         for key, value in data.dict(exclude_none=True).items():
             setattr(contract, key, value)
 
