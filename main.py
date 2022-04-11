@@ -15,7 +15,7 @@ def startup_event():
     init_db(DB_FILE)
 
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 def read_root():
     return {"server status": "Running"}
 
