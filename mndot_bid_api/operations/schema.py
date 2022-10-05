@@ -20,7 +20,6 @@ class ContractResult(ContractCreateData):
 
 
 class ContractUpdateData(BaseModel):
-    id: int
     letting_date: Optional[date]
     sp_number: Optional[str]
     district: Optional[str]
@@ -39,8 +38,8 @@ class BidderResult(BidderCreateData):
     pass
 
 
-class BidderUpdateData(BidderCreateData):
-    pass
+class BidderUpdateData(BaseModel):
+    name: str
 
 
 class BidCreateData(BaseModel):
@@ -57,7 +56,6 @@ class BidResult(BidCreateData):
 
 
 class BidUpdateData(BaseModel):
-    id: int
     contract_id: Optional[int]
     item_composite_id: Optional[str]
     bidder_id: Optional[int]
@@ -83,7 +81,6 @@ class ItemResult(ItemCreateData):
 
 
 class ItemUpdateData(BaseModel):
-    id: int
     composite_id: Optional[str]
     spec_year: Optional[str]
     spec_code: Optional[str]

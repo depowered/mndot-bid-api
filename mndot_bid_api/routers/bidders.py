@@ -1,33 +1,69 @@
-from typing import List
-from fastapi import APIRouter
+import fastapi
+from mndot_bid_api.db import database
+from mndot_bid_api.operations import bidders, schema
+from sqlalchemy.orm import Session
 
-from mndot_bid_api.operations.bidders import create_bidder, read_bidder, update_bidder
-from mndot_bid_api.operations.bidders import read_all_bidders
-from mndot_bid_api.operations.models import (
-    BidderCreateData,
-    BidderResult,
-    BidderUpdateData,
+router = fastapi.APIRouter()
+
+
+@router.get(
+    "/bidder/all",
+    tags=["bidder"],
+    response_model=list[schema.BidderResult],
+    status_code=fastapi.status.HTTP_200_OK,
 )
+def api_read_all_bidders(
+    db: Session = fastapi.Depends(database.get_db_session),
+) -> list[schema.BidderResult]:
+    return bidders.read_all_bidders(db)
 
 
-router = APIRouter()
+@router.get(
+    "/bidder/{bidder_id}",
+    tags=["bidder"],
+    response_model=schema.BidderResult,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_read_bidder(
+    bidder_id: int, db: Session = fastapi.Depends(database.get_db_session)
+) -> schema.BidderResult:
+    return bidders.read_bidder(bidder_id, db)
 
 
-@router.get("/bidders", tags=["bidders"], response_model=List[BidderResult])
-def api_read_all_bidders() -> list[BidderResult]:
-    return read_all_bidders()
+@router.post(
+    "/bidder",
+    tags=["bidder"],
+    response_model=schema.BidderResult,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_create_bidder(
+    data: schema.BidderCreateData,
+    db: Session = fastapi.Depends(database.get_db_session),
+) -> schema.BidderResult:
+    return bidders.create_bidder(data, db)
 
 
-@router.get("/bidder/{bidder_id}", tags=["bidders"], response_model=BidderResult)
-def api_read_bidder(bidder_id: int) -> BidderResult:
-    return read_bidder(bidder_id)
+@router.patch(
+    "/bidder/{bidder_id}",
+    tags=["bidder"],
+    response_model=schema.BidderResult,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_update_bidder(
+    bidder_id: int,
+    data: schema.BidderUpdateData,
+    db: Session = fastapi.Depends(database.get_db_session),
+) -> schema.BidderResult:
+    return bidders.update_bidder(bidder_id, data, db)
 
 
-@router.post("/bidder", tags=["bidders"], response_model=BidderResult)
-def api_create_bidder(bidder: BidderCreateData) -> BidderResult:
-    return create_bidder(bidder)
-
-
-@router.patch("/bidder/{bidder_id}", tags=["bidders"], response_model=BidderResult)
-def api_update_bidder(bidder_id: int, bidder: BidderUpdateData) -> BidderResult:
-    return update_bidder(bidder_id, bidder)
+@router.delete(
+    "/bidder/{bidder_id}",
+    tags=["bidder"],
+    status_code=fastapi.status.HTTP_204_NO_CONTENT,
+)
+def api_delete_bidder(
+    bidder_id: int,
+    db: Session = fastapi.Depends(database.get_db_session),
+):
+    return bidders.delete_bidder(bidder_id, db)
