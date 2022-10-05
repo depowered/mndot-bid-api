@@ -9,13 +9,15 @@ DBSession = sessionmaker()
 
 def init_sqlite_db(url: str) -> None:
     engine = create_engine(url, connect_args={"check_same_thread": False})
-    DBSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    DBSession.configure(
+        bind=engine, autocommit=False, autoflush=False
+    )  # = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     models.Base.metadata.create_all(bind=engine)
 
 
-def get_db_session():
+def get_db_session() -> Session:
     try:
-        db = DBSession()
+        db: Session = DBSession()
         yield db
     finally:
         db.close()
