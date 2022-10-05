@@ -35,7 +35,7 @@
 				"editor.formatOnSaveMode": "file",
 				"editor.formatOnSave": true,
 				"python.formatting.provider": "black",
-				"python.analysis.typeCheckingMode": "strict",
+				"python.analysis.typeCheckingMode": "basic",
 				"editor.codeActionsOnSave": {
 					"source.organizeImports": true
 				}
