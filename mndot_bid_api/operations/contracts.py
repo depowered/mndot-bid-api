@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from mndot_bid_api.db.database import DBSession
 from mndot_bid_api.db.models import Contract, to_dict
-from mndot_bid_api.operations.models import (
+from mndot_bid_api.operations.schema import (
     ContractCreateData,
     ContractResult,
     ContractUpdateData,

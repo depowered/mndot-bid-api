@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from main import app, startup_event
 from mndot_bid_api.db.models import to_dict
 from mndot_bid_api.db.sample_data import bidders
-from mndot_bid_api.operations.models import BidderCreateData, BidderUpdateData
+from mndot_bid_api.operations.schema import BidderCreateData, BidderUpdateData
 
 startup_event()
 client = TestClient(app)

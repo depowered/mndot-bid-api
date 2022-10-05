@@ -7,7 +7,7 @@ from mndot_bid_api.operations.bids import (
     read_all_bids,
     update_bid,
 )
-from mndot_bid_api.operations.models import BidCreateData, BidResult, BidUpdateData
+from mndot_bid_api.operations.schema import BidCreateData, BidResult, BidUpdateData
 
 
 router = APIRouter()

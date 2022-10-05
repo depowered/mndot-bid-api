@@ -16,7 +16,7 @@ class ContractCreateData(BaseModel):
 
 
 class ContractResult(ContractCreateData):
-    ...
+    pass
 
 
 class ContractUpdateData(BaseModel):
@@ -36,11 +36,11 @@ class BidderCreateData(BaseModel):
 
 
 class BidderResult(BidderCreateData):
-    ...
+    pass
 
 
 class BidderUpdateData(BidderCreateData):
-    ...
+    pass
 
 
 class BidCreateData(BaseModel):

@@ -7,7 +7,7 @@ from mndot_bid_api.operations.contracts import (
     read_contract,
     update_contract,
 )
-from mndot_bid_api.operations.models import (
+from mndot_bid_api.operations.schema import (
     ContractCreateData,
     ContractResult,
     ContractUpdateData,
