@@ -1,13 +1,8 @@
 from fastapi import HTTPException
-from sqlalchemy import select
-
-from mndot_bid_api.db.engine import DBSession
+from mndot_bid_api.db.database import DBSession
 from mndot_bid_api.db.models import Bid, to_dict
-from mndot_bid_api.operations.models import (
-    BidCreateData,
-    BidResult,
-    BidUpdateData,
-)
+from mndot_bid_api.operations.models import BidCreateData, BidResult, BidUpdateData
+from sqlalchemy import select
 
 
 def read_all_bids() -> list[BidResult]:

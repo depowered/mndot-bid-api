@@ -1,13 +1,12 @@
 from fastapi import HTTPException
-from sqlalchemy import select
-
-from mndot_bid_api.db.engine import DBSession
+from mndot_bid_api.db.database import DBSession
 from mndot_bid_api.db.models import Contract, to_dict
 from mndot_bid_api.operations.models import (
     ContractCreateData,
     ContractResult,
     ContractUpdateData,
 )
+from sqlalchemy import select
 
 
 def read_all_contracts() -> list[ContractResult]:

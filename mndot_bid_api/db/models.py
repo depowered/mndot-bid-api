@@ -1,5 +1,8 @@
 from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+
+Base = declarative_base()
 
 
 def to_dict(obj: Base):

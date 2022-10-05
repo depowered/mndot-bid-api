@@ -1,18 +1,20 @@
+from sqlite3 import SQLITE_ALTER_TABLE
+
 from fastapi import FastAPI
 
-from mndot_bid_api.db.create_db import create_db
-from mndot_bid_api.db.engine import init_db
-from mndot_bid_api.routers import contracts, bidders, bids
+from mndot_bid_api.db import database
+from mndot_bid_api.routers import bidders, bids, contracts
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///data/api.db"
+# SQLALCHEMY_DATABASE_URL = "sqlite:///data/sample.db"
+
 
 app = FastAPI()
-
-DB_FILE = "sqlite:///sample.db"
-# create_db(DB_FILE)
 
 
 @app.on_event("startup")
 def startup_event():
-    init_db(DB_FILE)
+    database.init_sqlite_db(url=SQLALCHEMY_DATABASE_URL)
 
 
 @app.get("/", include_in_schema=False)
