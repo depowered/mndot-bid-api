@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 
 from mndot_bid_api.db.engine import DBSession
-from mndot_bid_api.db.models import DBBidder, to_dict
+from mndot_bid_api.db.models import Bidder, to_dict
 from mndot_bid_api.operations.models import (
     BidderResult,
     BidderCreateData,
@@ -12,14 +12,14 @@ from mndot_bid_api.operations.models import (
 
 def read_all_bidders() -> list[BidderResult]:
     with DBSession() as session:
-        statement = select(DBBidder)
+        statement = select(Bidder)
         bidders = session.execute(statement).scalars().all()
         return [BidderResult(**to_dict(b)) for b in bidders]
 
 
 def read_bidder(bidder_id) -> BidderResult:
     with DBSession() as session:
-        bidder = session.get(DBBidder, bidder_id)
+        bidder = session.get(Bidder, bidder_id)
         if not bidder:
             raise HTTPException(
                 status_code=404, detail=f"Bidder at ID {bidder_id} not found."
@@ -29,10 +29,10 @@ def read_bidder(bidder_id) -> BidderResult:
 
 def create_bidder(data: BidderCreateData) -> BidderResult:
     with DBSession() as session:
-        bidder = DBBidder(**data.dict())
+        bidder = Bidder(**data.dict())
 
         # verify that bidder is not already in database before adding
-        selected_bidder = session.get(DBBidder, bidder.id)
+        selected_bidder = session.get(Bidder, bidder.id)
         if selected_bidder:
             raise HTTPException(
                 status_code=303,
@@ -46,7 +46,7 @@ def create_bidder(data: BidderCreateData) -> BidderResult:
 
 def update_bidder(bidder_id: int, data: BidderUpdateData) -> BidderResult:
     with DBSession() as session:
-        bidder: DBBidder = session.get(DBBidder, bidder_id)
+        bidder: Bidder = session.get(Bidder, bidder_id)
 
         if not bidder:
             raise HTTPException(

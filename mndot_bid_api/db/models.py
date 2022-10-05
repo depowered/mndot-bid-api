@@ -1,22 +1,19 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, Date
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-
-Base = declarative_base()
 
 
 def to_dict(obj: Base):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 
-class DBBidder(Base):
+class Bidder(Base):
     __tablename__ = "bidder"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=True)
 
 
-class DBContract(Base):
+class Contract(Base):
     __tablename__ = "contract"
 
     id = Column(Integer, primary_key=True)
@@ -30,11 +27,11 @@ class DBContract(Base):
     engineers_total = Column(Integer, nullable=True)
 
     lowest_bidder_id = Column(Integer, ForeignKey("bidder.id"), nullable=True)
-    bidder = relationship(DBBidder)
+    bidder = relationship(Bidder)
     lowest_bidder_total = Column(Integer, nullable=True)
 
 
-class DBBid(Base):
+class Bid(Base):
     __tablename__ = "bid"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -45,13 +42,13 @@ class DBBid(Base):
     total_price = Column(Integer, nullable=False)
 
     contract_id = Column(Integer, ForeignKey("contract.id"), nullable=False)
-    contract = relationship(DBContract)
+    contract = relationship(Contract)
     bidder_id = Column(Integer, ForeignKey("bidder.id"), nullable=False)
-    bidder = relationship(DBBidder)
+    bidder = relationship(Bidder)
     bidder_rank = Column(Integer, nullable=False)
 
 
-class DBItems2018(Base):
+class Item(Base):
     __tablename__ = "items2018"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

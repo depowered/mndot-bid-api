@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from mndot_bid_api.db.models import DBBid, DBBidder, DBContract
+from mndot_bid_api.db.models import Bid, Bidder, Contract
 
 bidders = [
-    DBBidder(id=1, name="Veit"),
-    DBBidder(id=2, name="S.M. Hentges and Sons"),
-    DBBidder(id=3, name="Ames"),
+    Bidder(id=1, name="Veit"),
+    Bidder(id=2, name="S.M. Hentges and Sons"),
+    Bidder(id=3, name="Ames"),
 ]
 
 contracts = [
-    DBContract(
+    Contract(
         id=1,
         is_processed=True,
         let_date=datetime.today(),
@@ -22,12 +22,12 @@ contracts = [
         lowest_bidder_id=3,
         lowest_bidder_total=2_500_000_00,
     ),
-    DBContract(id=2, is_processed=False),
-    DBContract(id=3, is_processed=False),
+    Contract(id=2, is_processed=False),
+    Contract(id=3, is_processed=False),
 ]
 
 bids = [
-    DBBid(
+    Bid(
         id=1,
         item_number="2501.503/02931",
         spec_year=2020,
@@ -38,7 +38,7 @@ bids = [
         bidder_id=3,
         bidder_rank=1,
     ),
-    DBBid(
+    Bid(
         id=2,
         item_number="2575.503/12345",
         spec_year=2020,
@@ -49,7 +49,7 @@ bids = [
         bidder_id=3,
         bidder_rank=1,
     ),
-    DBBid(
+    Bid(
         id=3,
         item_number="2575.501/00010",
         spec_year=2020,
