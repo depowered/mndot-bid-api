@@ -31,45 +31,67 @@ contracts = [
     ),
 ]
 
-# bids = [
-#     Bid(
-#         id=1,
-#         item_number="2501.503/02931",
-#         spec_year=2020,
-#         quantity=300.0,
-#         unit_price=6_00,
-#         total_price=int(300.0 * 6_00),
-#         contract_id=1,
-#         bidder_id=3,
-#         bidder_rank=1,
-#     ),
-#     Bid(
-#         id=2,
-#         item_number="2575.503/12345",
-#         spec_year=2020,
-#         quantity=10_000.0,
-#         unit_price=1_25,
-#         total_price=int(10_000.0 * 1_25),
-#         contract_id=1,
-#         bidder_id=3,
-#         bidder_rank=1,
-#     ),
-#     Bid(
-#         id=3,
-#         item_number="2575.501/00010",
-#         spec_year=2020,
-#         quantity=1.0,
-#         unit_price=30_000_00,
-#         total_price=int(1.0 * 30_000_00),
-#         contract_id=1,
-#         bidder_id=3,
-#         bidder_rank=1,
-#     ),
-# ]
+bids = [
+    models.Bid(
+        id=1,
+        contract_id=2,
+        item_composite_id="2020_2501_503_02931",
+        bidder_id=3,
+        quantity=300.0,
+        unit_price=6_00,
+        bid_type="winning_bid",
+    ),
+    models.Bid(
+        id=2,
+        contract_id=2,
+        item_composite_id="2020_2575_503_12345",
+        bidder_id=3,
+        quantity=10_000.0,
+        unit_price=1_25,
+        bid_type="winning_bid",
+    ),
+    models.Bid(
+        id=3,
+        contract_id=2,
+        item_composite_id="2575.501/00010",
+        bidder_id=3,
+        quantity=1.0,
+        unit_price=30_000_00,
+        bid_type="winning_bid",
+    ),
+    models.Bid(
+        id=4,
+        contract_id=2,
+        item_composite_id="2020_2501_503_02931",
+        bidder_id=0,
+        quantity=300.0,
+        unit_price=int(6_00 * 1.2),
+        bid_type="engineers_estimate",
+    ),
+    models.Bid(
+        id=5,
+        contract_id=2,
+        item_composite_id="2020_2575_503_12345",
+        bidder_id=0,
+        quantity=10_000.0,
+        unit_price=int(1_25 * 1.2),
+        bid_type="engineers_estimate",
+    ),
+    models.Bid(
+        id=6,
+        contract_id=2,
+        item_composite_id="2575.501/00010",
+        bidder_id=0,
+        quantity=1.0,
+        unit_price=int(30_000_00 * 1.2),
+        bid_type="engineers_estimate",
+    ),
+]
 
 
 def load_sample_data() -> None:
     with database.DBSession() as db:
         db.add_all(bidders)
         db.add_all(contracts)
+        db.add_all(bids)
         db.commit()

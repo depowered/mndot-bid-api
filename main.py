@@ -27,4 +27,4 @@ def read_root():
 
 app.include_router(contracts.router)
 app.include_router(bidders.router)
-# app.include_router(bids.router)
+app.include_router(bids.router)
