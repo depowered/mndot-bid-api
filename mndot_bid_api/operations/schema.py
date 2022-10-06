@@ -1,6 +1,7 @@
 from datetime import date
 from typing import Optional
 
+from mndot_bid_api.operations import enums
 from pydantic import BaseModel, constr
 
 
@@ -69,10 +70,10 @@ class ItemCreateData(BaseModel):
     spec_code: constr(strip_whitespace=True, min_length=4, max_length=4)
     unit_code: constr(strip_whitespace=True, min_length=3, max_length=3)
     item_code: constr(strip_whitespace=True, min_length=5, max_length=5)
-    short_description: str
-    long_description: str
-    unit: str
-    unit_abreviation: str
+    short_description: constr(strip_whitespace=True, to_upper=True)
+    long_description: constr(strip_whitespace=True, to_upper=True)
+    unit: enums.Unit
+    unit_abbreviation: enums.UnitAbbreviation
 
     @property
     def composite_id(self) -> str:
@@ -91,7 +92,7 @@ class ItemResult(BaseModel):
     short_description: str
     long_description: str
     unit: str
-    unit_abreviation: str
+    unit_abbreviation: str
 
 
 class ItemUpdateData(BaseModel):
@@ -99,10 +100,10 @@ class ItemUpdateData(BaseModel):
     spec_code: Optional[constr(strip_whitespace=True, min_length=4, max_length=4)]
     unit_code: Optional[constr(strip_whitespace=True, min_length=3, max_length=3)]
     item_code: Optional[constr(strip_whitespace=True, min_length=5, max_length=5)]
-    short_description: Optional[str]
-    long_description: Optional[str]
-    unit: Optional[str]
-    unit_abreviation: Optional[str]
+    short_description: Optional[constr(strip_whitespace=True, to_upper=True)]
+    long_description: Optional[constr(strip_whitespace=True, to_upper=True)]
+    unit: Optional[enums.Unit]
+    unit_abbreviation: Optional[enums.UnitAbbreviation]
 
     @property
     def composite_id(self) -> str:

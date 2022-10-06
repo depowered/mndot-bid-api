@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Computed, Date, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, Computed, Date, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -63,4 +63,4 @@ class Item(Base):
     short_description = Column(String, nullable=False)
     long_description = Column(String, nullable=False)
     unit = Column(String, nullable=False)
-    unit_abreviation = Column(String, nullable=False)
+    unit_abbreviation = Column(String, nullable=False)

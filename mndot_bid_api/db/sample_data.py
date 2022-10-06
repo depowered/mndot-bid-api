@@ -100,7 +100,7 @@ items = [
         short_description="biolog",
         long_description="sediment control log type (straw)",
         unit="LIN FT",
-        unit_abreviation="LF",
+        unit_abbreviation="LF",
     ),
     models.Item(
         id=2,
@@ -112,7 +112,7 @@ items = [
         short_description="silt fence",
         long_description="silt fence type HI",
         unit="LIN FT",
-        unit_abreviation="LF",
+        unit_abbreviation="LF",
     ),
 ]
 
