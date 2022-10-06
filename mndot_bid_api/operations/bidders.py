@@ -5,23 +5,24 @@ from sqlalchemy.orm import Session
 
 
 def read_all_bidders(db: Session) -> list[schema.BidderResult]:
-    bidder_models = db.query(models.Bidder).all()
-    return [schema.BidderResult(**models.to_dict(model)) for model in bidder_models]
+    bidder_records = db.query(models.Bidder).all()
+    return [schema.BidderResult(**models.to_dict(model)) for model in bidder_records]
 
 
 def read_bidder(bidder_id: int, db: Session) -> schema.BidderResult:
-    bidder_model = db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
-    if not bidder_model:
+    bidder_record = (
+        db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
+    )
+    if not bidder_record:
         raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
         )
-    return schema.BidderResult(**models.to_dict(bidder_model))
+    return schema.BidderResult(**models.to_dict(bidder_record))
 
 
 def create_bidder(data: schema.BidderCreateData, db: Session) -> schema.BidderResult:
-    # Verify record is not already present
-    record = db.query(models.Bidder).filter(models.Bidder.id == data.id).first()
-    if record:
+    bidder_record = db.query(models.Bidder).filter(models.Bidder.id == data.id).first()
+    if bidder_record:
         raise fastapi.HTTPException(
             status_code=303, detail=f"Bidder already exists at ID {data.id}"
         )
@@ -36,29 +37,31 @@ def create_bidder(data: schema.BidderCreateData, db: Session) -> schema.BidderRe
 def update_bidder(
     bidder_id: int, data: schema.BidderUpdateData, db: Session
 ) -> schema.BidderResult:
-    # Verify record exists
-    record = db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
-    if not record:
+    bidder_record = (
+        db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
+    )
+    if not bidder_record:
         raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
         )
 
     for key, value in data.dict(exclude_none=True).items():
-        setattr(record, key, value)
+        setattr(bidder_record, key, value)
 
-    db.add(record)
+    db.add(bidder_record)
     db.commit()
 
-    return schema.BidderResult(**models.to_dict(record))
+    return schema.BidderResult(**models.to_dict(bidder_record))
 
 
 def delete_bidder(bidder_id: int, db: Session) -> None:
-    # Verify record exists
-    record = db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
-    if not record:
+    bidder_record = (
+        db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
+    )
+    if not bidder_record:
         raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
         )
 
-    db.delete(record)
+    db.delete(bidder_record)
     db.commit()
