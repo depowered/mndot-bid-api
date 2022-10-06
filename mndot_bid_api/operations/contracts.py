@@ -1,57 +1,79 @@
-from fastapi import HTTPException
-from mndot_bid_api.db.database import DBSession
-from mndot_bid_api.db.models import Contract, to_dict
-from mndot_bid_api.operations.schema import (
-    ContractCreateData,
-    ContractResult,
-    ContractUpdateData,
-)
-from sqlalchemy import select
+import fastapi
+from mndot_bid_api.db import database, models
+from mndot_bid_api.operations import schema
+from sqlalchemy.orm import Session
 
 
-def read_all_contracts() -> list[ContractResult]:
-    with DBSession() as session:
-        statement = select(Contract)
-        contracts: list[Contract] = session.execute(statement).scalars().all()
-        return [ContractResult(**to_dict(c)) for c in contracts]
+def read_all_contracts(db: Session()) -> list[schema.ContractResult]:
+    contract_records = db.query(models.Contract).all()
+    return [
+        schema.ContractResult(**models.to_dict(contract))
+        for contract in contract_records
+    ]
 
 
-def read_contract(contract_id: int) -> ContractResult:
-    with DBSession() as session:
-        contract = session.get(Contract, contract_id)
-        if not contract:
-            return {"message": f"Contract with ID {contract_id} not found."}
-        return ContractResult(**to_dict(contract))
+def read_contract(contract_id: int, db: Session) -> schema.ContractResult:
+    contract_record = (
+        db.query(models.Contract).filter(models.Contract.id == contract_id).first()
+    )
+    if not contract_record:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"Contract at ID {contract_id} not found",
+        )
+
+    return schema.ContractResult(**models.to_dict(contract_record))
 
 
-def create_contract(data: ContractCreateData) -> ContractResult:
-    with DBSession() as session:
-        contract = Contract(**data.dict())
+def create_contract(
+    data: schema.ContractCreateData, db: Session
+) -> schema.ContractResult:
+    contract_record = (
+        db.query(models.Contract).filter(models.Contract.id == data.id).first()
+    )
+    if contract_record:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_303_SEE_OTHER,
+            detail=f"Contract already exists at ID {data.id}",
+        )
 
-        # verify that contract is not already in the database before adding
-        selected_contract = session.get(Contract, contract.id)
-        if selected_contract:
-            raise HTTPException(
-                status_code=303,
-                detail=f"Contract already exists at ID {selected_contract.id}.",
-            )
+    contract_model = models.Contract(**data.dict())
+    db.add(contract_model)
+    db.commit()
 
-        session.add(contract)
-        session.commit()
-        return ContractResult(**to_dict(contract))
+    return schema.ContractResult(**models.to_dict(contract_model))
 
 
-def update_contract(contract_id: int, data: ContractUpdateData) -> ContractResult:
-    with DBSession() as session:
-        contract: Contract = session.get(Contract, contract_id)
+def update_contract(
+    contract_id: int, data: schema.ContractUpdateData, db: Session
+) -> schema.ContractResult:
+    contract_record = (
+        db.query(models.Contract).filter(models.Contract.id == contract_id).first()
+    )
+    if not contract_record:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"Contract at ID {contract_id} not found",
+        )
 
-        if not contract:
-            raise HTTPException(
-                status_code=404, detail=f"Contract with ID {contract_id} not found."
-            )
+    for key, value in data.dict(exclude_none=True).items():
+        setattr(contract_record, key, value)
 
-        for key, value in data.dict(exclude_none=True).items():
-            setattr(contract, key, value)
+    db.add(contract_record)
+    db.commit()
 
-        session.commit()
-        return ContractResult(**to_dict(contract))
+    return schema.ContractResult(**models.to_dict(contract_record))
+
+
+def delete_contract(contract_id: int, db: Session) -> None:
+    contract_record = (
+        db.query(models.Contract).filter(models.Contract.id == contract_id).first()
+    )
+    if not contract_record:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"Contract at ID {contract_id} not found",
+        )
+
+    db.delete(contract_record)
+    db.commit()
