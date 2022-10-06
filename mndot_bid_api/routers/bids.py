@@ -1,33 +1,68 @@
-from typing import List
-from fastapi import APIRouter
+import fastapi
+from mndot_bid_api.db import database
+from mndot_bid_api.operations import bids, schema
+from sqlalchemy.orm import Session
 
-from mndot_bid_api.operations.bids import (
-    create_bid,
-    read_bid,
-    read_all_bids,
-    update_bid,
+router = fastapi.APIRouter()
+
+
+@router.get(
+    "/bid/all",
+    tags=["bid"],
+    response_model=list[schema.BidResult],
+    status_code=fastapi.status.HTTP_200_OK,
 )
-from mndot_bid_api.operations.schema import BidCreateData, BidResult, BidUpdateData
+def api_read_all_bids(
+    db: Session = fastapi.Depends(database.get_db_session),
+) -> schema.BidResult:
+    return bids.read_all_bids(db)
 
 
-router = APIRouter()
+@router.get(
+    "/bid/{bid_id}",
+    tags=["bid"],
+    response_model=schema.BidResult,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_read_bid(
+    bid_id: int, db: Session = fastapi.Depends(database.get_db_session)
+) -> schema.BidResult:
+    return bids.read_bid(bid_id, db)
 
 
-@router.get("/bids", tags=["bids"], response_model=List[BidResult])
-def api_read_all_bids() -> BidResult:
-    return read_all_bids()
+@router.post(
+    "/bid",
+    tags=["bid"],
+    response_model=schema.BidResult,
+    status_code=fastapi.status.HTTP_201_CREATED,
+)
+def api_create_bid(
+    data: schema.BidCreateData, db: Session = fastapi.Depends(database.get_db_session)
+) -> schema.BidResult:
+    return bids.create_bid(data, db)
 
 
-@router.get("/bid/{bid_id}", tags=["bids"], response_model=BidResult)
-def api_read_bid(bid_id) -> BidResult:
-    return read_bid(bid_id)
+@router.patch(
+    "/bid/{bid_id}",
+    tags=["bid"],
+    response_model=schema.BidResult,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_update_bid(
+    bid_id: int,
+    data: schema.BidUpdateData,
+    db: Session = fastapi.Depends(database.get_db_session),
+) -> schema.BidResult:
+    return bids.update_bid(bid_id, data, db)
 
 
-@router.post("/bid", tags=["bids"], response_model=BidResult)
-def api_create_bid(data: BidCreateData) -> BidResult:
-    return create_bid(data)
-
-
-@router.patch("/bid/{bid_id}", tags=["bids"], response_model=BidResult)
-def api_update_bid(bid_id: int, data: BidUpdateData) -> BidResult:
-    return update_bid(bid_id, data)
+@router.delete(
+    "/bid/{bid_id}",
+    tags=["bid"],
+    status_code=fastapi.status.HTTP_204_NO_CONTENT,
+)
+def api_delete_bid(
+    bid_id: int,
+    db: Session = fastapi.Depends(database.get_db_session),
+):
+    return bids.delete_bid(bid_id, db)
