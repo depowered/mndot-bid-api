@@ -53,7 +53,7 @@ bids = [
     models.Bid(
         id=3,
         contract_id=2,
-        item_composite_id="2575.501/00010",
+        item_composite_id="2020_2575_501_00010",
         bidder_id=3,
         quantity=1.0,
         unit_price=30_000_00,
@@ -80,11 +80,39 @@ bids = [
     models.Bid(
         id=6,
         contract_id=2,
-        item_composite_id="2575.501/00010",
+        item_composite_id="2020_2575_501_00010",
         bidder_id=0,
         quantity=1.0,
         unit_price=int(30_000_00 * 1.2),
         bid_type="engineers_estimate",
+    ),
+]
+
+
+items = [
+    models.Item(
+        id=1,
+        composite_id="2020_2501_503_02931",
+        spec_year="2020",
+        spec_code="2501",
+        unit_code="503",
+        item_code="02931",
+        short_description="biolog",
+        long_description="sediment control log type (straw)",
+        unit="LIN FT",
+        unit_abreviation="LF",
+    ),
+    models.Item(
+        id=2,
+        composite_id="2020_2575_501_00010",
+        spec_year="2020",
+        spec_code="2501",
+        unit_code="503",
+        item_code="00010",
+        short_description="silt fence",
+        long_description="silt fence type HI",
+        unit="LIN FT",
+        unit_abreviation="LF",
     ),
 ]
 
@@ -94,4 +122,5 @@ def load_sample_data() -> None:
         db.add_all(bidders)
         db.add_all(contracts)
         db.add_all(bids)
+        db.add_all(items)
         db.commit()

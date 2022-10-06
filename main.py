@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI
 
 from mndot_bid_api.db import database, sample_data
-from mndot_bid_api.routers import bidders, bids, contracts
+from mndot_bid_api.routers import bidders, bids, contracts, items
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///data/api.db"
 
@@ -28,3 +28,4 @@ def read_root():
 app.include_router(contracts.router)
 app.include_router(bidders.router)
 app.include_router(bids.router)
+app.include_router(items.router)
