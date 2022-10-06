@@ -7,7 +7,7 @@ router = fastapi.APIRouter()
 
 
 @router.get(
-    "/contract",
+    "/contract/all",
     tags=["contract"],
     response_model=list[schema.ContractResult],
     status_code=fastapi.status.HTTP_200_OK,
