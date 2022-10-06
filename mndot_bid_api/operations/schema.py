@@ -9,6 +9,17 @@ class ContractCreateData(BaseModel):
     id: int
     letting_date: date
     sp_number: str
+    district: enums.District
+    county: enums.County
+    description: str
+    winning_bidder_id: int
+    spec_year: constr(strip_whitespace=True, min_length=4, max_length=4)
+
+
+class ContractResult(BaseModel):
+    id: int
+    letting_date: date
+    sp_number: str
     district: str
     county: str
     description: str
@@ -16,15 +27,11 @@ class ContractCreateData(BaseModel):
     spec_year: str
 
 
-class ContractResult(ContractCreateData):
-    pass
-
-
 class ContractUpdateData(BaseModel):
     letting_date: Optional[date]
     sp_number: Optional[str]
-    district: Optional[str]
-    county: Optional[str]
+    district: Optional[enums.District]
+    county: Optional[enums.County]
     description: Optional[str]
     winning_bidder_id: Optional[int]
     spec_year: Optional[str]
