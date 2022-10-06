@@ -25,6 +25,6 @@ def read_root():
     return {"server status": "Running"}
 
 
-# app.include_router(contracts.router)
+app.include_router(contracts.router)
 app.include_router(bidders.router)
 # app.include_router(bids.router)

@@ -1,31 +1,35 @@
 from datetime import datetime
 
-from mndot_bid_api.db import database
-from mndot_bid_api.db.models import Bid, Bidder, Contract
+from mndot_bid_api.db import database, models
 
 bidders = [
-    Bidder(id=1, name="Veit"),
-    Bidder(id=2, name="S.M. Hentges and Sons"),
-    Bidder(id=3, name="Ames"),
+    models.Bidder(id=1, name="Veit"),
+    models.Bidder(id=2, name="S.M. Hentges and Sons"),
+    models.Bidder(id=3, name="Ames"),
 ]
 
-# contracts = [
-#     Contract(
-#         id=1,
-#         is_processed=True,
-#         let_date=datetime.today(),
-#         let_year=2022,
-#         spec_year=2020,
-#         sp_number="4911-15",
-#         district="Baxter",
-#         county="Benton",
-#         engineers_total=2_000_000_00,
-#         lowest_bidder_id=3,
-#         lowest_bidder_total=2_500_000_00,
-#     ),
-#     Contract(id=2, is_processed=False),
-#     Contract(id=3, is_processed=False),
-# ]
+contracts = [
+    models.Contract(
+        id=1,
+        letting_date=datetime.today(),
+        sp_number="4911-15",
+        district="Baxter",
+        county="Benton",
+        description="Some road is getting new pavement",
+        winning_bidder_id=1,
+        spec_year=2020,
+    ),
+    models.Contract(
+        id=2,
+        letting_date=datetime.today(),
+        sp_number="3309-35",
+        district="Metro",
+        county="Hennepin",
+        description="They build ponds for this one",
+        winning_bidder_id=3,
+        spec_year=2020,
+    ),
+]
 
 # bids = [
 #     Bid(
@@ -67,4 +71,5 @@ bidders = [
 def load_sample_data() -> None:
     with database.DBSession() as db:
         db.add_all(bidders)
+        db.add_all(contracts)
         db.commit()
