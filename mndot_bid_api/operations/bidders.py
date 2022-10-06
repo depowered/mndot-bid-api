@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+import fastapi
 from mndot_bid_api.db import database, models
 from mndot_bid_api.operations import schema
 from sqlalchemy.orm import Session
@@ -12,7 +12,7 @@ def read_all_bidders(db: Session) -> list[schema.BidderResult]:
 def read_bidder(bidder_id: int, db: Session) -> schema.BidderResult:
     bidder_model = db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
     if not bidder_model:
-        raise HTTPException(
+        raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
         )
     return schema.BidderResult(**models.to_dict(bidder_model))
@@ -22,7 +22,7 @@ def create_bidder(data: schema.BidderCreateData, db: Session) -> schema.BidderRe
     # Verify record is not already present
     record = db.query(models.Bidder).filter(models.Bidder.id == data.id).first()
     if record:
-        raise HTTPException(
+        raise fastapi.HTTPException(
             status_code=303, detail=f"Bidder already exists at ID {data.id}"
         )
 
@@ -39,7 +39,7 @@ def update_bidder(
     # Verify record exists
     record = db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
     if not record:
-        raise HTTPException(
+        raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
         )
 
@@ -56,7 +56,7 @@ def delete_bidder(bidder_id: int, db: Session) -> None:
     # Verify record exists
     record = db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
     if not record:
-        raise HTTPException(
+        raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
         )
 
