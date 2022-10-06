@@ -33,6 +33,9 @@ def create_item(data: schema.ItemCreateData, db: Session) -> schema.ItemResult:
         )
 
     item_model = models.Item(**data.dict())
+    # Sync composite_id with current values
+    setattr(item_model, "composite_id", data.composite_id)
+
     db.add(item_model)
     db.commit()
 
@@ -51,6 +54,9 @@ def update_item(
 
     for key, value in data.dict(exclude_none=True).items():
         setattr(item_record, key, value)
+
+    # Sync composite_id with current values
+    setattr(item_record, "composite_id", data.composite_id)
 
     db.add(item_record)
     db.commit()

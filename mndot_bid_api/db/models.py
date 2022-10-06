@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, Computed, Date, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -56,10 +56,10 @@ class Item(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     composite_id = Column(String, nullable=False)
-    spec_year = Column(String, nullable=False)
-    spec_code = Column(String, nullable=False)
-    unit_code = Column(String, nullable=False)
-    item_code = Column(String, nullable=False)
+    spec_year = Column(String(4), nullable=False)
+    spec_code = Column(String(4), nullable=False)
+    unit_code = Column(String(3), nullable=False)
+    item_code = Column(String(5), nullable=False)
     short_description = Column(String, nullable=False)
     long_description = Column(String, nullable=False)
     unit = Column(String, nullable=False)

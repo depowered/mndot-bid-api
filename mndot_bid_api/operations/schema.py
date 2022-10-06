@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 
 class ContractCreateData(BaseModel):
@@ -65,6 +65,24 @@ class BidUpdateData(BaseModel):
 
 
 class ItemCreateData(BaseModel):
+    spec_year: constr(strip_whitespace=True, min_length=4, max_length=4)
+    spec_code: constr(strip_whitespace=True, min_length=4, max_length=4)
+    unit_code: constr(strip_whitespace=True, min_length=3, max_length=3)
+    item_code: constr(strip_whitespace=True, min_length=5, max_length=5)
+    short_description: str
+    long_description: str
+    unit: str
+    unit_abreviation: str
+
+    @property
+    def composite_id(self) -> str:
+        return "_".join(
+            [self.spec_year, self.spec_code, self.unit_code, self.item_code]
+        )
+
+
+class ItemResult(BaseModel):
+    id: int
     composite_id: str
     spec_year: str
     spec_code: str
@@ -76,17 +94,18 @@ class ItemCreateData(BaseModel):
     unit_abreviation: str
 
 
-class ItemResult(ItemCreateData):
-    id: int
-
-
 class ItemUpdateData(BaseModel):
-    composite_id: Optional[str]
-    spec_year: Optional[str]
-    spec_code: Optional[str]
-    unit_code: Optional[str]
-    item_code: Optional[str]
+    spec_year: Optional[constr(strip_whitespace=True, min_length=4, max_length=4)]
+    spec_code: Optional[constr(strip_whitespace=True, min_length=4, max_length=4)]
+    unit_code: Optional[constr(strip_whitespace=True, min_length=3, max_length=3)]
+    item_code: Optional[constr(strip_whitespace=True, min_length=5, max_length=5)]
     short_description: Optional[str]
     long_description: Optional[str]
     unit: Optional[str]
     unit_abreviation: Optional[str]
+
+    @property
+    def composite_id(self) -> str:
+        return "_".join(
+            [self.spec_year, self.spec_code, self.unit_code, self.item_code]
+        )
