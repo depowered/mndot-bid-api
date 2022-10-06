@@ -1,6 +1,12 @@
 import enum
 
 
+class BidType(str, enum.Enum):
+    ENGINEER = "engineer"
+    WINNING = "winning"
+    LOSING = "losing"
+
+
 class UnitAbbreviation(str, enum.Enum):
     ACRE = "ACRE"
     ASMY = "ASMY"

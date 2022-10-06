@@ -56,11 +56,17 @@ class BidCreateData(BaseModel):
     bidder_id: int
     quantity: float
     unit_price: int
-    bid_type: str
+    bid_type: enums.BidType
 
 
-class BidResult(BidCreateData):
+class BidResult(BaseModel):
     id: int
+    contract_id: int
+    item_composite_id: str
+    bidder_id: int
+    quantity: float
+    unit_price: int
+    bid_type: str
 
 
 class BidUpdateData(BaseModel):
@@ -69,7 +75,7 @@ class BidUpdateData(BaseModel):
     bidder_id: Optional[int]
     quantity: Optional[float]
     unit_price: Optional[int]
-    bid_type: Optional[str]
+    bid_type: Optional[enums.BidType]
 
 
 class ItemCreateData(BaseModel):
