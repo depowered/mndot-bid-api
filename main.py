@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -35,3 +36,6 @@ app.include_router(contracts.router)
 app.include_router(bidders.router)
 app.include_router(bids.router)
 app.include_router(items.router)
+
+with open("./openapi.json", "w") as f:
+    f.write(json.dumps(app.openapi()))
