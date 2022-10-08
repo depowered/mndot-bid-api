@@ -90,7 +90,7 @@ class ItemCreateData(BaseModel):
 
     @property
     def composite_id(self) -> str:
-        return "_".join([self.spec_code, self.unit_code, self.item_code])
+        return "_".join([str(self.spec_code), str(self.unit_code), str(self.item_code)])
 
 
 class ItemResult(BaseModel):
@@ -118,4 +118,4 @@ class ItemUpdateData(BaseModel):
 
     @property
     def composite_id(self) -> str:
-        return "_".join([self.spec_code, self.unit_code, self.item_code])
+        return "_".join([str(self.spec_code), str(self.unit_code), str(self.item_code)])

@@ -15,7 +15,7 @@ router = fastapi.APIRouter()
 def api_read_all_items(
     spec_year: enums.SpecYear,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.ItemResult:
+) -> list[schema.ItemResult]:
 
     return items.read_all_items(spec_year, db)
 
