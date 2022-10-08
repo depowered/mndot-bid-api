@@ -1,31 +1,123 @@
 import fastapi
 from mndot_bid_api.db import models
-from mndot_bid_api.operations import schema
+from mndot_bid_api.operations import enums, schema
 from sqlalchemy.orm import Session
 
 
-def read_all_items(db: Session) -> list[schema.ItemResult]:
-    item_records = db.query(models.Item).all()
+def read_all_items(spec_year: enums.SpecYear, db: Session) -> list[schema.ItemResult]:
+    item_records = (
+        db.query(models.Item).filter(models.Item.spec_year == spec_year).all()
+    )
     return [schema.ItemResult(**models.to_dict(item)) for item in item_records]
 
 
-def read_item(item_id: int, db: Session) -> schema.ItemResult:
-    item_record = db.query(models.Item).filter(models.Item.id == item_id).first()
+def read_single_item(
+    spec_year: enums.SpecYear,
+    compostite_id: str,
+    db: Session,
+) -> schema.ItemResult:
+
+    item_record = (
+        db.query(models.Item)
+        .filter(models.Item.spec_year == spec_year)
+        .filter(models.Item.composite_id == compostite_id)
+        .first()
+    )
+
     if not item_record:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Bid at ID {item_id} not found",
+            detail=f"Item not found",
         )
 
     return schema.ItemResult(**models.to_dict(item_record))
 
 
+def read_multiple_items(
+    spec_year: enums.SpecYear,
+    spec_code: str | None,
+    unit_code: str | None,
+    item_code: str | None,
+    unit: enums.Unit | None,
+    unit_abbreviation: enums.UnitAbbreviation | None,
+    db: Session,
+) -> list[schema.ItemResult]:
+
+    filters = {}
+    if spec_code:
+        filters.update({"spec_code": spec_code})
+    if unit_code:
+        filters.update({"unit_code": unit_code})
+    if item_code:
+        filters.update({"item_code": item_code})
+    if unit:
+        filters.update({"unit": unit})
+    if unit_abbreviation:
+        filters.update({"unit_abbreviation": unit_abbreviation})
+
+    if not filters:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
+            detail="Provide at least one query parameter",
+        )
+
+    item_records = (
+        db.query(models.Item)
+        .filter(models.Item.spec_year == spec_year)
+        .filter_by(**filters)
+        .all()
+    )
+
+    if not item_records:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No items found matching the provided query parameters",
+        )
+
+    return [schema.ItemResult(**models.to_dict(item)) for item in item_records]
+
+
+def search_item(
+    spec_year: enums.SpecYear, search_string: str, db: Session
+) -> list[schema.ItemResult]:
+
+    results = []
+    for column in models.Item.__table__.columns:
+        # skip searching id and compound_id columns
+        if column.name in ["id", "composite_id"]:
+            continue
+
+        item_records = (
+            db.query(models.Item)
+            .filter(models.Item.spec_year == spec_year)
+            .filter(column.like(f"%{search_string}%"))
+            .all()
+        )
+        if item_records:
+            results.extend(item_records)
+
+    if not results:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No items found matching the provided search string",
+        )
+
+    results_no_duplicates_sorted = sorted(set(results), key=lambda item: item.id)
+
+    return [
+        schema.ItemResult(**models.to_dict(item))
+        for item in results_no_duplicates_sorted
+    ]
+
+
 def create_item(data: schema.ItemCreateData, db: Session) -> schema.ItemResult:
+
     item_record = (
         db.query(models.Item)
         .filter(models.Item.composite_id == data.composite_id)
         .first()
     )
+
     if item_record:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_303_SEE_OTHER,
@@ -45,7 +137,9 @@ def create_item(data: schema.ItemCreateData, db: Session) -> schema.ItemResult:
 def update_item(
     item_id: int, data: schema.ItemUpdateData, db: Session
 ) -> schema.ItemResult:
+
     item_record = db.query(models.Item).filter(models.Item.id == item_id).first()
+
     if not item_record:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
@@ -65,7 +159,9 @@ def update_item(
 
 
 def delete_item(item_id: int, db: Session) -> None:
+
     item_record = db.query(models.Item).filter(models.Item.id == item_id).first()
+
     if not item_record:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,

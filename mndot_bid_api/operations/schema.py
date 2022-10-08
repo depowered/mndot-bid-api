@@ -79,7 +79,7 @@ class BidUpdateData(BaseModel):
 
 
 class ItemCreateData(BaseModel):
-    spec_year: constr(strip_whitespace=True, min_length=4, max_length=4)
+    spec_year: enums.SpecYear
     spec_code: constr(strip_whitespace=True, min_length=4, max_length=4)
     unit_code: constr(strip_whitespace=True, min_length=3, max_length=3)
     item_code: constr(strip_whitespace=True, min_length=5, max_length=5)
@@ -90,9 +90,7 @@ class ItemCreateData(BaseModel):
 
     @property
     def composite_id(self) -> str:
-        return "_".join(
-            [self.spec_year, self.spec_code, self.unit_code, self.item_code]
-        )
+        return "_".join([self.spec_code, self.unit_code, self.item_code])
 
 
 class ItemResult(BaseModel):
@@ -109,7 +107,7 @@ class ItemResult(BaseModel):
 
 
 class ItemUpdateData(BaseModel):
-    spec_year: Optional[constr(strip_whitespace=True, min_length=4, max_length=4)]
+    spec_year: Optional[enums.SpecYear]
     spec_code: Optional[constr(strip_whitespace=True, min_length=4, max_length=4)]
     unit_code: Optional[constr(strip_whitespace=True, min_length=3, max_length=3)]
     item_code: Optional[constr(strip_whitespace=True, min_length=5, max_length=5)]
@@ -120,6 +118,4 @@ class ItemUpdateData(BaseModel):
 
     @property
     def composite_id(self) -> str:
-        return "_".join(
-            [self.spec_year, self.spec_code, self.unit_code, self.item_code]
-        )
+        return "_".join([self.spec_code, self.unit_code, self.item_code])

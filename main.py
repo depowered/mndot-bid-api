@@ -9,7 +9,7 @@ from mndot_bid_api.routers import bidders, bids, contracts, items
 DEVELOPMENT_DATABASE_URL = "sqlite:///data/dev-api.db"
 PRODUCTION_DATABASE_URL = "sqlite:///data/prod-api.db"
 
-DEVELOPMENT_MODE = False
+DEVELOPMENT_MODE = True
 
 
 app = FastAPI()
