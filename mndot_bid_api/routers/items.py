@@ -74,7 +74,7 @@ def api_read_multiple_items(
 
 
 @router.get(
-    "/item/{spec_year}/search",
+    "/item/{spec_year}/{search_string}",
     tags=["item"],
     response_model=list[schema.ItemResult],
     status_code=fastapi.status.HTTP_200_OK,
