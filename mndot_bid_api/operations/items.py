@@ -11,6 +11,26 @@ def read_all_items(spec_year: enums.SpecYear, db: Session) -> list[schema.ItemRe
     return [schema.ItemResult(**models.to_dict(item)) for item in item_records]
 
 
+def read_item(spec_year, spec_code, unit_code, item_code, db) -> schema.ItemResult:
+
+    item_record = (
+        db.query(models.Item)
+        .filter(models.Item.spec_year == spec_year)
+        .filter(models.Item.spec_code == spec_code)
+        .filter(models.Item.unit_code == unit_code)
+        .filter(models.Item.item_code == item_code)
+        .first()
+    )
+
+    if not item_record:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"Item not found",
+        )
+
+    return schema.ItemResult(**models.to_dict(item_record))
+
+
 def read_single_item(
     spec_year: enums.SpecYear,
     compostite_id: str,

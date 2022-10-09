@@ -21,6 +21,23 @@ def api_read_all_items(
 
 
 @router.get(
+    "/item/{spec_year}/{spec_code}/{unit_code}/{item_code}",
+    tags=["item"],
+    response_model=schema.ItemResult,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_read_item(
+    spec_year: enums.SpecYear,
+    spec_code: str,
+    unit_code: str,
+    item_code: str,
+    db: Session = fastapi.Depends(database.get_db_session),
+) -> schema.ItemResult:
+
+    return items.read_item(spec_year, spec_code, unit_code, item_code, db)
+
+
+@router.get(
     "/item/{spec_year}/single",
     tags=["item"],
     response_model=schema.ItemResult,
