@@ -64,6 +64,19 @@ def search_item(
     ]
 
 
+def read_item_by_id(item_id: int, db: Session) -> schema.ItemResult:
+
+    item_record = db.query(models.Item).filter(models.Item.id == item_id).first()
+
+    if not item_record:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"Item at ID {item_id} not found",
+        )
+
+    return schema.ItemResult(**models.to_dict(item_record))
+
+
 def create_item(data: schema.ItemCreateData, db: Session) -> schema.ItemResult:
 
     item_record = (

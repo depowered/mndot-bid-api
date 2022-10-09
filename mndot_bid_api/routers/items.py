@@ -52,6 +52,19 @@ def api_search_item(
     return items.search_item(spec_year, search_string, db)
 
 
+@router.get(
+    "/item/{item_id}",
+    tags=["item"],
+    response_model=schema.ItemResult,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_read_item_by_id(
+    item_id: int, db: Session = fastapi.Depends(database.get_db_session)
+) -> schema.ItemResult:
+
+    return items.read_item_by_id(item_id, db)
+
+
 @router.post(
     "/item",
     tags=["item"],
