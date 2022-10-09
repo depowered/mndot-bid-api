@@ -38,42 +38,6 @@ def api_read_item(
 
 
 @router.get(
-    "/item/{spec_year}/single",
-    tags=["item"],
-    response_model=schema.ItemResult,
-    status_code=fastapi.status.HTTP_200_OK,
-)
-def api_read_single_item(
-    spec_year: enums.SpecYear,
-    composite_id: str,
-    db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.ItemResult:
-
-    return items.read_single_item(spec_year, composite_id, db)
-
-
-@router.get(
-    "/item/{spec_year}/multiple",
-    tags=["item"],
-    response_model=list[schema.ItemResult],
-    status_code=fastapi.status.HTTP_200_OK,
-)
-def api_read_multiple_items(
-    spec_year: enums.SpecYear,
-    spec_code: str | None = None,
-    unit_code: str | None = None,
-    item_code: str | None = None,
-    unit: enums.Unit | None = None,
-    unit_abbreviation: enums.UnitAbbreviation | None = None,
-    db: Session = fastapi.Depends(database.get_db_session),
-) -> list[schema.ItemResult]:
-
-    return items.read_multiple_items(
-        spec_year, spec_code, unit_code, item_code, unit, unit_abbreviation, db
-    )
-
-
-@router.get(
     "/item/{spec_year}/{search_string}",
     tags=["item"],
     response_model=list[schema.ItemResult],
