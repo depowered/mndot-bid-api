@@ -42,13 +42,10 @@ class Bid(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     contract_id = Column(Integer, ForeignKey("contract.id"), nullable=False)
     item_id = Column(Integer, ForeignKey("item.id"), nullable=False)
-    # item_composite_id = Column(String, ForeignKey("item.composite_id"), nullable=False)
     bidder_id = Column(Integer, ForeignKey("bidder.id"), nullable=False)
     quantity = Column(Float, nullable=False)
     unit_price = Column(Integer, nullable=False)
-    bid_type = Column(
-        String, nullable=False
-    )  # "engineers_estimate", "winning_bid", or "losing_bid"
+    bid_type = Column(String, nullable=False)
 
     # Relationships
     contract = relationship("Contract")
@@ -60,7 +57,6 @@ class Item(Base):
     __tablename__ = "item"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    # composite_id = Column(String, nullable=False)
     spec_year = Column(String(4), nullable=False)
     spec_code = Column(String(4), nullable=False)
     unit_code = Column(String(3), nullable=False)
