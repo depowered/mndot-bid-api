@@ -1,6 +1,6 @@
 import fastapi
 from mndot_bid_api.db import database
-from mndot_bid_api.operations import bids, schema
+from mndot_bid_api.operations import bids, enums, schema
 from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter()
@@ -66,3 +66,19 @@ def api_delete_bid(
     db: Session = fastapi.Depends(database.get_db_session),
 ):
     return bids.delete_bid(bid_id, db)
+
+
+@router.get(
+    "/bid/query/",
+    tags=["bid"],
+    response_model=list[schema.BidResult],
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_query_bid(
+    contract_id: int | None = None,
+    item_id: int | None = None,
+    bidder_id: int | None = None,
+    bid_type: enums.BidType | None = None,
+    db: Session = fastapi.Depends(database.get_db_session),
+) -> list[schema.BidResult]:
+    return bids.query_bid(contract_id, item_id, bidder_id, bid_type, db)

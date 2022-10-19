@@ -1,6 +1,6 @@
 import fastapi
 from mndot_bid_api.db import models
-from mndot_bid_api.operations import schema
+from mndot_bid_api.operations import enums, schema
 from sqlalchemy.orm import Session
 
 
@@ -100,3 +100,39 @@ def delete_bid(bid_id: int, db: Session) -> None:
 
     db.delete(bid_record)
     db.commit()
+
+
+def query_bid(
+    contract_id: int | None,
+    item_id: int | None,
+    bidder_id: int | None,
+    bid_type: enums.BidType | None,
+    db: Session,
+) -> list[schema.BidResult]:
+
+    # build a dyanmic query dictionary and pass to the filter_by function
+    filter_kwargs = {}
+    if contract_id:
+        filter_kwargs["contract_id"] = contract_id
+    if item_id:
+        filter_kwargs["item_id"] = item_id
+    if bidder_id:
+        filter_kwargs["bidder_id"] = bidder_id
+    if bid_type:
+        filter_kwargs["bid_type"] = bid_type
+
+    if not filter_kwargs:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
+            detail=f"Provide at least one query parameter",
+        )
+
+    bid_records = db.query(models.Bid).filter_by(**filter_kwargs).all()
+
+    if not bid_records:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No Bids found matching the provided query parameters",
+        )
+
+    return [schema.BidResult(**models.to_dict(bid)) for bid in bid_records]

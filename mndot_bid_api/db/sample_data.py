@@ -39,7 +39,7 @@ bids = [
         bidder_id=3,
         quantity=300.0,
         unit_price=6_00,
-        bid_type="winning_bid",
+        bid_type="winning",
     ),
     models.Bid(
         id=2,
@@ -48,7 +48,7 @@ bids = [
         bidder_id=3,
         quantity=10_000.0,
         unit_price=1_25,
-        bid_type="winning_bid",
+        bid_type="winning",
     ),
     models.Bid(
         id=3,
@@ -57,7 +57,7 @@ bids = [
         bidder_id=3,
         quantity=1.0,
         unit_price=30_000_00,
-        bid_type="winning_bid",
+        bid_type="winning",
     ),
     models.Bid(
         id=4,
@@ -66,7 +66,7 @@ bids = [
         bidder_id=0,
         quantity=300.0,
         unit_price=int(6_00 * 1.2),
-        bid_type="engineers_estimate",
+        bid_type="engineer",
     ),
     models.Bid(
         id=5,
@@ -75,7 +75,7 @@ bids = [
         bidder_id=0,
         quantity=10_000.0,
         unit_price=int(1_25 * 1.2),
-        bid_type="engineers_estimate",
+        bid_type="engineer",
     ),
     models.Bid(
         id=6,
@@ -84,7 +84,7 @@ bids = [
         bidder_id=0,
         quantity=1.0,
         unit_price=int(30_000_00 * 1.2),
-        bid_type="engineers_estimate",
+        bid_type="engineer",
     ),
 ]
 
