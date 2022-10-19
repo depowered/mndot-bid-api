@@ -52,7 +52,10 @@ class BidderUpdateData(BaseModel):
 
 class BidCreateData(BaseModel):
     contract_id: int
-    item_composite_id: str
+    spec_year: enums.SpecYear
+    spec_code: constr(strip_whitespace=True, min_length=4, max_length=4)
+    unit_code: constr(strip_whitespace=True, min_length=3, max_length=3)
+    item_code: constr(strip_whitespace=True, min_length=5, max_length=5)
     bidder_id: int
     quantity: float
     unit_price: int
@@ -62,7 +65,7 @@ class BidCreateData(BaseModel):
 class BidResult(BaseModel):
     id: int
     contract_id: int
-    item_composite_id: str
+    item_id: int
     bidder_id: int
     quantity: float
     unit_price: int
@@ -71,7 +74,7 @@ class BidResult(BaseModel):
 
 class BidUpdateData(BaseModel):
     contract_id: Optional[int]
-    item_composite_id: Optional[str]
+    item_id: Optional[int]
     bidder_id: Optional[int]
     quantity: Optional[float]
     unit_price: Optional[int]
@@ -88,14 +91,9 @@ class ItemCreateData(BaseModel):
     unit: enums.Unit
     unit_abbreviation: enums.UnitAbbreviation
 
-    @property
-    def composite_id(self) -> str:
-        return "_".join([str(self.spec_code), str(self.unit_code), str(self.item_code)])
-
 
 class ItemResult(BaseModel):
     id: int
-    composite_id: str
     spec_year: str
     spec_code: str
     unit_code: str
@@ -115,7 +113,3 @@ class ItemUpdateData(BaseModel):
     long_description: Optional[constr(strip_whitespace=True, to_upper=True)]
     unit: Optional[enums.Unit]
     unit_abbreviation: Optional[enums.UnitAbbreviation]
-
-    @property
-    def composite_id(self) -> str:
-        return "_".join([str(self.spec_code), str(self.unit_code), str(self.item_code)])

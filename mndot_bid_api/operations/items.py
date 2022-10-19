@@ -37,8 +37,8 @@ def search_item(
 
     results = []
     for column in models.Item.__table__.columns:
-        # skip searching id and compound_id columns
-        if column.name in ["id", "composite_id"]:
+        # skip searching id
+        if column.name in ["id"]:
             continue
 
         item_records = (
@@ -81,7 +81,12 @@ def create_item(data: schema.ItemCreateData, db: Session) -> schema.ItemResult:
 
     item_record = (
         db.query(models.Item)
-        .filter(models.Item.composite_id == data.composite_id)
+        .filter(
+            models.Item.spec_year == data.spec_year,
+            models.Item.spec_code == data.spec_code,
+            models.Item.unit_code == data.unit_code,
+            models.Item.item_code == data.item_code,
+        )
         .first()
     )
 
@@ -92,8 +97,6 @@ def create_item(data: schema.ItemCreateData, db: Session) -> schema.ItemResult:
         )
 
     item_model = models.Item(**data.dict())
-    # Sync composite_id with current values
-    setattr(item_model, "composite_id", data.composite_id)
 
     db.add(item_model)
     db.commit()
@@ -115,9 +118,6 @@ def update_item(
 
     for key, value in data.dict(exclude_none=True).items():
         setattr(item_record, key, value)
-
-    # Sync composite_id with current values
-    setattr(item_record, "composite_id", data.composite_id)
 
     db.add(item_record)
     db.commit()

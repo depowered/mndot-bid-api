@@ -35,7 +35,7 @@ bids = [
     models.Bid(
         id=1,
         contract_id=2,
-        item_composite_id="2020_2501_503_02931",
+        item_id=1,
         bidder_id=3,
         quantity=300.0,
         unit_price=6_00,
@@ -44,7 +44,7 @@ bids = [
     models.Bid(
         id=2,
         contract_id=2,
-        item_composite_id="2020_2575_503_12345",
+        item_id=2,
         bidder_id=3,
         quantity=10_000.0,
         unit_price=1_25,
@@ -53,7 +53,7 @@ bids = [
     models.Bid(
         id=3,
         contract_id=2,
-        item_composite_id="2020_2575_501_00010",
+        item_id=2,
         bidder_id=3,
         quantity=1.0,
         unit_price=30_000_00,
@@ -62,7 +62,7 @@ bids = [
     models.Bid(
         id=4,
         contract_id=2,
-        item_composite_id="2020_2501_503_02931",
+        item_id=1,
         bidder_id=0,
         quantity=300.0,
         unit_price=int(6_00 * 1.2),
@@ -71,7 +71,7 @@ bids = [
     models.Bid(
         id=5,
         contract_id=2,
-        item_composite_id="2020_2575_503_12345",
+        item_id=2,
         bidder_id=0,
         quantity=10_000.0,
         unit_price=int(1_25 * 1.2),
@@ -80,7 +80,7 @@ bids = [
     models.Bid(
         id=6,
         contract_id=2,
-        item_composite_id="2020_2575_501_00010",
+        item_id=2,
         bidder_id=0,
         quantity=1.0,
         unit_price=int(30_000_00 * 1.2),
@@ -92,7 +92,6 @@ bids = [
 items = [
     models.Item(
         id=1,
-        composite_id="2501_503_02931",
         spec_year="2020",
         spec_code="2501",
         unit_code="503",
@@ -104,7 +103,6 @@ items = [
     ),
     models.Item(
         id=2,
-        composite_id="2575_501_00010",
         spec_year="2020",
         spec_code="2575",
         unit_code="501",
@@ -116,7 +114,6 @@ items = [
     ),
     models.Item(
         id=3,
-        composite_id="2501_503_02931",
         spec_year="2018",
         spec_code="2501",
         unit_code="503",
@@ -128,7 +125,6 @@ items = [
     ),
     models.Item(
         id=4,
-        composite_id="2018_2575_501_00010",
         spec_year="2018",
         spec_code="2575",
         unit_code="501",
@@ -140,7 +136,6 @@ items = [
     ),
     models.Item(
         id=5,
-        composite_id="2501_503_02931",
         spec_year="2016",
         spec_code="2501",
         unit_code="503",
@@ -152,7 +147,6 @@ items = [
     ),
     models.Item(
         id=6,
-        composite_id="2575_501_00010",
         spec_year="2016",
         spec_code="2575",
         unit_code="501",

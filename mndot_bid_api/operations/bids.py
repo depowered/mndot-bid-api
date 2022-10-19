@@ -1,5 +1,5 @@
 import fastapi
-from mndot_bid_api.db import database, models
+from mndot_bid_api.db import models
 from mndot_bid_api.operations import schema
 from sqlalchemy.orm import Session
 
@@ -21,22 +21,50 @@ def read_bid(bid_id: int, db: Session) -> schema.BidResult:
 
 
 def create_bid(data: schema.BidCreateData, db: Session) -> schema.BidResult:
+    # Get matching item record so that item_id can be assigned to the new bid record
+    item_record = (
+        db.query(models.Item)
+        .filter(
+            models.Item.spec_year == data.spec_year,
+            models.Item.spec_code == data.spec_code,
+            models.Item.unit_code == data.unit_code,
+            models.Item.item_code == data.item_code,
+        )
+        .first()
+    )
+
+    if not item_record:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"Matching item not found for spec_year: {data.spec_year}, spec_code: {data.spec_code}, unit_code: {data.unit_code}, item_code: {data.item_code}. Cannot assign item_id.",
+        )
+
+    # Check if bid record already exists
     bid_record = (
         db.query(models.Bid)
         .filter(
             models.Bid.contract_id == data.contract_id,
-            models.Bid.item_composite_id == data.item_composite_id,
+            models.Bid.item_id == item_record.id,
             models.Bid.bidder_id == data.bidder_id,
         )
         .first()
     )
+
     if bid_record:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_303_SEE_OTHER,
             detail=f"Bid already exists at ID {bid_record.id}",
         )
 
-    bid_model = models.Bid(**data.dict())
+    # BidCreateData properties don't match Bid model exactly, cannot unpack dict to create
+    bid_model = models.Bid()
+    setattr(bid_model, "contract_id", data.contract_id)
+    setattr(bid_model, "item_id", item_record.id)
+    setattr(bid_model, "bidder_id", data.bidder_id)
+    setattr(bid_model, "quantity", data.quantity)
+    setattr(bid_model, "unit_price", data.unit_price)
+    setattr(bid_model, "bid_type", data.bid_type)
+
     db.add(bid_model)
     db.commit()
 
