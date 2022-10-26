@@ -3,8 +3,8 @@ from pathlib import Path
 
 from fastapi import FastAPI
 
-from mndot_bid_api.db import database, sample_data
-from mndot_bid_api.routers import bidders, bids, contracts, items
+from mndot_bid_api.db import database  # , sample_data
+from mndot_bid_api.routers import bidders, bids, contracts, invalid_bids, items
 
 DEVELOPMENT_DATABASE_URL = "sqlite:///data/dev-api.db"
 PRODUCTION_DATABASE_URL = "sqlite:///data/prod-api.db"
@@ -21,8 +21,8 @@ def startup_event():
 
     if DEVELOPMENT_MODE:
         database.init_sqlite_db(url=DEVELOPMENT_DATABASE_URL)
-        if not dev_db_exists:
-            sample_data.load_sample_data()
+        # if not dev_db_exists:
+        #     sample_data.load_sample_data()
     else:
         database.init_sqlite_db(url=PRODUCTION_DATABASE_URL)
 
@@ -35,6 +35,7 @@ def read_root():
 app.include_router(contracts.router)
 app.include_router(bidders.router)
 app.include_router(bids.router)
+app.include_router(invalid_bids.router)
 app.include_router(items.router)
 
 with open("./openapi.json", "w") as f:
