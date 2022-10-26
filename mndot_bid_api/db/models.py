@@ -17,7 +17,7 @@ class Bidder(Base):
     __tablename__ = "bidder"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=True)
+    name = Column(String, nullable=False)
 
 
 class Contract(Base):
@@ -30,7 +30,6 @@ class Contract(Base):
     county = Column(String, nullable=False)
     description = Column(String, nullable=False)
     winning_bidder_id = Column(Integer, ForeignKey("bidder.id"), nullable=False)
-    spec_year = Column(String, nullable=False)
 
     # Relationships
     bidder = relationship("Bidder")
@@ -41,8 +40,13 @@ class Bid(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     contract_id = Column(Integer, ForeignKey("contract.id"), nullable=False)
-    item_id = Column(Integer, ForeignKey("item.id"), nullable=False)
     bidder_id = Column(Integer, ForeignKey("bidder.id"), nullable=False)
+    item_spec_code = Column(String, ForeignKey("item.spec_code"), nullable=False)
+    item_unit_code = Column(String, ForeignKey("item.unit_code"), nullable=False)
+    item_item_code = Column(String, ForeignKey("item.item_code"), nullable=False)
+    item_long_description = Column(
+        String, ForeignKey("item.long_description"), nullable=False
+    )
     quantity = Column(Float, nullable=False)
     unit_price = Column(Integer, nullable=False)
     bid_type = Column(String, nullable=False)
