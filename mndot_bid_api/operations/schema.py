@@ -88,19 +88,6 @@ class BidUpdateData(BaseModel):
 #############################################################################
 
 
-class InvalidBidCreateData(BaseModel):
-    contract_id: int
-    bidder_id: int
-    item_spec_code: constr(strip_whitespace=True, min_length=4, max_length=4)
-    item_unit_code: constr(strip_whitespace=True, min_length=3, max_length=3)
-    item_item_code: constr(strip_whitespace=True, min_length=5, max_length=5)
-    item_long_description: constr(strip_whitespace=True, to_upper=True)
-    item_unit_abbreviation: constr(strip_whitespace=True, to_upper=True)
-    quantity: float
-    unit_price: int
-    bid_type: enums.BidType
-
-
 class InvalidBidResult(BaseModel):
     id: int
     contract_id: int
