@@ -29,7 +29,7 @@ def read_invalid_bid_by_id(invalid_bid_id: int, db: Session) -> schema.InvalidBi
     return schema.InvalidBidResult(**models.to_dict(invalid_bid_record))
 
 
-def create_invalid_bid(data: schema.InvalidBidCreateData, db: Session):
+def create_invalid_bid(data: schema.BidCreateData, db: Session):
 
     query_filter = {key: value for key, value in data.dict().items()}
     invalid_bid_record = db.query(models.InvalidBid).filter_by(**query_filter).first()

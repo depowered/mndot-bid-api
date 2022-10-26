@@ -41,7 +41,7 @@ def api_read_invalid_bid_by_id(
     status_code=fastapi.status.HTTP_201_CREATED,
 )
 def api_create_invalid_bid(
-    data: schema.InvalidBidCreateData,
+    data: schema.BidCreateData,
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.InvalidBidResult:
 
