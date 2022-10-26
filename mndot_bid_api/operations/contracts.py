@@ -1,5 +1,5 @@
 import fastapi
-from mndot_bid_api.db import database, models
+from mndot_bid_api.db import models
 from mndot_bid_api.operations import schema
 from sqlalchemy.orm import Session
 

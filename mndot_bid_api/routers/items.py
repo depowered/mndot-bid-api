@@ -1,6 +1,7 @@
 import fastapi
+from mndot_bid_api import operations
 from mndot_bid_api.db import database
-from mndot_bid_api.operations import enums, items, schema
+from mndot_bid_api.operations import enums, schema
 from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter()
@@ -17,7 +18,7 @@ def api_read_all_items(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> list[schema.ItemResult]:
 
-    return items.read_all_items(spec_year, db)
+    return operations.items.read_all_items(spec_year, db)
 
 
 @router.get(
@@ -34,7 +35,7 @@ def api_read_item(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.ItemResult:
 
-    return items.read_item(spec_year, spec_code, unit_code, item_code, db)
+    return operations.items.read_item(spec_year, spec_code, unit_code, item_code, db)
 
 
 @router.get(
@@ -49,7 +50,7 @@ def api_search_item(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> list[schema.ItemResult]:
 
-    return items.search_item(spec_year, search_string, db)
+    return operations.items.search_item(spec_year, search_string, db)
 
 
 @router.get(
@@ -62,7 +63,7 @@ def api_read_item_by_id(
     item_id: int, db: Session = fastapi.Depends(database.get_db_session)
 ) -> schema.ItemResult:
 
-    return items.read_item_by_id(item_id, db)
+    return operations.items.read_item_by_id(item_id, db)
 
 
 @router.post(
@@ -75,7 +76,7 @@ def api_create_item(
     data: schema.ItemCreateData, db: Session = fastapi.Depends(database.get_db_session)
 ) -> schema.ItemResult:
 
-    return items.create_item(data, db)
+    return operations.items.create_item(data, db)
 
 
 @router.patch(
@@ -90,7 +91,7 @@ def api_update_item(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.ItemResult:
 
-    return items.update_item(item_id, data, db)
+    return operations.items.update_item(item_id, data, db)
 
 
 @router.delete(
@@ -103,4 +104,4 @@ def api_delete_item(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> None:
 
-    return items.delete_item(item_id, db)
+    return operations.items.delete_item(item_id, db)

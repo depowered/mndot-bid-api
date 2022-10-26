@@ -1,6 +1,7 @@
 import fastapi
+from mndot_bid_api import operations
 from mndot_bid_api.db import database
-from mndot_bid_api.operations import bids, enums, schema
+from mndot_bid_api.operations import enums, schema
 from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter()
@@ -15,7 +16,8 @@ router = fastapi.APIRouter()
 def api_read_all_bids(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.BidResult:
-    return bids.read_all_bids(db)
+
+    return operations.bids.read_all_bids(db)
 
 
 @router.get(
@@ -27,7 +29,8 @@ def api_read_all_bids(
 def api_read_bid(
     bid_id: int, db: Session = fastapi.Depends(database.get_db_session)
 ) -> schema.BidResult:
-    return bids.read_bid(bid_id, db)
+
+    return operations.bids.read_bid(bid_id, db)
 
 
 @router.post(
@@ -39,7 +42,8 @@ def api_read_bid(
 def api_create_bid(
     data: schema.BidCreateData, db: Session = fastapi.Depends(database.get_db_session)
 ) -> schema.BidResult:
-    return bids.create_bid(data, db)
+
+    return operations.bids.create_bid(data, db)
 
 
 @router.patch(
@@ -53,7 +57,8 @@ def api_update_bid(
     data: schema.BidUpdateData,
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.BidResult:
-    return bids.update_bid(bid_id, data, db)
+
+    return operations.bids.update_bid(bid_id, data, db)
 
 
 @router.delete(
@@ -65,7 +70,8 @@ def api_delete_bid(
     bid_id: int,
     db: Session = fastapi.Depends(database.get_db_session),
 ):
-    return bids.delete_bid(bid_id, db)
+
+    return operations.bids.delete_bid(bid_id, db)
 
 
 @router.get(
@@ -81,4 +87,5 @@ def api_query_bid(
     bid_type: enums.BidType | None = None,
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> list[schema.BidResult]:
-    return bids.query_bid(contract_id, item_id, bidder_id, bid_type, db)
+
+    return operations.bids.query_bid(contract_id, item_id, bidder_id, bid_type, db)

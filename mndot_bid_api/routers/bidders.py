@@ -1,6 +1,7 @@
 import fastapi
+from mndot_bid_api import operations
 from mndot_bid_api.db import database
-from mndot_bid_api.operations import bidders, schema
+from mndot_bid_api.operations import schema
 from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter()
@@ -15,7 +16,7 @@ router = fastapi.APIRouter()
 def api_read_all_bidders(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> list[schema.BidderResult]:
-    return bidders.read_all_bidders(db)
+    return operations.bidders.read_all_bidders(db)
 
 
 @router.get(
@@ -27,7 +28,7 @@ def api_read_all_bidders(
 def api_read_bidder(
     bidder_id: int, db: Session = fastapi.Depends(database.get_db_session)
 ) -> schema.BidderResult:
-    return bidders.read_bidder(bidder_id, db)
+    return operations.bidders.read_bidder(bidder_id, db)
 
 
 @router.post(
@@ -40,7 +41,7 @@ def api_create_bidder(
     data: schema.BidderCreateData,
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.BidderResult:
-    return bidders.create_bidder(data, db)
+    return operations.bidders.create_bidder(data, db)
 
 
 @router.patch(
@@ -54,7 +55,7 @@ def api_update_bidder(
     data: schema.BidderUpdateData,
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.BidderResult:
-    return bidders.update_bidder(bidder_id, data, db)
+    return operations.bidders.update_bidder(bidder_id, data, db)
 
 
 @router.delete(
@@ -66,4 +67,4 @@ def api_delete_bidder(
     bidder_id: int,
     db: Session = fastapi.Depends(database.get_db_session),
 ):
-    return bidders.delete_bidder(bidder_id, db)
+    return operations.bidders.delete_bidder(bidder_id, db)

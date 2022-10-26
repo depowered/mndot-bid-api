@@ -1,6 +1,7 @@
 import fastapi
+from mndot_bid_api import operations
 from mndot_bid_api.db import database
-from mndot_bid_api.operations import contracts, schema
+from mndot_bid_api.operations import schema
 from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter()
@@ -15,7 +16,7 @@ router = fastapi.APIRouter()
 def api_read_all_contracts(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> list[schema.ContractResult]:
-    return contracts.read_all_contracts(db)
+    return operations.contracts.read_all_contracts(db)
 
 
 @router.get(
@@ -27,7 +28,7 @@ def api_read_all_contracts(
 def api_read_contract(
     contract_id: int, db: Session = fastapi.Depends(database.get_db_session)
 ) -> schema.ContractResult:
-    return contracts.read_contract(contract_id, db)
+    return operations.contracts.read_contract(contract_id, db)
 
 
 @router.post(
@@ -40,7 +41,7 @@ def api_create_contract(
     data: schema.ContractCreateData,
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.ContractResult:
-    return contracts.create_contract(data, db)
+    return operations.contracts.create_contract(data, db)
 
 
 @router.patch(
@@ -54,7 +55,7 @@ def api_update_contract(
     data: schema.ContractUpdateData,
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> schema.ContractResult:
-    return contracts.update_contract(contract_id, data, db)
+    return operations.contracts.update_contract(contract_id, data, db)
 
 
 @router.delete(
@@ -66,4 +67,4 @@ def api_delete_contract(
     contract_id: int,
     db: Session = fastapi.Depends(database.get_db_session),
 ):
-    return contracts.delete_contract(contract_id, db)
+    return operations.contracts.delete_contract(contract_id, db)
