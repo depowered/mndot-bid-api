@@ -33,6 +33,9 @@ class ContractUpdateData(BaseModel):
     winning_bidder_id: int | None
 
 
+#############################################################################
+
+
 class BidderCreateData(BaseModel):
     id: int
     name: str
@@ -47,6 +50,9 @@ class BidderUpdateData(BaseModel):
     name: str
 
 
+#############################################################################
+
+
 class BidCreateData(BaseModel):
     contract_id: int
     bidder_id: int
@@ -54,6 +60,7 @@ class BidCreateData(BaseModel):
     item_unit_code: constr(strip_whitespace=True, min_length=3, max_length=3)
     item_item_code: constr(strip_whitespace=True, min_length=5, max_length=5)
     item_long_description: constr(strip_whitespace=True, to_upper=True)
+    item_unit_abbreviation: constr(strip_whitespace=True, to_upper=True)
     quantity: float
     unit_price: int
     bid_type: enums.BidType
@@ -63,10 +70,7 @@ class BidResult(BaseModel):
     id: int
     contract_id: int
     bidder_id: int
-    item_spec_code: str
-    item_unit_code: str
-    item_item_code: str
-    item_long_description: str
+    item_id: int
     quantity: float
     unit_price: int
     bid_type: str
@@ -75,13 +79,56 @@ class BidResult(BaseModel):
 class BidUpdateData(BaseModel):
     contract_id: int | None
     bidder_id: int | None
+    item_id: int | None
+    quantity: float | None
+    unit_price: int | None
+    bid_type: enums.BidType | None
+
+
+#############################################################################
+
+
+class InvalidBidCreateData(BaseModel):
+    contract_id: int
+    bidder_id: int
+    item_spec_code: constr(strip_whitespace=True, min_length=4, max_length=4)
+    item_unit_code: constr(strip_whitespace=True, min_length=3, max_length=3)
+    item_item_code: constr(strip_whitespace=True, min_length=5, max_length=5)
+    item_long_description: constr(strip_whitespace=True, to_upper=True)
+    item_unit_abbreviation: constr(strip_whitespace=True, to_upper=True)
+    quantity: float
+    unit_price: int
+    bid_type: enums.BidType
+
+
+class InvalidBidResult(BaseModel):
+    id: int
+    contract_id: int
+    bidder_id: int
+    item_spec_code: str
+    item_unit_code: str
+    item_item_code: str
+    item_long_description: str
+    item_unit_abbreviation: str
+    quantity: float
+    unit_price: int
+    bid_type: enums.BidType
+
+
+class InvalidBidUpdateData(BaseModel):
+    contract_id: int | None
+    bidder_id: int | None
     item_spec_code: constr(strip_whitespace=True, min_length=4, max_length=4) | None
     item_unit_code: constr(strip_whitespace=True, min_length=3, max_length=3) | None
     item_item_code: constr(strip_whitespace=True, min_length=5, max_length=5) | None
     item_long_description: constr(strip_whitespace=True, to_upper=True) | None
+    item_unit_abbreviation: constr(strip_whitespace=True, to_upper=True) | None
     quantity: float | None
     unit_price: int | None
     bid_type: enums.BidType | None
+
+
+#############################################################################
 
 
 class ItemCreateData(BaseModel):
@@ -97,7 +144,6 @@ class ItemCreateData(BaseModel):
 
 class ItemResult(BaseModel):
     id: int
-    spec_year: str
     spec_code: str
     unit_code: str
     item_code: str
@@ -105,6 +151,10 @@ class ItemResult(BaseModel):
     long_description: str
     unit: str
     unit_abbreviation: str
+    in_spec_2016: bool
+    in_spec_2018: bool
+    in_spec_2020: bool
+    in_spec_2022: bool
 
 
 class ItemUpdateData(BaseModel):
@@ -116,3 +166,7 @@ class ItemUpdateData(BaseModel):
     long_description: constr(strip_whitespace=True, to_upper=True) | None
     unit: enums.Unit | None
     unit_abbreviation: enums.UnitAbbreviation | None
+    in_spec_2016: bool | None
+    in_spec_2018: bool | None
+    in_spec_2020: bool | None
+    in_spec_2022: bool | None
