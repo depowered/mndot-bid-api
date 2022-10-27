@@ -197,3 +197,13 @@ class ItemUpdateData(BaseModel):
     in_spec_2018: bool | None
     in_spec_2020: bool | None
     in_spec_2022: bool | None
+
+
+class Item(BaseModel):
+    type: str = "Item"
+    data: ItemResult
+
+
+class ItemCollection(BaseModel):
+    type: str = "ItemCollection"
+    data: list[ItemResult]

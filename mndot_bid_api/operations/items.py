@@ -4,14 +4,18 @@ from mndot_bid_api.operations import enums, schema
 from sqlalchemy.orm import Session
 
 
-def read_all_items(spec_year: enums.SpecYear, db: Session) -> list[schema.ItemResult]:
+def read_all_items(spec_year: enums.SpecYear, db: Session) -> schema.ItemCollection:
+
     item_records = (
         db.query(models.Item).filter(models.Item.spec_year == spec_year).all()
     )
-    return [schema.ItemResult(**models.to_dict(item)) for item in item_records]
+
+    item_results = [schema.ItemResult(**models.to_dict(item)) for item in item_records]
+
+    return schema.ItemCollection(data=item_results)
 
 
-def read_item(spec_year, spec_code, unit_code, item_code, db) -> schema.ItemResult:
+def read_item(spec_year, spec_code, unit_code, item_code, db) -> schema.Item:
 
     item_record = (
         db.query(models.Item)
@@ -28,12 +32,14 @@ def read_item(spec_year, spec_code, unit_code, item_code, db) -> schema.ItemResu
             detail=f"Item not found",
         )
 
-    return schema.ItemResult(**models.to_dict(item_record))
+    item_result = schema.ItemResult(**models.to_dict(item_record))
+
+    return schema.Item(data=item_result)
 
 
 def search_item(
     spec_year: enums.SpecYear, search_string: str, db: Session
-) -> list[schema.ItemResult]:
+) -> schema.ItemCollection:
 
     results = []
     for column in models.Item.__table__.columns:
@@ -58,13 +64,15 @@ def search_item(
 
     results_no_duplicates_sorted = sorted(set(results), key=lambda item: item.id)
 
-    return [
+    item_results = [
         schema.ItemResult(**models.to_dict(item))
         for item in results_no_duplicates_sorted
     ]
 
+    return schema.ItemCollection(data=item_results)
 
-def read_item_by_id(item_id: int, db: Session) -> schema.ItemResult:
+
+def read_item_by_id(item_id: int, db: Session) -> schema.Item:
 
     item_record = db.query(models.Item).filter(models.Item.id == item_id).first()
 
@@ -74,10 +82,12 @@ def read_item_by_id(item_id: int, db: Session) -> schema.ItemResult:
             detail=f"Item at ID {item_id} not found",
         )
 
-    return schema.ItemResult(**models.to_dict(item_record))
+    item_result = schema.ItemResult(**models.to_dict(item_record))
+
+    return schema.Item(data=item_result)
 
 
-def create_item(data: schema.ItemCreateData, db: Session) -> schema.ItemResult:
+def create_item(data: schema.ItemCreateData, db: Session) -> schema.Item:
 
     item_record = (
         db.query(models.Item)
@@ -101,12 +111,12 @@ def create_item(data: schema.ItemCreateData, db: Session) -> schema.ItemResult:
     db.add(item_model)
     db.commit()
 
-    return schema.ItemResult(**models.to_dict(item_model))
+    item_result = schema.ItemResult(**models.to_dict(item_model))
+
+    return schema.Item(data=item_result)
 
 
-def update_item(
-    item_id: int, data: schema.ItemUpdateData, db: Session
-) -> schema.ItemResult:
+def update_item(item_id: int, data: schema.ItemUpdateData, db: Session) -> schema.Item:
 
     item_record = db.query(models.Item).filter(models.Item.id == item_id).first()
 
@@ -122,7 +132,9 @@ def update_item(
     db.add(item_record)
     db.commit()
 
-    return schema.ItemResult(**models.to_dict(item_record))
+    item_result = schema.ItemResult(**models.to_dict(item_record))
+
+    return schema.Item(data=item_result)
 
 
 def delete_item(item_id: int, db: Session) -> None:
