@@ -3,8 +3,8 @@ from pathlib import Path
 
 from fastapi import FastAPI
 
+from mndot_bid_api import routers
 from mndot_bid_api.db import database  # , sample_data
-from mndot_bid_api.routers import bidders, bids, contracts, invalid_bids, items
 
 DEVELOPMENT_DATABASE_URL = "sqlite:///data/dev-api.db"
 PRODUCTION_DATABASE_URL = "sqlite:///data/prod-api.db"
@@ -32,11 +32,11 @@ def read_root():
     return {"server status": "Running"}
 
 
-app.include_router(contracts.router)
-app.include_router(bidders.router)
-app.include_router(bids.router)
-app.include_router(invalid_bids.router)
-app.include_router(items.router)
+app.include_router(routers.contracts_router)
+app.include_router(routers.bidders_router)
+app.include_router(routers.bids_router)
+app.include_router(routers.invalid_bids_router)
+app.include_router(routers.items_router)
 
 with open("./openapi.json", "w") as f:
     f.write(json.dumps(app.openapi()))
