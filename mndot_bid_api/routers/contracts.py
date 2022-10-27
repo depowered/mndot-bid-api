@@ -10,51 +10,55 @@ router = fastapi.APIRouter()
 @router.get(
     "/contract/all",
     tags=["contract"],
-    response_model=list[schema.ContractResult],
+    response_model=schema.ContractCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_contracts(
     db: Session = fastapi.Depends(database.get_db_session),
-) -> list[schema.ContractResult]:
+) -> schema.ContractCollection:
+
     return operations.contracts.read_all_contracts(db)
 
 
 @router.get(
     "/contract/{contract_id}",
     tags=["contract"],
-    response_model=schema.ContractResult,
+    response_model=schema.Contract,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_contract(
     contract_id: int, db: Session = fastapi.Depends(database.get_db_session)
-) -> schema.ContractResult:
+) -> schema.Contract:
+
     return operations.contracts.read_contract(contract_id, db)
 
 
 @router.post(
     "/contract",
     tags=["contract"],
-    response_model=schema.ContractResult,
+    response_model=schema.Contract,
     status_code=fastapi.status.HTTP_201_CREATED,
 )
 def api_create_contract(
     data: schema.ContractCreateData,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.ContractResult:
+) -> schema.Contract:
+
     return operations.contracts.create_contract(data, db)
 
 
 @router.patch(
     "/contract/{contract_id}",
     tags=["contract"],
-    response_model=schema.ContractResult,
+    response_model=schema.Contract,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_update_contract(
     contract_id: int,
     data: schema.ContractUpdateData,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.ContractResult:
+) -> schema.Contract:
+
     return operations.contracts.update_contract(contract_id, data, db)
 
 
@@ -67,4 +71,5 @@ def api_delete_contract(
     contract_id: int,
     db: Session = fastapi.Depends(database.get_db_session),
 ):
+
     return operations.contracts.delete_contract(contract_id, db)

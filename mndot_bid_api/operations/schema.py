@@ -33,6 +33,16 @@ class ContractUpdateData(BaseModel):
     winning_bidder_id: int | None
 
 
+class Contract(BaseModel):
+    type: str = "Contract"
+    data: ContractResult
+
+
+class ContractCollection(BaseModel):
+    type: str = "Contract"
+    data: list[ContractResult]
+
+
 #############################################################################
 
 
