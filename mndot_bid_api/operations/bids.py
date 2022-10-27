@@ -4,39 +4,49 @@ from mndot_bid_api.operations import enums, schema
 from sqlalchemy.orm import Session
 
 
-def read_all_bids(db: Session) -> list[schema.BidResult]:
+class InvalidBidExecption(Exception):
+    pass
+
+
+def read_all_bids(db: Session) -> schema.BidCollection:
+
     bid_records = db.query(models.Bid).all()
-    return [schema.BidResult(**models.to_dict(bid)) for bid in bid_records]
+
+    bid_results = [schema.BidResult(**models.to_dict(bid)) for bid in bid_records]
+
+    return schema.BidCollection(data=bid_results)
 
 
-def read_bid(bid_id: int, db: Session) -> schema.BidResult:
+def read_bid(bid_id: int, db: Session) -> schema.Bid:
+
     bid_record = db.query(models.Bid).filter(models.Bid.id == bid_id).first()
+
     if not bid_record:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Bid at ID {bid_id} not found",
         )
 
-    return schema.BidResult(**models.to_dict(bid_record))
+    return schema.Bid(data=schema.BidResult(**models.to_dict(bid_record)))
 
 
-def create_bid(data: schema.BidCreateData, db: Session) -> schema.BidResult:
+def create_bid(data: schema.BidCreateData, db: Session) -> schema.Bid:
     # Get matching item record so that item_id can be assigned to the new bid record
     item_record = (
         db.query(models.Item)
         .filter(
-            models.Item.spec_year == data.spec_year,
-            models.Item.spec_code == data.spec_code,
-            models.Item.unit_code == data.unit_code,
-            models.Item.item_code == data.item_code,
+            models.Item.spec_code == data.item_spec_code,
+            models.Item.unit_code == data.item_unit_code,
+            models.Item.item_code == data.item_item_code,
+            models.Item.long_description == data.item_long_description,
+            models.Item.unit_abbreviation == data.item_unit_abbreviation,
         )
         .first()
     )
 
     if not item_record:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Matching item not found for spec_year: {data.spec_year}, spec_code: {data.spec_code}, unit_code: {data.unit_code}, item_code: {data.item_code}. Cannot assign item_id.",
+        raise InvalidBidExecption(
+            "No matching item found. Redirect to create invalid bid."
         )
 
     # Check if bid record already exists
@@ -68,13 +78,13 @@ def create_bid(data: schema.BidCreateData, db: Session) -> schema.BidResult:
     db.add(bid_model)
     db.commit()
 
-    return schema.BidResult(**models.to_dict(bid_model))
+    return schema.Bid(data=schema.BidResult(**models.to_dict(bid_model)))
 
 
-def update_bid(
-    bid_id: int, data: schema.BidUpdateData, db: Session
-) -> schema.BidResult:
+def update_bid(bid_id: int, data: schema.BidUpdateData, db: Session) -> schema.Bid:
+
     bid_record = db.query(models.Bid).filter(models.Bid.id == bid_id).first()
+
     if not bid_record:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
@@ -87,11 +97,13 @@ def update_bid(
     db.add(bid_record)
     db.commit()
 
-    return schema.BidResult(**models.to_dict(bid_record))
+    return schema.Bid(data=schema.BidResult(**models.to_dict(bid_record)))
 
 
 def delete_bid(bid_id: int, db: Session) -> None:
+
     bid_record = db.query(models.Bid).filter(models.Bid.id == bid_id).first()
+
     if not bid_record:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
@@ -108,7 +120,7 @@ def query_bid(
     bidder_id: int | None,
     bid_type: enums.BidType | None,
     db: Session,
-) -> list[schema.BidResult]:
+) -> schema.BidCollection:
 
     # build a dyanmic query dictionary and pass to the filter_by function
     filter_kwargs = {}
@@ -135,4 +147,6 @@ def query_bid(
             detail=f"No Bids found matching the provided query parameters",
         )
 
-    return [schema.BidResult(**models.to_dict(bid)) for bid in bid_records]
+    bid_results = [schema.BidResult(**models.to_dict(bid)) for bid in bid_records]
+
+    return schema.BidCollection(data=bid_results)
