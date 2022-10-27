@@ -10,12 +10,12 @@ router = fastapi.APIRouter(prefix="/invalid_bid")
 @router.get(
     "/all",
     tags=["invalid_bid"],
-    response_model=list[schema.InvalidBidResult],
+    response_model=schema.InvalidBidCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_invalid_bids(
     db: Session = fastapi.Depends(database.get_db_session),
-) -> list[schema.InvalidBidResult]:
+) -> schema.InvalidBidCollection:
 
     return operations.invalid_bids.read_all_invalid_bids(db)
 
@@ -23,13 +23,13 @@ def api_read_all_invalid_bids(
 @router.get(
     "/{invalid_bid_id}",
     tags=["invalid_bid"],
-    response_model=schema.InvalidBidResult,
+    response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_invalid_bid_by_id(
     invalid_bid_id: int,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.InvalidBidResult:
+) -> schema.InvalidBid:
 
     return operations.invalid_bids.read_invalid_bid_by_id(invalid_bid_id, db)
 
@@ -37,13 +37,13 @@ def api_read_invalid_bid_by_id(
 @router.post(
     "/",
     tags=["invalid_bid"],
-    response_model=schema.InvalidBidResult,
+    response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_201_CREATED,
 )
 def api_create_invalid_bid(
     data: schema.BidCreateData,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.InvalidBidResult:
+) -> schema.InvalidBid:
 
     return operations.invalid_bids.create_invalid_bid(data, db)
 
@@ -51,14 +51,14 @@ def api_create_invalid_bid(
 @router.patch(
     "/{invalid_bid_id}",
     tags=["invalid_bid"],
-    response_model=schema.InvalidBidResult,
+    response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_update_invalid_bid(
     invalid_bid_id: int,
     data: schema.InvalidBidUpdateData,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.InvalidBidResult:
+) -> schema.InvalidBid:
 
     return operations.invalid_bids.update_invalid_bid(invalid_bid_id, data, db)
 

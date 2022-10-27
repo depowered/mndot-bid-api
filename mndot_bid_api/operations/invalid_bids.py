@@ -4,15 +4,19 @@ from mndot_bid_api.operations import schema
 from sqlalchemy.orm import Session
 
 
-def read_all_invalid_bids(db: Session) -> list[schema.InvalidBidResult]:
+def read_all_invalid_bids(db: Session) -> schema.InvalidBidCollection:
+
     invalid_bid_records = db.query(models.InvalidBid).all()
-    return [
+
+    invalid_bid_results = [
         schema.InvalidBidResult(**models.to_dict(invalid_bid))
         for invalid_bid in invalid_bid_records
     ]
 
+    return schema.InvalidBidCollection(data=invalid_bid_results)
 
-def read_invalid_bid_by_id(invalid_bid_id: int, db: Session) -> schema.InvalidBidResult:
+
+def read_invalid_bid_by_id(invalid_bid_id: int, db: Session) -> schema.InvalidBid:
 
     invalid_bid_record = (
         db.query(models.InvalidBid)
@@ -26,10 +30,12 @@ def read_invalid_bid_by_id(invalid_bid_id: int, db: Session) -> schema.InvalidBi
             detail=f"Invalid bid record at ID {invalid_bid_id} not found",
         )
 
-    return schema.InvalidBidResult(**models.to_dict(invalid_bid_record))
+    return schema.InvalidBid(
+        data=schema.InvalidBidResult(**models.to_dict(invalid_bid_record))
+    )
 
 
-def create_invalid_bid(data: schema.BidCreateData, db: Session):
+def create_invalid_bid(data: schema.BidCreateData, db: Session) -> schema.InvalidBid:
 
     query_filter = {key: value for key, value in data.dict().items()}
     invalid_bid_record = db.query(models.InvalidBid).filter_by(**query_filter).first()
@@ -45,12 +51,14 @@ def create_invalid_bid(data: schema.BidCreateData, db: Session):
     db.add(invalid_bid_model)
     db.commit()
 
-    return schema.InvalidBidResult(**models.to_dict(invalid_bid_model))
+    return schema.InvalidBid(
+        data=schema.InvalidBidResult(**models.to_dict(invalid_bid_model))
+    )
 
 
 def update_invalid_bid(
     invalid_bid_id: int, data: schema.InvalidBidUpdateData, db: Session
-) -> schema.InvalidBidResult:
+) -> schema.InvalidBid:
 
     invalid_bid_record = (
         db.query(models.InvalidBid)
@@ -70,7 +78,9 @@ def update_invalid_bid(
     db.add(invalid_bid_record)
     db.commit()
 
-    return schema.InvalidBidResult(**models.to_dict(invalid_bid_record))
+    return schema.InvalidBid(
+        data=schema.InvalidBidResult(**models.to_dict(invalid_bid_record))
+    )
 
 
 def delete_invalid_bid(invalid_bid_id: int, db: Session) -> None:

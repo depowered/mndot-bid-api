@@ -85,6 +85,16 @@ class BidUpdateData(BaseModel):
     bid_type: enums.BidType | None
 
 
+class Bid(BaseModel):
+    type: str = "Bid"
+    data: BidResult
+
+
+class BidCollection(BaseModel):
+    type: str = "BidCollection"
+    data: list[BidResult]
+
+
 #############################################################################
 
 
@@ -113,6 +123,16 @@ class InvalidBidUpdateData(BaseModel):
     quantity: float | None
     unit_price: int | None
     bid_type: enums.BidType | None
+
+
+class InvalidBid(BaseModel):
+    type: str = "InvalidBid"
+    data: InvalidBidResult
+
+
+class InvalidBidCollection(BaseModel):
+    type: str = "InvalidBidCollection"
+    data: list[InvalidBidResult]
 
 
 #############################################################################
