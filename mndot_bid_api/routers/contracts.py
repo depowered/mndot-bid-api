@@ -4,12 +4,11 @@ from mndot_bid_api.db import database
 from mndot_bid_api.operations import schema
 from sqlalchemy.orm import Session
 
-router = fastapi.APIRouter()
+router = fastapi.APIRouter(prefix="/contract", tags=["contract"])
 
 
 @router.get(
-    "/contract/all",
-    tags=["contract"],
+    "/all",
     response_model=schema.ContractCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
@@ -21,8 +20,7 @@ def api_read_all_contracts(
 
 
 @router.get(
-    "/contract/{contract_id}",
-    tags=["contract"],
+    "/{contract_id}",
     response_model=schema.Contract,
     status_code=fastapi.status.HTTP_200_OK,
 )
@@ -34,8 +32,7 @@ def api_read_contract(
 
 
 @router.post(
-    "/contract",
-    tags=["contract"],
+    "/",
     response_model=schema.Contract,
     status_code=fastapi.status.HTTP_201_CREATED,
 )
@@ -48,8 +45,7 @@ def api_create_contract(
 
 
 @router.patch(
-    "/contract/{contract_id}",
-    tags=["contract"],
+    "/{contract_id}",
     response_model=schema.Contract,
     status_code=fastapi.status.HTTP_200_OK,
 )
@@ -63,8 +59,7 @@ def api_update_contract(
 
 
 @router.delete(
-    "/contact/{contract_id}",
-    tags=["contract"],
+    "/{contract_id}",
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
 def api_delete_contract(
