@@ -2,7 +2,6 @@ import enum
 
 
 class SpecYear(str, enum.Enum):
-    NONE = "NONE"
     SPEC_2016 = "2016"
     SPEC_2018 = "2018"
     SPEC_2020 = "2020"
