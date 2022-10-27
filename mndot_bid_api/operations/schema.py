@@ -60,6 +60,16 @@ class BidderUpdateData(BaseModel):
     name: str
 
 
+class Bidder(BaseModel):
+    type: str = "Bidder"
+    data: BidderResult
+
+
+class BidderCollection(BaseModel):
+    type: str = "Bidder"
+    data: list[BidderResult]
+
+
 #############################################################################
 
 
