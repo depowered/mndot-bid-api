@@ -9,8 +9,8 @@ def to_dict(obj: Base):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 
-def get_columns_list(obj: Base):
-    return [c.name for c in obj.__table__.columns]
+def get_columns(obj: Base):
+    return [c for c in obj.__table__.columns]
 
 
 class Bidder(Base):
