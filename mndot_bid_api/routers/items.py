@@ -1,29 +1,28 @@
 import fastapi
+from mndot_bid_api import operations
 from mndot_bid_api.db import database
-from mndot_bid_api.operations import enums, items, schema
+from mndot_bid_api.operations import enums, schema
 from sqlalchemy.orm import Session
 
-router = fastapi.APIRouter()
+router = fastapi.APIRouter(prefix="/item", tags=["item"])
 
 
 @router.get(
-    "/item/{spec_year}/all",
-    tags=["item"],
-    response_model=list[schema.ItemResult],
+    "/{spec_year}/all",
+    response_model=schema.ItemCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_items(
     spec_year: enums.SpecYear,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> list[schema.ItemResult]:
+) -> schema.ItemCollection:
 
-    return items.read_all_items(spec_year, db)
+    return operations.items.read_all_items(spec_year, db)
 
 
 @router.get(
-    "/item/{spec_year}/{spec_code}/{unit_code}/{item_code}",
-    tags=["item"],
-    response_model=schema.ItemResult,
+    "/{spec_year}/{spec_code}/{unit_code}/{item_code}",
+    response_model=schema.Item,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_item(
@@ -32,70 +31,65 @@ def api_read_item(
     unit_code: str,
     item_code: str,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.ItemResult:
+) -> schema.Item:
 
-    return items.read_item(spec_year, spec_code, unit_code, item_code, db)
+    return operations.items.read_item(spec_year, spec_code, unit_code, item_code, db)
 
 
 @router.get(
-    "/item/{spec_year}/{search_string}",
-    tags=["item"],
-    response_model=list[schema.ItemResult],
+    "/{spec_year}/{search_string}",
+    response_model=schema.ItemCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_search_item(
     spec_year: enums.SpecYear,
     search_string: str,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> list[schema.ItemResult]:
+) -> schema.ItemCollection:
 
-    return items.search_item(spec_year, search_string, db)
+    return operations.items.search_item(spec_year, search_string, db)
 
 
 @router.get(
-    "/item/{item_id}",
-    tags=["item"],
-    response_model=schema.ItemResult,
+    "/{item_id}",
+    response_model=schema.Item,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_item_by_id(
     item_id: int, db: Session = fastapi.Depends(database.get_db_session)
-) -> schema.ItemResult:
+) -> schema.Item:
 
-    return items.read_item_by_id(item_id, db)
+    return operations.items.read_item_by_id(item_id, db)
 
 
 @router.post(
-    "/item",
-    tags=["item"],
-    response_model=schema.ItemResult,
+    "/",
+    response_model=schema.Item,
     status_code=fastapi.status.HTTP_201_CREATED,
 )
 def api_create_item(
     data: schema.ItemCreateData, db: Session = fastapi.Depends(database.get_db_session)
-) -> schema.ItemResult:
+) -> schema.Item:
 
-    return items.create_item(data, db)
+    return operations.items.create_item(data, db)
 
 
 @router.patch(
-    "/item/{item_id}",
-    tags=["item"],
-    response_model=schema.ItemResult,
+    "/{item_id}",
+    response_model=schema.Item,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_update_item(
     item_id: int,
     data: schema.ItemUpdateData,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.ItemResult:
+) -> schema.Item:
 
-    return items.update_item(item_id, data, db)
+    return operations.items.update_item(item_id, data, db)
 
 
 @router.delete(
-    "/item/{item_id}",
-    tags=["item"],
+    "/{item_id}",
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
 def api_delete_item(
@@ -103,4 +97,4 @@ def api_delete_item(
     db: Session = fastapi.Depends(database.get_db_session),
 ) -> None:
 
-    return items.delete_item(item_id, db)
+    return operations.items.delete_item(item_id, db)

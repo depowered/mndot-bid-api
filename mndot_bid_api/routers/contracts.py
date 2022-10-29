@@ -1,69 +1,70 @@
 import fastapi
+from mndot_bid_api import operations
 from mndot_bid_api.db import database
-from mndot_bid_api.operations import contracts, schema
+from mndot_bid_api.operations import schema
 from sqlalchemy.orm import Session
 
-router = fastapi.APIRouter()
+router = fastapi.APIRouter(prefix="/contract", tags=["contract"])
 
 
 @router.get(
-    "/contract/all",
-    tags=["contract"],
-    response_model=list[schema.ContractResult],
+    "/all",
+    response_model=schema.ContractCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_contracts(
     db: Session = fastapi.Depends(database.get_db_session),
-) -> list[schema.ContractResult]:
-    return contracts.read_all_contracts(db)
+) -> schema.ContractCollection:
+
+    return operations.contracts.read_all_contracts(db)
 
 
 @router.get(
-    "/contract/{contract_id}",
-    tags=["contract"],
-    response_model=schema.ContractResult,
+    "/{contract_id}",
+    response_model=schema.Contract,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_contract(
     contract_id: int, db: Session = fastapi.Depends(database.get_db_session)
-) -> schema.ContractResult:
-    return contracts.read_contract(contract_id, db)
+) -> schema.Contract:
+
+    return operations.contracts.read_contract(contract_id, db)
 
 
 @router.post(
-    "/contract",
-    tags=["contract"],
-    response_model=schema.ContractResult,
+    "/",
+    response_model=schema.Contract,
     status_code=fastapi.status.HTTP_201_CREATED,
 )
 def api_create_contract(
     data: schema.ContractCreateData,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.ContractResult:
-    return contracts.create_contract(data, db)
+) -> schema.Contract:
+
+    return operations.contracts.create_contract(data, db)
 
 
 @router.patch(
-    "/contract/{contract_id}",
-    tags=["contract"],
-    response_model=schema.ContractResult,
+    "/{contract_id}",
+    response_model=schema.Contract,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_update_contract(
     contract_id: int,
     data: schema.ContractUpdateData,
     db: Session = fastapi.Depends(database.get_db_session),
-) -> schema.ContractResult:
-    return contracts.update_contract(contract_id, data, db)
+) -> schema.Contract:
+
+    return operations.contracts.update_contract(contract_id, data, db)
 
 
 @router.delete(
-    "/contact/{contract_id}",
-    tags=["contract"],
+    "/{contract_id}",
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
 def api_delete_contract(
     contract_id: int,
     db: Session = fastapi.Depends(database.get_db_session),
 ):
-    return contracts.delete_contract(contract_id, db)
+
+    return operations.contracts.delete_contract(contract_id, db)
