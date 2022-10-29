@@ -14,7 +14,7 @@ IN_SPEC_YEAR_COLUMN_MAP = {
 def read_all_items(spec_year: enums.SpecYear, db: Session) -> schema.ItemCollection:
 
     item_records = (
-        db.query(models.Item).filter(IN_SPEC_YEAR_COLUMN_MAP[spec_year] is True).all()
+        db.query(models.Item).filter(IN_SPEC_YEAR_COLUMN_MAP[spec_year] == True).all()
     )
 
     item_results = [schema.ItemResult(**models.to_dict(item)) for item in item_records]
@@ -26,7 +26,7 @@ def read_item(spec_year, spec_code, unit_code, item_code, db) -> schema.Item:
 
     item_record = (
         db.query(models.Item)
-        .filter(IN_SPEC_YEAR_COLUMN_MAP[spec_year] is True)
+        .filter(IN_SPEC_YEAR_COLUMN_MAP[spec_year] == True)
         .filter(models.Item.spec_code == spec_code)
         .filter(models.Item.unit_code == unit_code)
         .filter(models.Item.item_code == item_code)
@@ -56,7 +56,7 @@ def search_item(
 
         item_records = (
             db.query(models.Item)
-            .filter(IN_SPEC_YEAR_COLUMN_MAP[spec_year] is True)
+            .filter(IN_SPEC_YEAR_COLUMN_MAP[spec_year] == True)
             .filter(column.like(f"%{search_string}%"))
             .all()
         )
