@@ -53,7 +53,7 @@ class BidderCreateData(BaseModel):
 
 class BidderResult(BaseModel):
     id: int
-    name: str
+    name: str | None
 
 
 class BidderUpdateData(BaseModel):

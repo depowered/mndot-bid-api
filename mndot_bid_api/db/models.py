@@ -17,7 +17,7 @@ class Bidder(Base):
     __tablename__ = "bidder"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=True)
 
 
 class Contract(Base):
