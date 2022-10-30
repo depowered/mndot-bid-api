@@ -1,8 +1,6 @@
 import fastapi
 from mndot_bid_api import db, operations
-from mndot_bid_api.db import database, interface
 from mndot_bid_api.operations import schema
-from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter(prefix="/bidder", tags=["bidder"])
 
