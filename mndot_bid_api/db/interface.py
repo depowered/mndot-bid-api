@@ -73,3 +73,7 @@ class DBModelInterface:
 
 def get_bidder_interface() -> DBModelInterface:
     return DBModelInterface(models.Bidder)
+
+
+def get_contract_interface() -> DBModelInterface:
+    return DBModelInterface(models.Contract)
