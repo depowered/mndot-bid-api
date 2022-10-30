@@ -3,14 +3,6 @@ from typing import Any, Protocol
 RecordDict = dict[str, Any]
 
 
-class RecordNotFoundException(Exception):
-    pass
-
-
-class RecordAlreadyExistsException(Exception):
-    pass
-
-
 class CRUDInterface(Protocol):
     def read_all(self) -> list[RecordDict]:
         ...
