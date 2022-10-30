@@ -31,13 +31,23 @@ class DBModelInterface:
 
             return models.to_dict(record)
 
-    def read_by_kwargs(self, **kwargs) -> RecordDict:
+    def read_one_by_kwargs(self, **kwargs) -> RecordDict:
+        """Returns the first existing database record that matches the given keyward arguments."""
         with database.SessionContextManager() as db:
             record = db.query(self.model).filter_by(**kwargs).first()
             if not record:
                 raise RecordNotFoundException()
 
             return models.to_dict(record)
+
+    def read_all_by_kwargs(self, **kwargs) -> list[RecordDict]:
+        """Returns the all existing database records that match the given keyward arguments."""
+        with database.SessionContextManager() as db:
+            records = db.query(self.model).filter_by(**kwargs).all()
+            if not records:
+                raise RecordNotFoundException()
+
+            return [models.to_dict(record) for record in records]
 
     def create(self, data: RecordDict) -> RecordDict:
         """Creates a new record in the database."""
@@ -86,5 +96,13 @@ def get_contract_interface() -> DBModelInterface:
     return DBModelInterface(models.Contract)
 
 
+def get_bid_interface() -> DBModelInterface:
+    return DBModelInterface(models.Bid)
+
+
 def get_invalid_bid_interface() -> DBModelInterface:
     return DBModelInterface(models.InvalidBid)
+
+
+def get_item_interface() -> DBModelInterface:
+    return DBModelInterface(models.Item)

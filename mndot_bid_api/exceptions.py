@@ -4,3 +4,7 @@ class RecordNotFoundException(Exception):
 
 class RecordAlreadyExistsException(Exception):
     pass
+
+
+class InvalidBidExecption(Exception):
+    pass
