@@ -31,13 +31,20 @@ class DBModelInterface:
 
             return models.to_dict(record)
 
+    def read_by_kwargs(self, **kwargs) -> RecordDict:
+        with database.SessionContextManager() as db:
+            record = db.query(self.model).filter_by(**kwargs).first()
+            if not record:
+                raise RecordNotFoundException()
+
+            return models.to_dict(record)
+
     def create(self, data: RecordDict) -> RecordDict:
         """Creates a new record in the database."""
         with database.SessionContextManager() as db:
-            # Statement valid only if data parameter includes an id key
-            record = db.query(self.model).filter(self.model.id == data["id"]).first()
+            record = db.query(self.model).filter_by(**data).first()
             if record:
-                raise RecordAlreadyExistsException()
+                raise RecordAlreadyExistsException({"id": record.id})
 
             new_record = self.model(**data)
             db.add(new_record)
@@ -77,3 +84,7 @@ def get_bidder_interface() -> DBModelInterface:
 
 def get_contract_interface() -> DBModelInterface:
     return DBModelInterface(models.Contract)
+
+
+def get_invalid_bid_interface() -> DBModelInterface:
+    return DBModelInterface(models.InvalidBid)

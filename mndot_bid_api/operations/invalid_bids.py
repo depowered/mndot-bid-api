@@ -1,101 +1,84 @@
 import fastapi
-from mndot_bid_api.db import models
+from mndot_bid_api.exceptions import (
+    RecordAlreadyExistsException,
+    RecordNotFoundException,
+)
 from mndot_bid_api.operations import schema
-from sqlalchemy.orm import Session
+from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
-def read_all_invalid_bids(db: Session) -> schema.InvalidBidCollection:
+def read_all_invalid_bids(
+    invalid_bid_interface: CRUDInterface,
+) -> schema.InvalidBidCollection:
+    records = invalid_bid_interface.read_all()
+    results = [schema.InvalidBidResult(**record) for record in records]
 
-    invalid_bid_records = db.query(models.InvalidBid).all()
-
-    invalid_bid_results = [
-        schema.InvalidBidResult(**models.to_dict(invalid_bid))
-        for invalid_bid in invalid_bid_records
-    ]
-
-    return schema.InvalidBidCollection(data=invalid_bid_results)
+    return schema.InvalidBidCollection(data=results)
 
 
-def read_invalid_bid_by_id(invalid_bid_id: int, db: Session) -> schema.InvalidBid:
+def read_invalid_bid_by_id(
+    invalid_bid_id: int, invalid_bid_interface: CRUDInterface
+) -> schema.InvalidBid:
+    try:
+        record = invalid_bid_interface.read_by_id(invalid_bid_id)
 
-    invalid_bid_record = (
-        db.query(models.InvalidBid)
-        .filter(models.InvalidBid.id == invalid_bid_id)
-        .first()
-    )
-
-    if not invalid_bid_record:
+    except RecordNotFoundException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Invalid bid record at ID {invalid_bid_id} not found",
-        )
+        ) from exc
 
-    return schema.InvalidBid(
-        data=schema.InvalidBidResult(**models.to_dict(invalid_bid_record))
-    )
+    result = schema.InvalidBidResult(**record)
+
+    return schema.InvalidBid(data=result)
 
 
-def create_invalid_bid(data: schema.BidCreateData, db: Session) -> schema.InvalidBid:
+def create_invalid_bid(
+    data: schema.BidCreateData, invalid_bid_interface: CRUDInterface
+) -> schema.InvalidBid:
+    try:
+        record = invalid_bid_interface.create(data.dict())
 
-    query_filter = {key: value for key, value in data.dict().items()}
-    invalid_bid_record = db.query(models.InvalidBid).filter_by(**query_filter).first()
-
-    if invalid_bid_record:
+    except RecordAlreadyExistsException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_303_SEE_OTHER,
-            detail=f"Invalid bid record already exists at ID {invalid_bid_record.id}",
-        )
+            detail=f"Invalid bid record already exists at ID {exc.args[0]['id']}",
+        ) from exc
 
-    invalid_bid_model = models.InvalidBid(**data.dict())
+    result = schema.InvalidBidResult(**record)
 
-    db.add(invalid_bid_model)
-    db.commit()
-
-    return schema.InvalidBid(
-        data=schema.InvalidBidResult(**models.to_dict(invalid_bid_model))
-    )
+    return schema.InvalidBid(data=result)
 
 
 def update_invalid_bid(
-    invalid_bid_id: int, data: schema.InvalidBidUpdateData, db: Session
+    invalid_bid_id: int,
+    data: schema.InvalidBidUpdateData,
+    invalid_bid_interface: CRUDInterface,
 ) -> schema.InvalidBid:
+    try:
+        record = invalid_bid_interface.update(
+            invalid_bid_id, data.dict(exclude_none=True)
+        )
 
-    invalid_bid_record = (
-        db.query(models.InvalidBid)
-        .filter(models.InvalidBid.id == invalid_bid_id)
-        .first()
-    )
-
-    if not invalid_bid_record:
+    except RecordNotFoundException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Invalid bid record at ID {invalid_bid_id} not found",
-        )
+        ) from exc
 
-    for key, value in data.dict(exclude_none=True).items():
-        setattr(invalid_bid_record, key, value)
+    result = schema.InvalidBidResult(**record)
 
-    db.add(invalid_bid_record)
-    db.commit()
-
-    return schema.InvalidBid(
-        data=schema.InvalidBidResult(**models.to_dict(invalid_bid_record))
-    )
+    return schema.InvalidBid(data=result)
 
 
-def delete_invalid_bid(invalid_bid_id: int, db: Session) -> None:
+def delete_invalid_bid(
+    invalid_bid_id: int, invalid_bid_interface: CRUDInterface
+) -> None:
+    try:
+        invalid_bid_interface.delete(invalid_bid_id)
 
-    invalid_bid_record = (
-        db.query(models.InvalidBid)
-        .filter(models.InvalidBid.id == invalid_bid_id)
-        .first()
-    )
-
-    if not invalid_bid_record:
+    except RecordNotFoundException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Invalid bid record at ID {invalid_bid_id} not found",
-        )
-
-    db.delete(invalid_bid_record)
-    db.commit()
+        ) from exc
