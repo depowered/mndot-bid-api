@@ -1,8 +1,8 @@
+from datetime import date
+
 import fastapi
-from mndot_bid_api import operations
-from mndot_bid_api.db import database
+from mndot_bid_api import db, operations
 from mndot_bid_api.operations import schema
-from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter(prefix="/contract", tags=["contract"])
 
@@ -13,10 +13,10 @@ router = fastapi.APIRouter(prefix="/contract", tags=["contract"])
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_contracts(
-    db: Session = fastapi.Depends(database.get_db_session),
+    contract_interface=fastapi.Depends(db.get_contract_interface),
 ) -> schema.ContractCollection:
 
-    return operations.contracts.read_all_contracts(db)
+    return operations.contracts.read_all_contracts(contract_interface)
 
 
 @router.get(
@@ -25,10 +25,11 @@ def api_read_all_contracts(
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_contract(
-    contract_id: int, db: Session = fastapi.Depends(database.get_db_session)
+    contract_id: int,
+    contract_interface=fastapi.Depends(db.get_contract_interface),
 ) -> schema.Contract:
 
-    return operations.contracts.read_contract(contract_id, db)
+    return operations.contracts.read_contract(contract_id, contract_interface)
 
 
 @router.post(
@@ -38,10 +39,10 @@ def api_read_contract(
 )
 def api_create_contract(
     data: schema.ContractCreateData,
-    db: Session = fastapi.Depends(database.get_db_session),
+    contract_interface=fastapi.Depends(db.get_contract_interface),
 ) -> schema.Contract:
 
-    return operations.contracts.create_contract(data, db)
+    return operations.contracts.create_contract(data, contract_interface)
 
 
 @router.patch(
@@ -52,10 +53,10 @@ def api_create_contract(
 def api_update_contract(
     contract_id: int,
     data: schema.ContractUpdateData,
-    db: Session = fastapi.Depends(database.get_db_session),
+    contract_interface=fastapi.Depends(db.get_contract_interface),
 ) -> schema.Contract:
 
-    return operations.contracts.update_contract(contract_id, data, db)
+    return operations.contracts.update_contract(contract_id, data, contract_interface)
 
 
 @router.delete(
@@ -64,7 +65,33 @@ def api_update_contract(
 )
 def api_delete_contract(
     contract_id: int,
-    db: Session = fastapi.Depends(database.get_db_session),
+    contract_interface=fastapi.Depends(db.get_contract_interface),
 ):
 
-    return operations.contracts.delete_contract(contract_id, db)
+    return operations.contracts.delete_contract(contract_id, contract_interface)
+
+
+@router.get(
+    "/query/",
+    response_model=schema.ContractCollection,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_query_contract(
+    contract_interface=fastapi.Depends(db.get_contract_interface),
+    letting_date: date | None = None,
+    sp_number: str | None = None,
+    district: str | None = None,
+    county: str | None = None,
+    description: str | None = None,
+    winning_bidder_id: int | None = None,
+) -> schema.ContractCollection:
+    kwargs = locals()
+
+    # Filter for non-None keyword arguments to pass to the query function
+    filtered_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if value and key != "contract_interface"
+    }
+
+    return operations.contracts.query_contract(contract_interface, **filtered_kwargs)

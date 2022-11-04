@@ -1,50 +1,48 @@
 import fastapi
-from mndot_bid_api import operations
-from mndot_bid_api.db import database
+from mndot_bid_api import db, operations
 from mndot_bid_api.operations import enums, schema
-from sqlalchemy.orm import Session
 
-router = fastapi.APIRouter(prefix="/bid")
+router = fastapi.APIRouter(prefix="/bid", tags=["bid"])
 
 
 @router.get(
     "/all",
-    tags=["bid"],
     response_model=schema.BidCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_bids(
-    db: Session = fastapi.Depends(database.get_db_session),
+    bid_interface=fastapi.Depends(db.get_bid_interface),
 ) -> schema.BidCollection:
 
-    return operations.bids.read_all_bids(db)
+    return operations.bids.read_all_bids(bid_interface)
 
 
 @router.get(
     "/{bid_id}",
-    tags=["bid"],
     response_model=schema.Bid,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_bid(
-    bid_id: int, db: Session = fastapi.Depends(database.get_db_session)
+    bid_id: int,
+    bid_interface=fastapi.Depends(db.get_bid_interface),
 ) -> schema.Bid:
 
-    return operations.bids.read_bid(bid_id, db)
+    return operations.bids.read_bid(bid_id, bid_interface)
 
 
 @router.post(
     "/",
-    tags=["bid"],
     response_model=schema.Bid,
     status_code=fastapi.status.HTTP_201_CREATED,
 )
 def api_create_bid(
-    data: schema.BidCreateData, db: Session = fastapi.Depends(database.get_db_session)
+    data: schema.BidCreateData,
+    bid_interface=fastapi.Depends(db.get_bid_interface),
+    item_interface=fastapi.Depends(db.get_item_interface),
 ) -> schema.Bid | fastapi.responses.RedirectResponse:
 
     try:
-        bid_result = operations.bids.create_bid(data, db)
+        bid_result = operations.bids.create_bid(data, bid_interface, item_interface)
         return bid_result
 
     except operations.bids.InvalidBidExecption:
@@ -56,35 +54,32 @@ def api_create_bid(
 
 @router.patch(
     "/{bid_id}",
-    tags=["bid"],
     response_model=schema.Bid,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_update_bid(
     bid_id: int,
     data: schema.BidUpdateData,
-    db: Session = fastapi.Depends(database.get_db_session),
+    bid_interface=fastapi.Depends(db.get_bid_interface),
 ) -> schema.Bid:
 
-    return operations.bids.update_bid(bid_id, data, db)
+    return operations.bids.update_bid(bid_id, data, bid_interface)
 
 
 @router.delete(
     "/{bid_id}",
-    tags=["bid"],
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
 def api_delete_bid(
     bid_id: int,
-    db: Session = fastapi.Depends(database.get_db_session),
+    bid_interface=fastapi.Depends(db.get_bid_interface),
 ):
 
-    return operations.bids.delete_bid(bid_id, db)
+    return operations.bids.delete_bid(bid_id, bid_interface)
 
 
 @router.get(
     "/query/",
-    tags=["bid"],
     response_model=schema.BidCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
@@ -93,7 +88,13 @@ def api_query_bid(
     item_id: int | None = None,
     bidder_id: int | None = None,
     bid_type: enums.BidType | None = None,
-    db: Session = fastapi.Depends(database.get_db_session),
+    bid_interface=fastapi.Depends(db.get_bid_interface),
 ) -> schema.BidCollection:
+    kwargs = locals()
 
-    return operations.bids.query_bid(contract_id, item_id, bidder_id, bid_type, db)
+    # Filter for non-None keyword arguments to pass to the query function
+    filtered_kwargs = {
+        key: value for key, value in kwargs.items() if value and key != "bid_interface"
+    }
+
+    return operations.bids.query_bid(bid_interface, **filtered_kwargs)

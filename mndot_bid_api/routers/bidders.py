@@ -1,8 +1,6 @@
 import fastapi
-from mndot_bid_api import operations
-from mndot_bid_api.db import database
+from mndot_bid_api import db, operations
 from mndot_bid_api.operations import schema
-from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter(prefix="/bidder", tags=["bidder"])
 
@@ -13,10 +11,10 @@ router = fastapi.APIRouter(prefix="/bidder", tags=["bidder"])
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_bidders(
-    db: Session = fastapi.Depends(database.get_db_session),
+    bidder_interface=fastapi.Depends(db.get_bidder_interface),
 ) -> schema.BidderCollection:
 
-    return operations.bidders.read_all_bidders(db)
+    return operations.bidders.read_all_bidders(bidder_interface)
 
 
 @router.get(
@@ -25,10 +23,11 @@ def api_read_all_bidders(
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_bidder(
-    bidder_id: int, db: Session = fastapi.Depends(database.get_db_session)
+    bidder_id: int,
+    bidder_interface=fastapi.Depends(db.get_bidder_interface),
 ) -> schema.Bidder:
 
-    return operations.bidders.read_bidder(bidder_id, db)
+    return operations.bidders.read_bidder(bidder_id, bidder_interface)
 
 
 @router.post(
@@ -38,10 +37,10 @@ def api_read_bidder(
 )
 def api_create_bidder(
     data: schema.BidderCreateData,
-    db: Session = fastapi.Depends(database.get_db_session),
+    bidder_interface=fastapi.Depends(db.get_bidder_interface),
 ) -> schema.Bidder:
 
-    return operations.bidders.create_bidder(data, db)
+    return operations.bidders.create_bidder(data, bidder_interface)
 
 
 @router.patch(
@@ -52,10 +51,10 @@ def api_create_bidder(
 def api_update_bidder(
     bidder_id: int,
     data: schema.BidderUpdateData,
-    db: Session = fastapi.Depends(database.get_db_session),
+    bidder_interface=fastapi.Depends(db.get_bidder_interface),
 ) -> schema.Bidder:
 
-    return operations.bidders.update_bidder(bidder_id, data, db)
+    return operations.bidders.update_bidder(bidder_id, data, bidder_interface)
 
 
 @router.delete(
@@ -64,7 +63,27 @@ def api_update_bidder(
 )
 def api_delete_bidder(
     bidder_id: int,
-    db: Session = fastapi.Depends(database.get_db_session),
+    bidder_interface=fastapi.Depends(db.get_bidder_interface),
 ):
 
-    return operations.bidders.delete_bidder(bidder_id, db)
+    return operations.bidders.delete_bidder(bidder_id, bidder_interface)
+
+
+@router.get(
+    "/query/",
+    response_model=schema.BidderCollection,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_query_bidder(
+    name: str | None = None, bidder_interface=fastapi.Depends(db.get_bidder_interface)
+) -> schema.BidderCollection:
+    kwargs = locals()
+
+    # Filter for non-None keyword arguments to pass to the query function
+    filtered_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if value and key != "bidder_interface"
+    }
+
+    return operations.bidders.query_bidder(bidder_interface, **filtered_kwargs)

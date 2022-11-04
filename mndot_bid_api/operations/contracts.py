@@ -1,96 +1,102 @@
 import fastapi
-from mndot_bid_api.db import models
+from mndot_bid_api.exceptions import (
+    RecordAlreadyExistsException,
+    RecordNotFoundException,
+)
 from mndot_bid_api.operations import schema
-from sqlalchemy.orm import Session
+from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
-def read_all_contracts(db: Session) -> schema.ContractCollection:
+def read_all_contracts(contract_interface: CRUDInterface) -> schema.ContractCollection:
+    records = contract_interface.read_all()
 
-    contract_records = db.query(models.Contract).all()
+    results = [schema.ContractResult(**record) for record in records]
 
-    contract_results = [
-        schema.ContractResult(**models.to_dict(contract))
-        for contract in contract_records
-    ]
-
-    return schema.ContractCollection(data=contract_results)
+    return schema.ContractCollection(data=results)
 
 
-def read_contract(contract_id: int, db: Session) -> schema.Contract:
+def read_contract(
+    contract_id: int, contract_interface: CRUDInterface
+) -> schema.Contract:
+    try:
+        record = contract_interface.read_by_id(contract_id)
 
-    contract_record = (
-        db.query(models.Contract).filter(models.Contract.id == contract_id).first()
-    )
-
-    if not contract_record:
+    except RecordNotFoundException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Contract at ID {contract_id} not found",
-        )
+        ) from exc
 
-    contract_result = schema.ContractResult(**models.to_dict(contract_record))
+    result = schema.ContractResult(**record)
 
-    return schema.Contract(data=contract_result)
+    return schema.Contract(data=result)
 
 
-def create_contract(data: schema.ContractCreateData, db: Session) -> schema.Contract:
+def create_contract(
+    data: schema.ContractCreateData, contract_interface: CRUDInterface
+) -> schema.Contract:
+    try:
+        record = contract_interface.create(data.dict())
 
-    contract_record = (
-        db.query(models.Contract).filter(models.Contract.id == data.id).first()
-    )
-
-    if contract_record:
+    except RecordAlreadyExistsException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_303_SEE_OTHER,
             detail=f"Contract already exists at ID {data.id}",
-        )
+        ) from exc
 
-    contract_model = models.Contract(**data.dict())
+    result = schema.ContractResult(**record)
 
-    db.add(contract_model)
-    db.commit()
-
-    contract_result = schema.ContractResult(**models.to_dict(contract_model))
-
-    return schema.Contract(data=contract_result)
+    return schema.Contract(data=result)
 
 
 def update_contract(
-    contract_id: int, data: schema.ContractUpdateData, db: Session
+    contract_id: int, data: schema.ContractUpdateData, contract_interface: CRUDInterface
 ) -> schema.Contract:
+    try:
+        record = contract_interface.update(
+            id=contract_id, data=data.dict(exclude_none=True)
+        )
 
-    contract_record = (
-        db.query(models.Contract).filter(models.Contract.id == contract_id).first()
-    )
-
-    if not contract_record:
+    except RecordNotFoundException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Contract at ID {contract_id} not found",
-        )
+        ) from exc
 
-    for key, value in data.dict(exclude_none=True).items():
-        setattr(contract_record, key, value)
+    result = schema.ContractResult(**record)
 
-    db.add(contract_record)
-    db.commit()
-
-    contract_result = schema.ContractResult(**models.to_dict(contract_record))
-
-    return schema.Contract(data=contract_result)
+    return schema.Contract(data=result)
 
 
-def delete_contract(contract_id: int, db: Session) -> None:
+def delete_contract(contract_id: int, contract_interface: CRUDInterface) -> None:
+    try:
+        contract_interface.delete(contract_id)
 
-    contract_record = (
-        db.query(models.Contract).filter(models.Contract.id == contract_id).first()
-    )
-
-    if not contract_record:
+    except RecordNotFoundException as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Contract at ID {contract_id} not found",
+        ) from exc
+
+
+def query_contract(
+    contract_interface: CRUDInterface, **kwargs
+) -> schema.ContractCollection:
+    if not kwargs:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
+            detail=f"Provide at least one query parameter",
         )
 
-    db.delete(contract_record)
-    db.commit()
+    try:
+        records = contract_interface.read_all_by_kwargs(**kwargs)
+
+    except RecordNotFoundException as exc:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No Contracts found matching the provided query parameters",
+        ) from exc
+
+    results = [schema.ContractResult(**record) for record in records]
+
+    return schema.ContractCollection(data=results)

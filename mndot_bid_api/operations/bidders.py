@@ -1,87 +1,93 @@
 import fastapi
-from mndot_bid_api.db import models
+from mndot_bid_api.exceptions import (
+    RecordAlreadyExistsException,
+    RecordNotFoundException,
+)
 from mndot_bid_api.operations import schema
-from sqlalchemy.orm import Session
+from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
-def read_all_bidders(db: Session) -> schema.BidderCollection:
+def read_all_bidders(bidder_interface: CRUDInterface) -> schema.BidderCollection:
+    records = bidder_interface.read_all()
+    results = [schema.BidderResult(**record) for record in records]
 
-    bidder_records = db.query(models.Bidder).all()
-
-    bidder_results = [
-        schema.BidderResult(**models.to_dict(model)) for model in bidder_records
-    ]
-
-    return schema.BidderCollection(data=bidder_results)
+    return schema.BidderCollection(data=results)
 
 
-def read_bidder(bidder_id: int, db: Session) -> schema.Bidder:
+def read_bidder(bidder_id: int, bidder_interface: CRUDInterface) -> schema.Bidder:
+    try:
+        record = bidder_interface.read_by_id(bidder_id)
 
-    bidder_record = (
-        db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
-    )
-
-    if not bidder_record:
+    except RecordNotFoundException as exc:
         raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
-        )
+        ) from exc
 
-    bidder_result = schema.BidderResult(**models.to_dict(bidder_record))
+    result = schema.BidderResult(**record)
 
-    return schema.Bidder(data=bidder_result)
+    return schema.Bidder(data=result)
 
 
-def create_bidder(data: schema.BidderCreateData, db: Session) -> schema.Bidder:
+def create_bidder(
+    data: schema.BidderCreateData, bidder_interface: CRUDInterface
+) -> schema.Bidder:
+    try:
+        record = bidder_interface.create(data.dict())
 
-    bidder_record = db.query(models.Bidder).filter(models.Bidder.id == data.id).first()
-
-    if bidder_record:
+    except RecordAlreadyExistsException as exc:
         raise fastapi.HTTPException(
             status_code=303, detail=f"Bidder already exists at ID {data.id}"
-        )
+        ) from exc
 
-    bidder_model = models.Bidder(**data.dict())
+    result = schema.BidderResult(**record)
 
-    db.add(bidder_model)
-    db.commit()
-
-    bidder_result = schema.BidderResult(**models.to_dict(bidder_model))
-
-    return schema.Bidder(data=bidder_result)
+    return schema.Bidder(data=result)
 
 
 def update_bidder(
-    bidder_id: int, data: schema.BidderUpdateData, db: Session
+    bidder_id: int, data: schema.BidderUpdateData, bidder_interface: CRUDInterface
 ) -> schema.Bidder:
-
-    bidder_record = (
-        db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
-    )
-
-    if not bidder_record:
-        raise fastapi.HTTPException(
-            status_code=404, detail=f"Bidder at ID {bidder_id} not found."
+    try:
+        record = bidder_interface.update(
+            id=bidder_id, data=data.dict(exclude_none=True)
         )
 
-    for key, value in data.dict(exclude_none=True).items():
-        setattr(bidder_record, key, value)
-
-    db.add(bidder_record)
-    db.commit()
-
-    bidder_result = schema.BidderResult(**models.to_dict(bidder_record))
-
-    return schema.Bidder(data=bidder_result)
-
-
-def delete_bidder(bidder_id: int, db: Session) -> None:
-    bidder_record = (
-        db.query(models.Bidder).filter(models.Bidder.id == bidder_id).first()
-    )
-    if not bidder_record:
+    except RecordNotFoundException as exc:
         raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
+        ) from exc
+
+    result = schema.BidderResult(**record)
+
+    return schema.Bidder(data=result)
+
+
+def delete_bidder(bidder_id: int, bidder_interface: CRUDInterface) -> None:
+    try:
+        bidder_interface.delete(bidder_id)
+
+    except RecordNotFoundException as exc:
+        raise fastapi.HTTPException(
+            status_code=404, detail=f"Bidder at ID {bidder_id} not found."
+        ) from exc
+
+
+def query_bidder(bidder_interface: CRUDInterface, **kwargs) -> schema.BidderCollection:
+    if not kwargs:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
+            detail=f"Provide at least one query parameter",
         )
 
-    db.delete(bidder_record)
-    db.commit()
+    try:
+        records = bidder_interface.read_all_by_kwargs(**kwargs)
+
+    except RecordNotFoundException as exc:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No Bidders found matching the provided query parameters",
+        ) from exc
+
+    results = [schema.BidderResult(**record) for record in records]
+
+    return schema.BidderCollection(data=results)

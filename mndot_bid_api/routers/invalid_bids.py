@@ -1,76 +1,107 @@
 import fastapi
-from mndot_bid_api import operations
-from mndot_bid_api.db import database
-from mndot_bid_api.operations import schema
-from sqlalchemy.orm import Session
+from mndot_bid_api import db, operations
+from mndot_bid_api.operations import enums, schema
 
-router = fastapi.APIRouter(prefix="/invalid_bid")
+router = fastapi.APIRouter(prefix="/invalid_bid", tags=["invalid_bid"])
 
 
 @router.get(
     "/all",
-    tags=["invalid_bid"],
     response_model=schema.InvalidBidCollection,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_invalid_bids(
-    db: Session = fastapi.Depends(database.get_db_session),
+    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
 ) -> schema.InvalidBidCollection:
 
-    return operations.invalid_bids.read_all_invalid_bids(db)
+    return operations.invalid_bids.read_all_invalid_bids(invalid_bid_interface)
 
 
 @router.get(
     "/{invalid_bid_id}",
-    tags=["invalid_bid"],
     response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_invalid_bid_by_id(
     invalid_bid_id: int,
-    db: Session = fastapi.Depends(database.get_db_session),
+    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
 ) -> schema.InvalidBid:
 
-    return operations.invalid_bids.read_invalid_bid_by_id(invalid_bid_id, db)
+    return operations.invalid_bids.read_invalid_bid_by_id(
+        invalid_bid_id, invalid_bid_interface
+    )
 
 
 @router.post(
     "/",
-    tags=["invalid_bid"],
     response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_201_CREATED,
 )
 def api_create_invalid_bid(
     data: schema.BidCreateData,
-    db: Session = fastapi.Depends(database.get_db_session),
+    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
 ) -> schema.InvalidBid:
 
-    return operations.invalid_bids.create_invalid_bid(data, db)
+    return operations.invalid_bids.create_invalid_bid(data, invalid_bid_interface)
 
 
 @router.patch(
     "/{invalid_bid_id}",
-    tags=["invalid_bid"],
     response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_update_invalid_bid(
     invalid_bid_id: int,
     data: schema.InvalidBidUpdateData,
-    db: Session = fastapi.Depends(database.get_db_session),
+    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
 ) -> schema.InvalidBid:
 
-    return operations.invalid_bids.update_invalid_bid(invalid_bid_id, data, db)
+    return operations.invalid_bids.update_invalid_bid(
+        invalid_bid_id, data, invalid_bid_interface
+    )
 
 
 @router.delete(
     "/{invalid_bid_id}",
-    tags=["invalid_bid"],
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
 def api_delete_invalid_bid(
     invalid_bid_id: int,
-    db: Session = fastapi.Depends(database.get_db_session),
+    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
 ) -> None:
 
-    return operations.invalid_bids.delete_invalid_bid(invalid_bid_id, db)
+    return operations.invalid_bids.delete_invalid_bid(
+        invalid_bid_id, invalid_bid_interface
+    )
+
+
+@router.get(
+    "/query/",
+    response_model=schema.InvalidBidCollection,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_query_invalid_bid(
+    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
+    contract_id: int | None = None,
+    bidder_id: int | None = None,
+    item_spec_code: str | None = None,
+    item_unit_code: str | None = None,
+    item_item_code: str | None = None,
+    item_long_description: str | None = None,
+    item_unit_abbreviation: str | None = None,
+    quantity: float | None = None,
+    unit_price: int | None = None,
+    bid_type: enums.BidType | None = None,
+) -> schema.InvalidBidCollection:
+    kwargs = locals()
+
+    # Filter for non-None keyword arguments to pass to the query function
+    filtered_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if value and key != "invalid_bid_interface"
+    }
+
+    return operations.invalid_bids.query_invalid_bid(
+        invalid_bid_interface, **filtered_kwargs
+    )
