@@ -159,7 +159,6 @@ class InvalidBidCollection(BaseModel):
 
 
 class ItemCreateData(BaseModel):
-    spec_year: enums.SpecYear
     spec_code: constr(strip_whitespace=True, min_length=4, max_length=4)
     unit_code: constr(strip_whitespace=True, min_length=3, max_length=3)
     item_code: constr(strip_whitespace=True, min_length=5, max_length=5)
@@ -167,6 +166,10 @@ class ItemCreateData(BaseModel):
     long_description: constr(strip_whitespace=True, to_upper=True)
     unit: enums.Unit
     unit_abbreviation: enums.UnitAbbreviation
+    in_spec_2016: bool | None
+    in_spec_2018: bool | None
+    in_spec_2020: bool | None
+    in_spec_2022: bool | None
 
 
 class ItemResult(BaseModel):
@@ -185,7 +188,6 @@ class ItemResult(BaseModel):
 
 
 class ItemUpdateData(BaseModel):
-    spec_year: enums.SpecYear | None
     spec_code: constr(strip_whitespace=True, min_length=4, max_length=4) | None
     unit_code: constr(strip_whitespace=True, min_length=3, max_length=3) | None
     item_code: constr(strip_whitespace=True, min_length=5, max_length=5) | None

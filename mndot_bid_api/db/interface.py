@@ -5,6 +5,7 @@ from mndot_bid_api.exceptions import (
     RecordAlreadyExistsException,
     RecordNotFoundException,
 )
+from overrides import override
 
 RecordDict = dict[str, Any]
 
@@ -88,6 +89,40 @@ class DBModelInterface:
             db.commit()
 
 
+class ItemInterface(DBModelInterface):
+    @override
+    def __init__(self) -> None:
+        super().__init__(models.Item)
+
+    @override
+    def create(self, data: RecordDict) -> RecordDict:
+        """Creates a new record in the database."""
+        with database.SessionContextManager() as db:
+            # Use the non-optional ItemCreateData parameters to search for an existing record
+            search_parameters = [
+                "spec_code",
+                "unit_code",
+                "item_code",
+                "short_description",
+                "long_description",
+                "unit",
+                "unit_abbreviation",
+            ]
+            kwargs = {
+                key: value for key, value in data.items() if key in search_parameters
+            }
+            record = db.query(self.model).filter_by(**kwargs).first()
+
+            if record:
+                raise RecordAlreadyExistsException({"id": record.id})
+
+            new_record = self.model(**data)
+            db.add(new_record)
+            db.commit()
+
+            return models.to_dict(new_record)
+
+
 def get_bidder_interface() -> DBModelInterface:
     return DBModelInterface(models.Bidder)
 
@@ -105,4 +140,4 @@ def get_invalid_bid_interface() -> DBModelInterface:
 
 
 def get_item_interface() -> DBModelInterface:
-    return DBModelInterface(models.Item)
+    return ItemInterface()
