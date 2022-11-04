@@ -1,3 +1,5 @@
+from datetime import date
+
 import fastapi
 from mndot_bid_api import db, operations
 from mndot_bid_api.operations import schema
@@ -67,3 +69,29 @@ def api_delete_contract(
 ):
 
     return operations.contracts.delete_contract(contract_id, contract_interface)
+
+
+@router.get(
+    "/query/",
+    response_model=schema.ContractCollection,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_query_contract(
+    contract_interface=fastapi.Depends(db.get_contract_interface),
+    letting_date: date | None = None,
+    sp_number: str | None = None,
+    district: str | None = None,
+    county: str | None = None,
+    description: str | None = None,
+    winning_bidder_id: int | None = None,
+) -> schema.ContractCollection:
+    kwargs = locals()
+
+    # Filter for non-None keyword arguments to pass to the query function
+    filtered_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if value and key != "contract_interface"
+    }
+
+    return operations.contracts.query_contract(contract_interface, **filtered_kwargs)

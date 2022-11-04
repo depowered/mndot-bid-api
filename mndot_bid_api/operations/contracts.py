@@ -77,3 +77,26 @@ def delete_contract(contract_id: int, contract_interface: CRUDInterface) -> None
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Contract at ID {contract_id} not found",
         ) from exc
+
+
+def query_contract(
+    contract_interface: CRUDInterface, **kwargs
+) -> schema.ContractCollection:
+    if not kwargs:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
+            detail=f"Provide at least one query parameter",
+        )
+
+    try:
+        records = contract_interface.read_all_by_kwargs(**kwargs)
+
+    except RecordNotFoundException as exc:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No Contracts found matching the provided query parameters",
+        ) from exc
+
+    results = [schema.ContractResult(**record) for record in records]
+
+    return schema.ContractCollection(data=results)

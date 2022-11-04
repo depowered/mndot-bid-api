@@ -82,3 +82,26 @@ def delete_invalid_bid(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Invalid bid record at ID {invalid_bid_id} not found",
         ) from exc
+
+
+def query_invalid_bid(
+    invalid_bid_interface: CRUDInterface, **kwargs
+) -> schema.InvalidBidCollection:
+    if not kwargs:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
+            detail=f"Provide at least one query parameter",
+        )
+
+    try:
+        records = invalid_bid_interface.read_all_by_kwargs(**kwargs)
+
+    except RecordNotFoundException as exc:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No Invalid Bids found matching the provided query parameters",
+        ) from exc
+
+    results = [schema.InvalidBidResult(**record) for record in records]
+
+    return schema.InvalidBidCollection(data=results)

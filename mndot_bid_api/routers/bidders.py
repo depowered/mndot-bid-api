@@ -67,3 +67,23 @@ def api_delete_bidder(
 ):
 
     return operations.bidders.delete_bidder(bidder_id, bidder_interface)
+
+
+@router.get(
+    "/query/",
+    response_model=schema.BidderCollection,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_query_bidder(
+    name: str | None = None, bidder_interface=fastapi.Depends(db.get_bidder_interface)
+) -> schema.BidderCollection:
+    kwargs = locals()
+
+    # Filter for non-None keyword arguments to pass to the query function
+    filtered_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if value and key != "bidder_interface"
+    }
+
+    return operations.bidders.query_bidder(bidder_interface, **filtered_kwargs)

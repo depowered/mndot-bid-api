@@ -103,17 +103,14 @@ def delete_bid(bid_id: int, bid_interface: CRUDInterface) -> None:
 
 def query_bid(bid_interface: CRUDInterface, **kwargs) -> schema.BidCollection:
 
-    # remove kwargs with a value of None
-    filtered_kwargs = {key: value for key, value in kwargs.items() if value}
-
-    if not filtered_kwargs:
+    if not kwargs:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_400_BAD_REQUEST,
             detail=f"Provide at least one query parameter",
         )
 
     try:
-        records = bid_interface.read_all_by_kwargs(**filtered_kwargs)
+        records = bid_interface.read_all_by_kwargs(**kwargs)
 
     except RecordNotFoundException as exc:
         raise fastapi.HTTPException(

@@ -1,8 +1,6 @@
 import fastapi
 from mndot_bid_api import db, operations
-from mndot_bid_api.db import database
 from mndot_bid_api.operations import enums, schema
-from sqlalchemy.orm import Session
 
 router = fastapi.APIRouter(prefix="/bid", tags=["bid"])
 
@@ -92,12 +90,11 @@ def api_query_bid(
     bid_type: enums.BidType | None = None,
     bid_interface=fastapi.Depends(db.get_bid_interface),
 ) -> schema.BidCollection:
+    kwargs = locals()
 
-    kwargs = {
-        "contract_id": contract_id,
-        "item_id": item_id,
-        "bidder_id": bidder_id,
-        "bid_type": bid_type,
+    # Filter for non-None keyword arguments to pass to the query function
+    filtered_kwargs = {
+        key: value for key, value in kwargs.items() if value and key != "bid_interface"
     }
 
-    return operations.bids.query_bid(bid_interface, **kwargs)
+    return operations.bids.query_bid(bid_interface, **filtered_kwargs)

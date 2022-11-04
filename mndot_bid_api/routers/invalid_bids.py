@@ -1,6 +1,6 @@
 import fastapi
 from mndot_bid_api import db, operations
-from mndot_bid_api.operations import schema
+from mndot_bid_api.operations import enums, schema
 
 router = fastapi.APIRouter(prefix="/invalid_bid", tags=["invalid_bid"])
 
@@ -72,4 +72,36 @@ def api_delete_invalid_bid(
 
     return operations.invalid_bids.delete_invalid_bid(
         invalid_bid_id, invalid_bid_interface
+    )
+
+
+@router.get(
+    "/query/",
+    response_model=schema.InvalidBidCollection,
+    status_code=fastapi.status.HTTP_200_OK,
+)
+def api_query_invalid_bid(
+    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
+    contract_id: int | None = None,
+    bidder_id: int | None = None,
+    item_spec_code: str | None = None,
+    item_unit_code: str | None = None,
+    item_item_code: str | None = None,
+    item_long_description: str | None = None,
+    item_unit_abbreviation: str | None = None,
+    quantity: float | None = None,
+    unit_price: int | None = None,
+    bid_type: enums.BidType | None = None,
+) -> schema.InvalidBidCollection:
+    kwargs = locals()
+
+    # Filter for non-None keyword arguments to pass to the query function
+    filtered_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if value and key != "invalid_bid_interface"
+    }
+
+    return operations.invalid_bids.query_invalid_bid(
+        invalid_bid_interface, **filtered_kwargs
     )

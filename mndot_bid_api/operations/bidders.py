@@ -70,3 +70,24 @@ def delete_bidder(bidder_id: int, bidder_interface: CRUDInterface) -> None:
         raise fastapi.HTTPException(
             status_code=404, detail=f"Bidder at ID {bidder_id} not found."
         ) from exc
+
+
+def query_bidder(bidder_interface: CRUDInterface, **kwargs) -> schema.BidderCollection:
+    if not kwargs:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
+            detail=f"Provide at least one query parameter",
+        )
+
+    try:
+        records = bidder_interface.read_all_by_kwargs(**kwargs)
+
+    except RecordNotFoundException as exc:
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            detail=f"No Bidders found matching the provided query parameters",
+        ) from exc
+
+    results = [schema.BidderResult(**record) for record in records]
+
+    return schema.BidderCollection(data=results)
