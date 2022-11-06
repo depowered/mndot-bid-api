@@ -38,7 +38,12 @@
 				"python.analysis.typeCheckingMode": "basic",
 				"editor.codeActionsOnSave": {
 					"source.organizeImports": true
-				}
+				},
+				"python.testing.pytestArgs": [
+					"tests"
+				],
+				"python.testing.unittestEnabled": false,
+				"python.testing.pytestEnabled": true
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
