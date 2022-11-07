@@ -66,7 +66,7 @@ class Bidder(BaseModel):
 
 
 class BidderCollection(BaseModel):
-    type: str = "Bidder"
+    type: str = "BidderCollection"
     data: list[BidderResult]
 
 
