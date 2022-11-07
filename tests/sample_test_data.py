@@ -1,3 +1,5 @@
+from datetime import date
+
 sample_bidders = [
     {"id": 0, "name": "engineer"},
     {"id": 207897, "name": "Central Specialties, Inc."},
@@ -10,7 +12,7 @@ sample_bidders = [
 sample_contracts = [
     {
         "id": 220005,
-        "letting_date": "2022-01-28",
+        "letting_date": date(year=2022, month=1, day=28),
         "sp_number": "5625-20",
         "district": "Detroit Lakes",
         "county": "OTTER TAIL",
