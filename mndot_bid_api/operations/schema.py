@@ -39,7 +39,7 @@ class Contract(BaseModel):
 
 
 class ContractCollection(BaseModel):
-    type: str = "Contract"
+    type: str = "ContractCollection"
     data: list[ContractResult]
 
 
