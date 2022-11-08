@@ -6,17 +6,21 @@ from mndot_bid_api.exceptions import (
     RecordNotFoundException,
 )
 from overrides import override
+from sqlalchemy.orm import sessionmaker
 
 RecordDict = dict[str, Any]
 
 
 class DBModelInterface:
-    def __init__(self, model: models.Base) -> None:
+    def __init__(
+        self, model: models.Base, configured_session_maker: sessionmaker
+    ) -> None:
         self.model = model
+        self.configured_session_maker = configured_session_maker
 
     def read_all(self) -> list[RecordDict]:
         """Returns all existing database records from the associated table."""
-        with database.SessionContextManager() as db:
+        with self.configured_session_maker() as db:
             records = db.query(self.model).all()
             if not records:
                 return []
@@ -25,7 +29,7 @@ class DBModelInterface:
 
     def read_by_id(self, id: int) -> RecordDict:
         """Returns an existing database record matching the given id."""
-        with database.SessionContextManager() as db:
+        with self.configured_session_maker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
                 raise RecordNotFoundException()
@@ -34,7 +38,7 @@ class DBModelInterface:
 
     def read_one_by_kwargs(self, **kwargs) -> RecordDict:
         """Returns the first existing database record that matches the given keyward arguments."""
-        with database.SessionContextManager() as db:
+        with self.configured_session_maker() as db:
             record = db.query(self.model).filter_by(**kwargs).first()
             if not record:
                 raise RecordNotFoundException()
@@ -43,7 +47,7 @@ class DBModelInterface:
 
     def read_all_by_kwargs(self, **kwargs) -> list[RecordDict]:
         """Returns the all existing database records that match the given keyward arguments."""
-        with database.SessionContextManager() as db:
+        with self.configured_session_maker() as db:
             records = db.query(self.model).filter_by(**kwargs).all()
             if not records:
                 raise RecordNotFoundException()
@@ -52,7 +56,7 @@ class DBModelInterface:
 
     def create(self, data: RecordDict) -> RecordDict:
         """Creates a new record in the database."""
-        with database.SessionContextManager() as db:
+        with self.configured_session_maker() as db:
             record = db.query(self.model).filter_by(**data).first()
             if record:
                 raise RecordAlreadyExistsException({"id": record.id})
@@ -65,7 +69,7 @@ class DBModelInterface:
 
     def update(self, id: int, data: RecordDict) -> RecordDict:
         """Updates an existing record from the database."""
-        with database.SessionContextManager() as db:
+        with self.configured_session_maker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
                 raise RecordNotFoundException()
@@ -80,7 +84,7 @@ class DBModelInterface:
 
     def delete(self, id: int) -> None:
         """Deletes an existing record from the database."""
-        with database.SessionContextManager() as db:
+        with self.configured_session_maker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
                 raise RecordNotFoundException()
@@ -91,13 +95,13 @@ class DBModelInterface:
 
 class ItemInterface(DBModelInterface):
     @override
-    def __init__(self) -> None:
-        super().__init__(models.Item)
+    def __init__(self, configured_session_maker: sessionmaker) -> None:
+        super().__init__(models.Item, configured_session_maker)
 
     @override
     def create(self, data: RecordDict) -> RecordDict:
         """Creates a new record in the database."""
-        with database.SessionContextManager() as db:
+        with self.configured_session_maker() as db:
             # Use the non-optional ItemCreateData parameters to search for an existing record
             search_parameters = [
                 "spec_code",
@@ -124,20 +128,20 @@ class ItemInterface(DBModelInterface):
 
 
 def get_bidder_interface() -> DBModelInterface:
-    return DBModelInterface(models.Bidder)
+    return DBModelInterface(models.Bidder, database.DBSession)
 
 
 def get_contract_interface() -> DBModelInterface:
-    return DBModelInterface(models.Contract)
+    return DBModelInterface(models.Contract, database.DBSession)
 
 
 def get_bid_interface() -> DBModelInterface:
-    return DBModelInterface(models.Bid)
+    return DBModelInterface(models.Bid, database.DBSession)
 
 
 def get_invalid_bid_interface() -> DBModelInterface:
-    return DBModelInterface(models.InvalidBid)
+    return DBModelInterface(models.InvalidBid, database.DBSession)
 
 
 def get_item_interface() -> DBModelInterface:
-    return ItemInterface()
+    return ItemInterface(database.DBSession)
