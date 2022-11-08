@@ -5,7 +5,6 @@ from mndot_bid_api.exceptions import (
     RecordAlreadyExistsException,
     RecordNotFoundException,
 )
-from overrides import override
 from sqlalchemy.orm import sessionmaker
 
 RecordDict = dict[str, Any]
@@ -57,9 +56,12 @@ class DBModelInterface:
     def create(self, data: RecordDict) -> RecordDict:
         """Creates a new record in the database."""
         with self.configured_session_maker() as db:
-            record = db.query(self.model).filter_by(**data).first()
-            if record:
-                raise RecordAlreadyExistsException({"id": record.id})
+            if isinstance(self.model, type(models.Item)):
+                self._raise_if_item_record_exists(**data)
+            else:
+                record = db.query(self.model).filter_by(**data).first()
+                if record:
+                    raise RecordAlreadyExistsException({"id": record.id})
 
             new_record = self.model(**data)
             db.add(new_record)
@@ -92,39 +94,31 @@ class DBModelInterface:
             db.delete(record)
             db.commit()
 
+    def _raise_if_item_record_exists(self, **kwargs) -> None:
+        """Queries the item table for an existing record using a subset of the provided kwargs
+        and raises a RecordAlreadyExistsException if one is found.
 
-class ItemInterface(DBModelInterface):
-    @override
-    def __init__(self, configured_session_maker: sessionmaker) -> None:
-        super().__init__(models.Item, configured_session_maker)
+        For verifying no matching item record exists before preforming a create operation.
 
-    @override
-    def create(self, data: RecordDict) -> RecordDict:
-        """Creates a new record in the database."""
+        Excludes the following kwargs from the query:
+            - in_spec_2016
+            - in_spec_2018
+            - in_spec_2020
+            - in_spec_2022
+        """
+        exclude_kwargs = [
+            "in_spec_2016",
+            "in_spec_2018",
+            "in_spec_2020",
+            "in_spec_2022",
+        ]
+        filtered_kwargs = {
+            key: value for key, value in kwargs.items() if key not in exclude_kwargs
+        }
         with self.configured_session_maker() as db:
-            # Use the non-optional ItemCreateData parameters to search for an existing record
-            search_parameters = [
-                "spec_code",
-                "unit_code",
-                "item_code",
-                "short_description",
-                "long_description",
-                "unit",
-                "unit_abbreviation",
-            ]
-            kwargs = {
-                key: value for key, value in data.items() if key in search_parameters
-            }
-            record = db.query(self.model).filter_by(**kwargs).first()
-
+            record = db.query(self.model).filter_by(**filtered_kwargs).first()
             if record:
                 raise RecordAlreadyExistsException({"id": record.id})
-
-            new_record = self.model(**data)
-            db.add(new_record)
-            db.commit()
-
-            return models.to_dict(new_record)
 
 
 def get_bidder_interface() -> DBModelInterface:
@@ -144,4 +138,4 @@ def get_invalid_bid_interface() -> DBModelInterface:
 
 
 def get_item_interface() -> DBModelInterface:
-    return ItemInterface(database.DBSession)
+    return DBModelInterface(models.Item, database.DBSession)
