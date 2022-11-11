@@ -1,5 +1,6 @@
 import fastapi
 import pytest
+
 from mndot_bid_api import operations
 from mndot_bid_api.exceptions import (
     RecordAlreadyExistsException,
