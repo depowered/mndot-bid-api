@@ -1,25 +1,26 @@
 from typing import Any
 
+from sqlalchemy.orm import sessionmaker
+
 from mndot_bid_api.db import database, models
 from mndot_bid_api.exceptions import (
     RecordAlreadyExistsException,
     RecordNotFoundException,
 )
-from sqlalchemy.orm import sessionmaker
 
 RecordDict = dict[str, Any]
 
 
 class DBModelInterface:
     def __init__(
-        self, model: models.Base, configured_session_maker: sessionmaker
+        self, model: models.Base, configured_sessionmaker: sessionmaker
     ) -> None:
         self.model = model
-        self.configured_session_maker = configured_session_maker
+        self.configured_sessionmaker = configured_sessionmaker
 
     def read_all(self) -> list[RecordDict]:
         """Returns all existing database records from the associated table."""
-        with self.configured_session_maker() as db:
+        with self.configured_sessionmaker() as db:
             records = db.query(self.model).all()
             if not records:
                 return []
@@ -28,7 +29,7 @@ class DBModelInterface:
 
     def read_by_id(self, id: int) -> RecordDict:
         """Returns an existing database record matching the given id."""
-        with self.configured_session_maker() as db:
+        with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
                 raise RecordNotFoundException()
@@ -37,7 +38,7 @@ class DBModelInterface:
 
     def read_one_by_kwargs(self, **kwargs) -> RecordDict:
         """Returns the first existing database record that matches the given keyward arguments."""
-        with self.configured_session_maker() as db:
+        with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter_by(**kwargs).first()
             if not record:
                 raise RecordNotFoundException()
@@ -46,7 +47,7 @@ class DBModelInterface:
 
     def read_all_by_kwargs(self, **kwargs) -> list[RecordDict]:
         """Returns the all existing database records that match the given keyward arguments."""
-        with self.configured_session_maker() as db:
+        with self.configured_sessionmaker() as db:
             records = db.query(self.model).filter_by(**kwargs).all()
             if not records:
                 raise RecordNotFoundException()
@@ -55,7 +56,7 @@ class DBModelInterface:
 
     def create(self, data: RecordDict) -> RecordDict:
         """Creates a new record in the database."""
-        with self.configured_session_maker() as db:
+        with self.configured_sessionmaker() as db:
             if isinstance(self.model, type(models.Item)):
                 self._raise_if_item_record_exists(**data)
             else:
@@ -71,7 +72,7 @@ class DBModelInterface:
 
     def update(self, id: int, data: RecordDict) -> RecordDict:
         """Updates an existing record from the database."""
-        with self.configured_session_maker() as db:
+        with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
                 raise RecordNotFoundException()
@@ -86,7 +87,7 @@ class DBModelInterface:
 
     def delete(self, id: int) -> None:
         """Deletes an existing record from the database."""
-        with self.configured_session_maker() as db:
+        with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
                 raise RecordNotFoundException()
@@ -115,7 +116,7 @@ class DBModelInterface:
         filtered_kwargs = {
             key: value for key, value in kwargs.items() if key not in exclude_kwargs
         }
-        with self.configured_session_maker() as db:
+        with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter_by(**filtered_kwargs).first()
             if record:
                 raise RecordAlreadyExistsException({"id": record.id})
