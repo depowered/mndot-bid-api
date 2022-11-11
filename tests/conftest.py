@@ -5,7 +5,7 @@ Adapted from:
 """
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 from mndot_bid_api.db import models
 from tests.data import sample_db_records
@@ -37,17 +37,16 @@ def tables(engine):
 
 
 @pytest.fixture(scope="function")
-def dbsession(engine, tables):
+def configured_sessionmaker(engine, tables):
     """Returns an sqlalchemy session, and after the test tears down everything properly."""
     connection = engine.connect()
     # begin the nested transaction
     transaction = connection.begin()
     # use the connection with the already started transaction
-    session = Session(bind=connection)
+    conf_sessionmaker = sessionmaker(bind=connection)
 
-    yield session
+    yield conf_sessionmaker
 
-    session.close()
     # roll back the broader transaction
     transaction.rollback()
     # put back the connection to the connection pool
