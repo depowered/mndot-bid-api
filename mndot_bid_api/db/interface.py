@@ -57,7 +57,7 @@ class DBModelInterface:
     def create(self, data: RecordDict) -> RecordDict:
         """Creates a new record in the database."""
         with self.configured_sessionmaker() as db:
-            if isinstance(self.model, type(models.Item)):
+            if isinstance(self.model(), models.Item):
                 self._raise_if_item_record_exists(**data)
             else:
                 record = db.query(self.model).filter_by(**data).first()
@@ -101,20 +101,26 @@ class DBModelInterface:
 
         For verifying no matching item record exists before preforming a create operation.
 
-        Excludes the following kwargs from the query:
-            - in_spec_2016
-            - in_spec_2018
-            - in_spec_2020
-            - in_spec_2022
+        Includes the following kwargs from the query:
+            - spec_code
+            - unit_code
+            - item_code
+            - short_description
+            - long_description
+            - unit
+            - unit_abbreviation
         """
-        exclude_kwargs = [
-            "in_spec_2016",
-            "in_spec_2018",
-            "in_spec_2020",
-            "in_spec_2022",
+        include_kwargs = [
+            "spec_code",
+            "unit_code",
+            "item_code",
+            "short_description",
+            "long_description",
+            "unit",
+            "unit_abbreviation",
         ]
         filtered_kwargs = {
-            key: value for key, value in kwargs.items() if key not in exclude_kwargs
+            key: value for key, value in kwargs.items() if key in include_kwargs
         }
         with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter_by(**filtered_kwargs).first()
