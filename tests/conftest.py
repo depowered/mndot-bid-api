@@ -18,6 +18,11 @@ def engine():
 
 @pytest.fixture(scope="session")
 def tables(engine):
+    # If the previous run failed to return the fixture, such as in a stopped
+    # debugging session, data may still exist in the database. Drop tables
+    # before continuing to avoid conflicts in the load sample data step.
+    models.Base.metadata.drop_all(engine)
+
     # Create tables
     models.Base.metadata.create_all(engine)
 
