@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from mndot_bid_api import operations
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface
-from mndot_bid_api.exceptions import InvalidBidExecption, RecordAlreadyExistsError
+from mndot_bid_api.exceptions import InvalidBidError, RecordAlreadyExistsError
 from mndot_bid_api.operations import enums, schema
 
 
@@ -132,7 +132,7 @@ def test_create_bids(configured_sessionmaker: sessionmaker):
     assert exc.value.status_code == 303
 
     create_data.item_spec_code = "9999"
-    with pytest.raises(InvalidBidExecption):
+    with pytest.raises(InvalidBidError):
         operation_function(create_data, bid_interface, item_interface)
 
 

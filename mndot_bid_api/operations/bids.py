@@ -1,7 +1,7 @@
 import fastapi
 
 from mndot_bid_api.exceptions import (
-    InvalidBidExecption,
+    InvalidBidError,
     RecordAlreadyExistsError,
     RecordNotFoundError,
 )
@@ -48,7 +48,7 @@ def create_bid(
         item_record = item_interface.read_one_by_kwargs(**item_filter_kwargs)
 
     except RecordNotFoundError as exc:
-        raise InvalidBidExecption(
+        raise InvalidBidError(
             "No matching item found. Redirect to create invalid bid."
         ) from exc
 

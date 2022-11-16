@@ -6,5 +6,5 @@ class RecordAlreadyExistsError(Exception):
     pass
 
 
-class InvalidBidExecption(Exception):
+class InvalidBidError(Exception):
     pass
