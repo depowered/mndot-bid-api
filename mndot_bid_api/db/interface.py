@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy.orm import sessionmaker
 
 from mndot_bid_api.db import database, models
-from mndot_bid_api.exceptions import RecordAlreadyExistsException, RecordNotFoundError
+from mndot_bid_api.exceptions import RecordAlreadyExistsError, RecordNotFoundError
 
 RecordDict = dict[str, Any]
 
@@ -59,7 +59,7 @@ class DBModelInterface:
             else:
                 record = db.query(self.model).filter_by(**data).first()
                 if record:
-                    raise RecordAlreadyExistsException({"id": record.id})
+                    raise RecordAlreadyExistsError({"id": record.id})
 
             new_record = self.model(**data)
             db.add(new_record)
@@ -94,7 +94,7 @@ class DBModelInterface:
 
     def _raise_if_item_record_exists(self, **kwargs) -> None:
         """Queries the item table for an existing record using a subset of the provided kwargs
-        and raises a RecordAlreadyExistsException if one is found.
+        and raises a RecordAlreadyExistsError if one is found.
 
         For verifying no matching item record exists before preforming a create operation.
 
@@ -122,7 +122,7 @@ class DBModelInterface:
         with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter_by(**filtered_kwargs).first()
             if record:
-                raise RecordAlreadyExistsException({"id": record.id})
+                raise RecordAlreadyExistsError({"id": record.id})
 
 
 def get_bidder_interface() -> DBModelInterface:

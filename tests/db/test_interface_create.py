@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface
-from mndot_bid_api.exceptions import RecordAlreadyExistsException
+from mndot_bid_api.exceptions import RecordAlreadyExistsError
 
 
 def test_create_bidders(configured_sessionmaker: sessionmaker):
@@ -24,7 +24,7 @@ def test_create_bidders(configured_sessionmaker: sessionmaker):
     assert len(record_dicts_before_create) == len(record_dicts_after_create) - 1
     assert record_dict in record_dicts_after_create
 
-    with pytest.raises(RecordAlreadyExistsException) as exc:
+    with pytest.raises(RecordAlreadyExistsError) as exc:
         interface.create(data=create_data_dict)
     assert exc.value.args[0]["id"] == 9999
 
@@ -53,7 +53,7 @@ def test_create_contracts(configured_sessionmaker: sessionmaker):
     assert len(record_dicts_before_create) == len(record_dicts_after_create) - 1
     assert record_dict in record_dicts_after_create
 
-    with pytest.raises(RecordAlreadyExistsException) as exc:
+    with pytest.raises(RecordAlreadyExistsError) as exc:
         interface.create(data=create_data_dict)
     assert exc.value.args[0]["id"] == 1001
 
@@ -91,7 +91,7 @@ def test_create_items(configured_sessionmaker: sessionmaker):
     assert len(record_dicts_before_create) == len(record_dicts_after_create) - 1
     assert record_dict in record_dicts_after_create
 
-    with pytest.raises(RecordAlreadyExistsException) as exc:
+    with pytest.raises(RecordAlreadyExistsError) as exc:
         interface.create(data=create_data_dict)
     assert exc.value.args[0]["id"] == 3
 
@@ -121,7 +121,7 @@ def test_create_bids(configured_sessionmaker: sessionmaker):
     assert len(record_dicts_before_create) == len(record_dicts_after_create) - 1
     assert record_dict in record_dicts_after_create
 
-    with pytest.raises(RecordAlreadyExistsException) as exc:
+    with pytest.raises(RecordAlreadyExistsError) as exc:
         interface.create(data=create_data_dict)
     assert exc.value.args[0]["id"] == 13
 
@@ -155,6 +155,6 @@ def test_create_invalid_bids(configured_sessionmaker: sessionmaker):
     assert len(record_dicts_before_create) == len(record_dicts_after_create) - 1
     assert record_dict in record_dicts_after_create
 
-    with pytest.raises(RecordAlreadyExistsException) as exc:
+    with pytest.raises(RecordAlreadyExistsError) as exc:
         interface.create(data=create_data_dict)
     assert exc.value.args[0]["id"] == 7

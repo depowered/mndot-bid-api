@@ -2,7 +2,7 @@ import fastapi
 
 from mndot_bid_api.exceptions import (
     InvalidBidExecption,
-    RecordAlreadyExistsException,
+    RecordAlreadyExistsError,
     RecordNotFoundError,
 )
 from mndot_bid_api.operations import schema
@@ -63,7 +63,7 @@ def create_bid(
     try:
         record = bid_interface.create(bid_record_dict)
 
-    except RecordAlreadyExistsException as exc:
+    except RecordAlreadyExistsError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_303_SEE_OTHER,
             detail=f"Bid already exists at ID {exc.args[0]['id']}",

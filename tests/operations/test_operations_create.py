@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from mndot_bid_api import operations
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface
-from mndot_bid_api.exceptions import InvalidBidExecption, RecordAlreadyExistsException
+from mndot_bid_api.exceptions import InvalidBidExecption, RecordAlreadyExistsError
 from mndot_bid_api.operations import enums, schema
 
 
@@ -94,7 +94,7 @@ def test_create_items(configured_sessionmaker: sessionmaker):
     assert result.type == expected_result.type
     assert result.data == expected_result.data
 
-    with pytest.raises(RecordAlreadyExistsException):
+    with pytest.raises(RecordAlreadyExistsError):
         operation_function(create_data, interface)
 
 

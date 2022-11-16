@@ -2,7 +2,7 @@ class RecordNotFoundError(Exception):
     pass
 
 
-class RecordAlreadyExistsException(Exception):
+class RecordAlreadyExistsError(Exception):
     pass
 
 

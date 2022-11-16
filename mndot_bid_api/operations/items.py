@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api.exceptions import RecordAlreadyExistsException, RecordNotFoundError
+from mndot_bid_api.exceptions import RecordAlreadyExistsError, RecordNotFoundError
 from mndot_bid_api.operations import schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
@@ -33,7 +33,7 @@ def create_item(
     try:
         record = item_interface.create(data.dict(exclude_none=True))
 
-    except RecordAlreadyExistsException as exc:
+    except RecordAlreadyExistsError as exc:
         raise exc
 
     result = schema.ItemResult(**record)

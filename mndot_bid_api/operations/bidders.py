@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api.exceptions import RecordAlreadyExistsException, RecordNotFoundError
+from mndot_bid_api.exceptions import RecordAlreadyExistsError, RecordNotFoundError
 from mndot_bid_api.operations import schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
@@ -32,7 +32,7 @@ def create_bidder(
     try:
         record = bidder_interface.create(data.dict())
 
-    except RecordAlreadyExistsException as exc:
+    except RecordAlreadyExistsError as exc:
         raise fastapi.HTTPException(
             status_code=303, detail=f"Bidder already exists at ID {data.id}"
         ) from exc
