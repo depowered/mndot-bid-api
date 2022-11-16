@@ -1,4 +1,4 @@
-class RecordNotFoundException(Exception):
+class RecordNotFoundError(Exception):
     pass
 
 

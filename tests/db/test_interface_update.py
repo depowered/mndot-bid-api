@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface
-from mndot_bid_api.exceptions import RecordNotFoundException
+from mndot_bid_api.exceptions import RecordNotFoundError
 
 
 def test_update_bidders(configured_sessionmaker: sessionmaker):
@@ -21,7 +21,7 @@ def test_update_bidders(configured_sessionmaker: sessionmaker):
     record_dict = interface.update(id=record_id, data=update_data_dict)
     assert record_dict == expected_record_dict
 
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.update(id=-7, data=update_data_dict)
 
 
@@ -41,7 +41,7 @@ def test_update_contracts(configured_sessionmaker: sessionmaker):
     record_dict = interface.update(id=record_id, data=update_data_dict)
     assert record_dict == expected_record_dict
 
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.update(id=-7, data=update_data_dict)
 
 
@@ -61,7 +61,7 @@ def test_update_items(configured_sessionmaker: sessionmaker):
     record_dict = interface.update(id=record_id, data=update_data_dict)
     assert record_dict == expected_record_dict
 
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.update(id=-7, data=update_data_dict)
 
 
@@ -81,7 +81,7 @@ def test_update_bids(configured_sessionmaker: sessionmaker):
     record_dict = interface.update(id=record_id, data=update_data_dict)
     assert record_dict == expected_record_dict
 
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.update(id=-7, data=update_data_dict)
 
 
@@ -101,5 +101,5 @@ def test_update_invalid_bids(configured_sessionmaker: sessionmaker):
     record_dict = interface.update(id=record_id, data=update_data_dict)
     assert record_dict == expected_record_dict
 
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.update(id=-7, data=update_data_dict)

@@ -1,8 +1,9 @@
 import fastapi
+
 from mndot_bid_api.exceptions import (
     InvalidBidExecption,
     RecordAlreadyExistsException,
-    RecordNotFoundException,
+    RecordNotFoundError,
 )
 from mndot_bid_api.operations import schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
@@ -19,7 +20,7 @@ def read_bid(bid_id: int, bid_interface: CRUDInterface) -> schema.Bid:
     try:
         record = bid_interface.read_by_id(bid_id)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Bid at ID {bid_id} not found",
@@ -46,7 +47,7 @@ def create_bid(
     try:
         item_record = item_interface.read_one_by_kwargs(**item_filter_kwargs)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise InvalidBidExecption(
             "No matching item found. Redirect to create invalid bid."
         ) from exc
@@ -79,7 +80,7 @@ def update_bid(
     try:
         record = bid_interface.update(id=bid_id, data=data.dict(exclude_none=True))
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Bid at ID {bid_id} not found",
@@ -94,7 +95,7 @@ def delete_bid(bid_id: int, bid_interface: CRUDInterface) -> None:
     try:
         bid_interface.delete(bid_id)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Bid at ID {bid_id} not found",
@@ -112,7 +113,7 @@ def query_bid(bid_interface: CRUDInterface, **kwargs) -> schema.BidCollection:
     try:
         records = bid_interface.read_all_by_kwargs(**kwargs)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"No Bids found matching the provided query parameters",

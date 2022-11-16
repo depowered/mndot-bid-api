@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface, RecordDict
-from mndot_bid_api.exceptions import RecordNotFoundException
+from mndot_bid_api.exceptions import RecordNotFoundError
 from tests.data import sample_record_dicts
 
 
@@ -22,7 +22,7 @@ def generic_read_by_id_raises_record_not_found_test(
     configured_sessionmaker: sessionmaker, model: models.Base
 ) -> None:
     interface = DBModelInterface(model, configured_sessionmaker)
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.read_by_id(-7)
 
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface
-from mndot_bid_api.exceptions import RecordNotFoundException
+from mndot_bid_api.exceptions import RecordNotFoundError
 
 
 def generic_delete_record_test(record_id: int, interface: DBModelInterface) -> None:
@@ -17,7 +17,7 @@ def generic_delete_record_test(record_id: int, interface: DBModelInterface) -> N
     assert record_dict not in record_dicts_after_delete
     assert len(record_dicts_before_delete) - 1 == len(record_dicts_after_delete)
 
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.delete(id=record_id)
 
 

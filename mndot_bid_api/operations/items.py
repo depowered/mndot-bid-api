@@ -1,8 +1,6 @@
 import fastapi
-from mndot_bid_api.exceptions import (
-    RecordAlreadyExistsException,
-    RecordNotFoundException,
-)
+
+from mndot_bid_api.exceptions import RecordAlreadyExistsException, RecordNotFoundError
 from mndot_bid_api.operations import schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
@@ -18,7 +16,7 @@ def read_item_by_id(item_id: int, item_interface: CRUDInterface) -> schema.Item:
     try:
         record = item_interface.read_by_id(item_id)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Item at ID {item_id} not found",
@@ -49,7 +47,7 @@ def update_item(
     try:
         record = item_interface.update(item_id, data=data.dict(exclude_none=True))
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Item at ID {item_id} not found",
@@ -64,7 +62,7 @@ def delete_item(item_id: int, item_interface: CRUDInterface) -> None:
     try:
         item_interface.delete(item_id)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Item at ID {item_id} not found",
@@ -81,7 +79,7 @@ def query_item(item_interface: CRUDInterface, **kwargs) -> schema.ItemCollection
     try:
         records = item_interface.read_all_by_kwargs(**kwargs)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"No Items found matching the provided query parameters",

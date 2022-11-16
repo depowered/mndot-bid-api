@@ -3,10 +3,7 @@ from typing import Any
 from sqlalchemy.orm import sessionmaker
 
 from mndot_bid_api.db import database, models
-from mndot_bid_api.exceptions import (
-    RecordAlreadyExistsException,
-    RecordNotFoundException,
-)
+from mndot_bid_api.exceptions import RecordAlreadyExistsException, RecordNotFoundError
 
 RecordDict = dict[str, Any]
 
@@ -32,7 +29,7 @@ class DBModelInterface:
         with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
-                raise RecordNotFoundException()
+                raise RecordNotFoundError()
 
             return models.to_dict(record)
 
@@ -41,7 +38,7 @@ class DBModelInterface:
         with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter_by(**kwargs).first()
             if not record:
-                raise RecordNotFoundException()
+                raise RecordNotFoundError()
 
             return models.to_dict(record)
 
@@ -50,7 +47,7 @@ class DBModelInterface:
         with self.configured_sessionmaker() as db:
             records = db.query(self.model).filter_by(**kwargs).all()
             if not records:
-                raise RecordNotFoundException()
+                raise RecordNotFoundError()
 
             return [models.to_dict(record) for record in records]
 
@@ -75,7 +72,7 @@ class DBModelInterface:
         with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
-                raise RecordNotFoundException()
+                raise RecordNotFoundError()
 
             for key, value in data.items():
                 setattr(record, key, value)
@@ -90,7 +87,7 @@ class DBModelInterface:
         with self.configured_sessionmaker() as db:
             record = db.query(self.model).filter(self.model.id == id).first()
             if not record:
-                raise RecordNotFoundException()
+                raise RecordNotFoundError()
 
             db.delete(record)
             db.commit()

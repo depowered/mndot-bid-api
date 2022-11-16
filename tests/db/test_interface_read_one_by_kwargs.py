@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface
-from mndot_bid_api.exceptions import RecordNotFoundException
+from mndot_bid_api.exceptions import RecordNotFoundError
 from tests.data import sample_record_dicts
 
 
@@ -22,7 +22,7 @@ def test_read_one_by_kwargs_bidders(configured_sessionmaker: sessionmaker):
     assert record_dict == expected_record_dict
 
     # No matches
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.read_one_by_kwargs(name="no match")
 
     # Invalid kwarg
@@ -44,7 +44,7 @@ def test_read_one_by_kwargs_contracts(configured_sessionmaker: sessionmaker):
     assert record_dict == expected_record_dict
 
     # No matches
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.read_one_by_kwargs(county="no match")
 
     # Invalid kwarg
@@ -66,7 +66,7 @@ def test_read_one_by_kwargs_items(configured_sessionmaker: sessionmaker):
     assert record_dict == expected_record_dict
 
     # No matches
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.read_one_by_kwargs(item_code="no match")
 
     # Invalid kwarg
@@ -88,7 +88,7 @@ def test_read_one_by_kwargs_bids(configured_sessionmaker: sessionmaker):
     assert record_dict == expected_record_dict
 
     # No matches
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.read_one_by_kwargs(contract_id=-7)
 
     # Invalid kwarg
@@ -110,7 +110,7 @@ def test_read_one_by_kwargs_invalid_bids(configured_sessionmaker: sessionmaker):
     assert record_dict == expected_record_dict
 
     # No matches
-    with pytest.raises(RecordNotFoundException):
+    with pytest.raises(RecordNotFoundError):
         interface.read_one_by_kwargs(contract_id=-7)
 
     # Invalid kwarg

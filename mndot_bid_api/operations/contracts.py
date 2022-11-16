@@ -1,8 +1,6 @@
 import fastapi
-from mndot_bid_api.exceptions import (
-    RecordAlreadyExistsException,
-    RecordNotFoundException,
-)
+
+from mndot_bid_api.exceptions import RecordAlreadyExistsException, RecordNotFoundError
 from mndot_bid_api.operations import schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
@@ -21,7 +19,7 @@ def read_contract(
     try:
         record = contract_interface.read_by_id(contract_id)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Contract at ID {contract_id} not found",
@@ -57,7 +55,7 @@ def update_contract(
             id=contract_id, data=data.dict(exclude_none=True)
         )
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Contract at ID {contract_id} not found",
@@ -72,7 +70,7 @@ def delete_contract(contract_id: int, contract_interface: CRUDInterface) -> None
     try:
         contract_interface.delete(contract_id)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Contract at ID {contract_id} not found",
@@ -91,7 +89,7 @@ def query_contract(
     try:
         records = contract_interface.read_all_by_kwargs(**kwargs)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"No Contracts found matching the provided query parameters",
