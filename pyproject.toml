@@ -8,7 +8,6 @@ authors = ["Devin Power <dpwr16@gmail.com>"]
 python = "^3.10"
 fastapi = {extras = ["all"], version = "^0.84"}
 SQLAlchemy = "^1.4.32"
-overrides = "^7.3.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
