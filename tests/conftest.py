@@ -129,6 +129,7 @@ def test_client(
     test_app.include_router(routers.bid_router)
     test_app.include_router(routers.invalid_bid_router)
     test_app.include_router(routers.item_router)
+    test_app.include_router(routers.etl_router)
 
     # Itialize and return the test client
     test_client = TestClient(test_app)
