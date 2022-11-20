@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any
 
 from pydantic import BaseModel, constr
 
@@ -210,3 +211,27 @@ class Item(BaseModel):
 class ItemCollection(BaseModel):
     type: str = "ItemCollection"
     data: list[ItemResult]
+
+
+#############################################################################
+
+
+class LoadResult(BaseModel):
+    route: str
+    method: str
+    status_code: int
+    message: str | None = None
+    request_body: dict[str, Any] | None = None
+    response_body: dict[str, Any] | None = None
+
+
+class ItemListETL(BaseModel):
+    spec_year: str
+    item_results: list[LoadResult]
+
+
+class AbstractETL(BaseModel):
+    contract_id: int
+    contract_results: list[LoadResult]
+    bidder_results: list[LoadResult]
+    bid_results: list[LoadResult]
