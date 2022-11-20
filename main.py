@@ -37,6 +37,7 @@ app.include_router(routers.bidder_router)
 app.include_router(routers.bid_router)
 app.include_router(routers.invalid_bid_router)
 app.include_router(routers.item_router)
+app.include_router(routers.etl_router)
 
 with open("./openapi.json", "w") as f:
     f.write(json.dumps(app.openapi()))
