@@ -46,8 +46,10 @@ def api_create_item(
 
     except RecordAlreadyExistsError as exc:
         item_id = exc.args[0]["id"]
-        update_data = schema.ItemUpdateData(**data.dict(exclude_none=True))
-        return operations.items.update_item(item_id, update_data, item_interface)
+        raise fastapi.HTTPException(
+            status_code=fastapi.status.HTTP_303_SEE_OTHER,
+            detail=f"Item already exists at ID {item_id}",
+        )
 
 
 @router.patch(
