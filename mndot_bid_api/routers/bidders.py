@@ -2,10 +2,10 @@ import fastapi
 
 from mndot_bid_api import db, operations, schema
 
-router = fastapi.APIRouter(prefix="/bidder", tags=["bidder"])
+bidder_router = fastapi.APIRouter(prefix="/bidder", tags=["bidder"])
 
 
-@router.get(
+@bidder_router.get(
     "/all",
     response_model=schema.BidderCollection,
     status_code=fastapi.status.HTTP_200_OK,
@@ -17,7 +17,7 @@ def api_read_all_bidders(
     return operations.bidders.read_all_bidders(bidder_interface)
 
 
-@router.get(
+@bidder_router.get(
     "/{bidder_id}",
     response_model=schema.Bidder,
     status_code=fastapi.status.HTTP_200_OK,
@@ -30,7 +30,7 @@ def api_read_bidder(
     return operations.bidders.read_bidder(bidder_id, bidder_interface)
 
 
-@router.post(
+@bidder_router.post(
     "/",
     response_model=schema.Bidder,
     status_code=fastapi.status.HTTP_200_OK,
@@ -43,7 +43,7 @@ def api_create_bidder(
     return operations.bidders.create_bidder(data, bidder_interface)
 
 
-@router.patch(
+@bidder_router.patch(
     "/{bidder_id}",
     response_model=schema.Bidder,
     status_code=fastapi.status.HTTP_200_OK,
@@ -57,7 +57,7 @@ def api_update_bidder(
     return operations.bidders.update_bidder(bidder_id, data, bidder_interface)
 
 
-@router.delete(
+@bidder_router.delete(
     "/{bidder_id}",
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
@@ -69,7 +69,7 @@ def api_delete_bidder(
     return operations.bidders.delete_bidder(bidder_id, bidder_interface)
 
 
-@router.get(
+@bidder_router.get(
     "/query/",
     response_model=schema.BidderCollection,
     status_code=fastapi.status.HTTP_200_OK,

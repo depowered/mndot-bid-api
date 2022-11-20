@@ -4,10 +4,10 @@ import fastapi
 
 from mndot_bid_api import db, operations, schema
 
-router = fastapi.APIRouter(prefix="/contract", tags=["contract"])
+contract_router = fastapi.APIRouter(prefix="/contract", tags=["contract"])
 
 
-@router.get(
+@contract_router.get(
     "/all",
     response_model=schema.ContractCollection,
     status_code=fastapi.status.HTTP_200_OK,
@@ -19,7 +19,7 @@ def api_read_all_contracts(
     return operations.contracts.read_all_contracts(contract_interface)
 
 
-@router.get(
+@contract_router.get(
     "/{contract_id}",
     response_model=schema.Contract,
     status_code=fastapi.status.HTTP_200_OK,
@@ -32,7 +32,7 @@ def api_read_contract(
     return operations.contracts.read_contract(contract_id, contract_interface)
 
 
-@router.post(
+@contract_router.post(
     "/",
     response_model=schema.Contract,
     status_code=fastapi.status.HTTP_201_CREATED,
@@ -45,7 +45,7 @@ def api_create_contract(
     return operations.contracts.create_contract(data, contract_interface)
 
 
-@router.patch(
+@contract_router.patch(
     "/{contract_id}",
     response_model=schema.Contract,
     status_code=fastapi.status.HTTP_200_OK,
@@ -59,7 +59,7 @@ def api_update_contract(
     return operations.contracts.update_contract(contract_id, data, contract_interface)
 
 
-@router.delete(
+@contract_router.delete(
     "/{contract_id}",
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
@@ -71,7 +71,7 @@ def api_delete_contract(
     return operations.contracts.delete_contract(contract_id, contract_interface)
 
 
-@router.get(
+@contract_router.get(
     "/query/",
     response_model=schema.ContractCollection,
     status_code=fastapi.status.HTTP_200_OK,

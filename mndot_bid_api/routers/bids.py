@@ -2,10 +2,10 @@ import fastapi
 
 from mndot_bid_api import db, enums, exceptions, operations, schema
 
-router = fastapi.APIRouter(prefix="/bid", tags=["bid"])
+bid_router = fastapi.APIRouter(prefix="/bid", tags=["bid"])
 
 
-@router.get(
+@bid_router.get(
     "/all",
     response_model=schema.BidCollection,
     status_code=fastapi.status.HTTP_200_OK,
@@ -17,7 +17,7 @@ def api_read_all_bids(
     return operations.bids.read_all_bids(bid_interface)
 
 
-@router.get(
+@bid_router.get(
     "/{bid_id}",
     response_model=schema.Bid,
     status_code=fastapi.status.HTTP_200_OK,
@@ -30,7 +30,7 @@ def api_read_bid(
     return operations.bids.read_bid(bid_id, bid_interface)
 
 
-@router.post(
+@bid_router.post(
     "/",
     response_model=schema.Bid,
     status_code=fastapi.status.HTTP_201_CREATED,
@@ -52,7 +52,7 @@ def api_create_bid(
         )
 
 
-@router.patch(
+@bid_router.patch(
     "/{bid_id}",
     response_model=schema.Bid,
     status_code=fastapi.status.HTTP_200_OK,
@@ -66,7 +66,7 @@ def api_update_bid(
     return operations.bids.update_bid(bid_id, data, bid_interface)
 
 
-@router.delete(
+@bid_router.delete(
     "/{bid_id}",
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
@@ -78,7 +78,7 @@ def api_delete_bid(
     return operations.bids.delete_bid(bid_id, bid_interface)
 
 
-@router.get(
+@bid_router.get(
     "/query/",
     response_model=schema.BidCollection,
     status_code=fastapi.status.HTTP_200_OK,

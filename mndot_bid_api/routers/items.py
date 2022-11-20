@@ -2,10 +2,10 @@ import fastapi
 
 from mndot_bid_api import db, operations, schema
 
-router = fastapi.APIRouter(prefix="/item", tags=["item"])
+item_router = fastapi.APIRouter(prefix="/item", tags=["item"])
 
 
-@router.get(
+@item_router.get(
     "/all",
     response_model=schema.ItemCollection,
     status_code=fastapi.status.HTTP_200_OK,
@@ -17,7 +17,7 @@ def api_read_all_items(
     return operations.items.read_all_items(item_interface)
 
 
-@router.get(
+@item_router.get(
     "/{item_id}",
     response_model=schema.Item,
     status_code=fastapi.status.HTTP_200_OK,
@@ -29,7 +29,7 @@ def api_read_item_by_id(
     return operations.items.read_item_by_id(item_id, item_interface)
 
 
-@router.post(
+@item_router.post(
     "/",
     response_model=schema.Item,
     status_code=fastapi.status.HTTP_201_CREATED,
@@ -41,7 +41,7 @@ def api_create_item(
     return operations.items.create_item(data, item_interface)
 
 
-@router.patch(
+@item_router.patch(
     "/{item_id}",
     response_model=schema.Item,
     status_code=fastapi.status.HTTP_200_OK,
@@ -55,7 +55,7 @@ def api_update_item(
     return operations.items.update_item(item_id, data, item_interface)
 
 
-@router.delete(
+@item_router.delete(
     "/{item_id}",
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
@@ -67,7 +67,7 @@ def api_delete_item(
     return operations.items.delete_item(item_id, item_interface)
 
 
-@router.get(
+@item_router.get(
     "/query/",
     response_model=schema.ItemCollection,
     status_code=fastapi.status.HTTP_200_OK,

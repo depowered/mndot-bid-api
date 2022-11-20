@@ -32,11 +32,11 @@ def read_root():
     return {"server status": "Running"}
 
 
-app.include_router(routers.contracts_router)
-app.include_router(routers.bidders_router)
-app.include_router(routers.bids_router)
-app.include_router(routers.invalid_bids_router)
-app.include_router(routers.items_router)
+app.include_router(routers.contract_router)
+app.include_router(routers.bidder_router)
+app.include_router(routers.bid_router)
+app.include_router(routers.invalid_bid_router)
+app.include_router(routers.item_router)
 
 with open("./openapi.json", "w") as f:
     f.write(json.dumps(app.openapi()))
