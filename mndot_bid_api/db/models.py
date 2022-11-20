@@ -6,6 +6,7 @@ Base = declarative_base()
 
 
 def to_dict(obj: Base):
+    """Extract a dictionary of {column_name: value} from a model instance."""
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 

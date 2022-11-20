@@ -124,11 +124,11 @@ def test_client(
         return {"server status": "Running"}
 
     # Add all routes
-    test_app.include_router(routers.bidders_router)
-    test_app.include_router(routers.contracts_router)
-    test_app.include_router(routers.bids_router)
-    test_app.include_router(routers.invalid_bids_router)
-    test_app.include_router(routers.items_router)
+    test_app.include_router(routers.bidder_router)
+    test_app.include_router(routers.contract_router)
+    test_app.include_router(routers.bid_router)
+    test_app.include_router(routers.invalid_bid_router)
+    test_app.include_router(routers.item_router)
 
     # Itialize and return the test client
     test_client = TestClient(test_app)

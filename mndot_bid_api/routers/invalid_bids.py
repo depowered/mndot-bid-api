@@ -1,11 +1,11 @@
 import fastapi
-from mndot_bid_api import db, operations
-from mndot_bid_api.operations import enums, schema
 
-router = fastapi.APIRouter(prefix="/invalid_bid", tags=["invalid_bid"])
+from mndot_bid_api import db, enums, operations, schema
+
+invalid_bid_router = fastapi.APIRouter(prefix="/invalid_bid", tags=["invalid_bid"])
 
 
-@router.get(
+@invalid_bid_router.get(
     "/all",
     response_model=schema.InvalidBidCollection,
     status_code=fastapi.status.HTTP_200_OK,
@@ -17,7 +17,7 @@ def api_read_all_invalid_bids(
     return operations.invalid_bids.read_all_invalid_bids(invalid_bid_interface)
 
 
-@router.get(
+@invalid_bid_router.get(
     "/{invalid_bid_id}",
     response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_200_OK,
@@ -32,7 +32,7 @@ def api_read_invalid_bid_by_id(
     )
 
 
-@router.post(
+@invalid_bid_router.post(
     "/",
     response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_201_CREATED,
@@ -45,7 +45,7 @@ def api_create_invalid_bid(
     return operations.invalid_bids.create_invalid_bid(data, invalid_bid_interface)
 
 
-@router.patch(
+@invalid_bid_router.patch(
     "/{invalid_bid_id}",
     response_model=schema.InvalidBid,
     status_code=fastapi.status.HTTP_200_OK,
@@ -61,7 +61,7 @@ def api_update_invalid_bid(
     )
 
 
-@router.delete(
+@invalid_bid_router.delete(
     "/{invalid_bid_id}",
     status_code=fastapi.status.HTTP_204_NO_CONTENT,
 )
@@ -75,7 +75,7 @@ def api_delete_invalid_bid(
     )
 
 
-@router.get(
+@invalid_bid_router.get(
     "/query/",
     response_model=schema.InvalidBidCollection,
     status_code=fastapi.status.HTTP_200_OK,

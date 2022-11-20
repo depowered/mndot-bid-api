@@ -1,7 +1,4 @@
-import fastapi
-
-from mndot_bid_api.exceptions import RecordAlreadyExistsError, RecordNotFoundError
-from mndot_bid_api.operations import schema
+from mndot_bid_api import exceptions, schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
@@ -16,11 +13,8 @@ def read_item_by_id(item_id: int, item_interface: CRUDInterface) -> schema.Item:
     try:
         record = item_interface.read_by_id(item_id)
 
-    except RecordNotFoundError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Item at ID {item_id} not found",
-        ) from exc
+    except exceptions.RecordNotFoundError as exc:
+        exceptions.raise_http_404(model_name="Item", id=item_id, exc=exc)
 
     result = schema.ItemResult(**record)
 
@@ -33,8 +27,9 @@ def create_item(
     try:
         record = item_interface.create(data.dict(exclude_none=True))
 
-    except RecordAlreadyExistsError as exc:
-        raise exc
+    except exceptions.RecordAlreadyExistsError as exc:
+        item_id = exc.args[0]["id"]
+        exceptions.raise_http_303(model_name="Item", id=item_id, exc=exc)
 
     result = schema.ItemResult(**record)
 
@@ -47,11 +42,8 @@ def update_item(
     try:
         record = item_interface.update(item_id, data=data.dict(exclude_none=True))
 
-    except RecordNotFoundError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Item at ID {item_id} not found",
-        ) from exc
+    except exceptions.RecordNotFoundError as exc:
+        exceptions.raise_http_404(model_name="Item", id=item_id, exc=exc)
 
     result = schema.ItemResult(**record)
 
@@ -62,28 +54,19 @@ def delete_item(item_id: int, item_interface: CRUDInterface) -> None:
     try:
         item_interface.delete(item_id)
 
-    except RecordNotFoundError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Item at ID {item_id} not found",
-        ) from exc
+    except exceptions.RecordNotFoundError as exc:
+        exceptions.raise_http_404(model_name="Item", id=item_id, exc=exc)
 
 
 def query_item(item_interface: CRUDInterface, **kwargs) -> schema.ItemCollection:
     if not kwargs:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
-            detail=f"Provide at least one query parameter",
-        )
+        exceptions.raise_http_400_empty_query()
 
     try:
         records = item_interface.read_all_by_kwargs(**kwargs)
 
-    except RecordNotFoundError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No Items found matching the provided query parameters",
-        ) from exc
+    except exceptions.RecordNotFoundError as exc:
+        exceptions.raise_http_404_query(model_name="Item", exc=exc)
 
     results = [schema.ItemResult(**record) for record in records]
 

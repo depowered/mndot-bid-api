@@ -20,7 +20,7 @@ def test_api_create_bid(test_client: TestClient):
         "bid_type": "engineer",
     }
 
-    response = test_client.post(url=route_url, data=json.dumps(create_data))
+    response = test_client.post(url=route_url, content=json.dumps(create_data))
     assert response.status_code == 201
 
     response_json = response.json()
@@ -42,8 +42,14 @@ def test_api_create_bid(test_client: TestClient):
         "bid_type": "engineer",
     }
 
-    response = test_client.post(url=route_url, data=json.dumps(invalid_create_data))
-    assert response.status_code == 307
+    response = test_client.post(
+        url=route_url, content=json.dumps(invalid_create_data), follow_redirects=True
+    )
+    assert response.status_code == 201
+    response_json = response.json()
+    assert response_json["type"] == "InvalidBid"
+    record_dict = response_json["data"]
+    assert record_dict.get("id")
 
 
 def test_api_create_item(test_client: TestClient):
@@ -64,7 +70,7 @@ def test_api_create_item(test_client: TestClient):
         "in_spec_2022": False,
     }
 
-    response = test_client.post(url=route_url, data=json.dumps(create_data))
+    response = test_client.post(url=route_url, content=json.dumps(create_data))
     assert response.status_code == 201
 
     response_json = response.json()
@@ -72,7 +78,7 @@ def test_api_create_item(test_client: TestClient):
     record_dict = response_json["data"]
     assert record_dict.get("in_spec_2022") is False
 
-    # Test RecordAlreadyExistsError updates existing record
+    # Test posting existing record raises status 303
     existing_record = {
         "spec_code": "2011",
         "unit_code": "601",
@@ -87,9 +93,5 @@ def test_api_create_item(test_client: TestClient):
         "in_spec_2022": True,  # Changed to True
     }
 
-    response = test_client.post(url=route_url, data=json.dumps(existing_record))
-    assert response.status_code == 201
-    response_json = response.json()
-    assert response_json["type"] == "Item"
-    record_dict = response_json["data"]
-    assert record_dict.get("in_spec_2022") is True
+    response = test_client.post(url=route_url, content=json.dumps(existing_record))
+    assert response.status_code == 303

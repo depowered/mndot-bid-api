@@ -259,6 +259,7 @@ invalid_bids = [
 
 
 def load_sample_data() -> None:
+    """Load the database with sample data."""
     with database.DBSession() as db:
         db.add_all(bidders)
         db.add_all(contracts)

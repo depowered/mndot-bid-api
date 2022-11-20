@@ -1,3 +1,6 @@
+from fastapi import HTTPException, status
+
+
 class RecordNotFoundError(Exception):
     pass
 
@@ -8,3 +11,43 @@ class RecordAlreadyExistsError(Exception):
 
 class InvalidBidError(Exception):
     pass
+
+
+def raise_http_404(model_name: str, id: int, exc: Exception) -> None:
+    """Raises a fastapi.HTTPException with the following properties
+    - status_code: 404 Not Found
+    - detail: {model_name} at ID {id} not found"""
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"{model_name} at ID {id} not found",
+    ) from exc
+
+
+def raise_http_404_query(model_name: str, exc: Exception) -> None:
+    """Raises a fastapi.HTTPException with the following properties
+    - status_code: 404 Not Found
+    - detail: No {model_name} records found matching the provided query parameters"""
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"No {model_name} records found matching the provided query parameters",
+    ) from exc
+
+
+def raise_http_303(model_name: str, id: int, exc: Exception) -> None:
+    """Raises a fastapi.HTTPException with the following properties
+    - status_code: 303 See Other
+    - detail: {model_name} already exists at ID {id}"""
+    raise HTTPException(
+        status_code=status.HTTP_303_SEE_OTHER,
+        detail=f"{model_name} already exists at ID {id}",
+    ) from exc
+
+
+def raise_http_400_empty_query() -> None:
+    """Raises a fastapi.HTTPException with the following properties
+    - status_code: 400 Bad Request
+    - detail: Provide at least one query parameter"""
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=f"Provide at least one query parameter",
+    )

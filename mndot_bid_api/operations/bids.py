@@ -1,11 +1,4 @@
-import fastapi
-
-from mndot_bid_api.exceptions import (
-    InvalidBidError,
-    RecordAlreadyExistsError,
-    RecordNotFoundError,
-)
-from mndot_bid_api.operations import schema
+from mndot_bid_api import exceptions, schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
@@ -20,11 +13,8 @@ def read_bid(bid_id: int, bid_interface: CRUDInterface) -> schema.Bid:
     try:
         record = bid_interface.read_by_id(bid_id)
 
-    except RecordNotFoundError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Bid at ID {bid_id} not found",
-        ) from exc
+    except exceptions.RecordNotFoundError as exc:
+        exceptions.raise_http_404(model_name="Bid", id=bid_id, exc=exc)
 
     result = schema.BidResult(**record)
 
@@ -47,8 +37,8 @@ def create_bid(
     try:
         item_record = item_interface.read_one_by_kwargs(**item_filter_kwargs)
 
-    except RecordNotFoundError as exc:
-        raise InvalidBidError(
+    except exceptions.RecordNotFoundError as exc:
+        raise exceptions.InvalidBidError(
             "No matching item found. Redirect to create invalid bid."
         ) from exc
 
@@ -63,11 +53,9 @@ def create_bid(
     try:
         record = bid_interface.create(bid_record_dict)
 
-    except RecordAlreadyExistsError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_303_SEE_OTHER,
-            detail=f"Bid already exists at ID {exc.args[0]['id']}",
-        ) from exc
+    except exceptions.RecordAlreadyExistsError as exc:
+        bid_id = exc.args[0]["id"]
+        exceptions.raise_http_303(model_name="Bid", id=bid_id, exc=exc)
 
     result = schema.BidResult(**record)
 
@@ -80,11 +68,8 @@ def update_bid(
     try:
         record = bid_interface.update(id=bid_id, data=data.dict(exclude_none=True))
 
-    except RecordNotFoundError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Bid at ID {bid_id} not found",
-        ) from exc
+    except exceptions.RecordNotFoundError as exc:
+        exceptions.raise_http_404(model_name="Bid", id=bid_id, exc=exc)
 
     result = schema.BidResult(**record)
 
@@ -95,29 +80,20 @@ def delete_bid(bid_id: int, bid_interface: CRUDInterface) -> None:
     try:
         bid_interface.delete(bid_id)
 
-    except RecordNotFoundError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"Bid at ID {bid_id} not found",
-        ) from exc
+    except exceptions.RecordNotFoundError as exc:
+        exceptions.raise_http_404(model_name="Bid", id=bid_id, exc=exc)
 
 
 def query_bid(bid_interface: CRUDInterface, **kwargs) -> schema.BidCollection:
 
     if not kwargs:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_400_BAD_REQUEST,
-            detail=f"Provide at least one query parameter",
-        )
+        exceptions.raise_http_400_empty_query()
 
     try:
         records = bid_interface.read_all_by_kwargs(**kwargs)
 
-    except RecordNotFoundError as exc:
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            detail=f"No Bids found matching the provided query parameters",
-        ) from exc
+    except exceptions.RecordNotFoundError as exc:
+        exceptions.raise_http_404_query(model_name="Bid", exc=exc)
 
     results = [schema.BidResult(**record) for record in records]
 

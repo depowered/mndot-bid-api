@@ -1,7 +1,8 @@
 from datetime import date
 
-from mndot_bid_api.operations import enums
 from pydantic import BaseModel, constr
+
+from mndot_bid_api import enums
 
 
 class ContractCreateData(BaseModel):
