@@ -9,6 +9,8 @@ RecordDict = dict[str, Any]
 
 
 class DBModelInterface:
+    """Interface that abstracts database calls for Create, Read, Update, and Delete operations."""
+
     def __init__(
         self, model: models.Base, configured_sessionmaker: sessionmaker
     ) -> None:
@@ -126,20 +128,25 @@ class DBModelInterface:
 
 
 def get_bidder_interface() -> DBModelInterface:
+    """Return a DBModelInterface configured for Bidder model operations."""
     return DBModelInterface(models.Bidder, database.DBSession)
 
 
 def get_contract_interface() -> DBModelInterface:
+    """Return a DBModelInterface configured for Contract model operations."""
     return DBModelInterface(models.Contract, database.DBSession)
 
 
 def get_bid_interface() -> DBModelInterface:
+    """Return a DBModelInterface configured for Bid model operations."""
     return DBModelInterface(models.Bid, database.DBSession)
 
 
 def get_invalid_bid_interface() -> DBModelInterface:
+    """Return a DBModelInterface configured for Invalid Bid model operations."""
     return DBModelInterface(models.InvalidBid, database.DBSession)
 
 
 def get_item_interface() -> DBModelInterface:
+    """Return a DBModelInterface configured for Item model operations."""
     return DBModelInterface(models.Item, database.DBSession)
