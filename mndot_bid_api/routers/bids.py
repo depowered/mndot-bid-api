@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api import db, operations
+from mndot_bid_api import db, exceptions, operations
 from mndot_bid_api.operations import enums, schema
 
 router = fastapi.APIRouter(prefix="/bid", tags=["bid"])
@@ -46,7 +46,7 @@ def api_create_bid(
         bid_result = operations.bids.create_bid(data, bid_interface, item_interface)
         return bid_result
 
-    except operations.bids.InvalidBidError:
+    except exceptions.InvalidBidError:
         return fastapi.responses.RedirectResponse(
             "/invalid_bid/",
             status_code=fastapi.status.HTTP_307_TEMPORARY_REDIRECT,

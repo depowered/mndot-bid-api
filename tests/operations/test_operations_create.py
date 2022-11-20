@@ -94,8 +94,9 @@ def test_create_items(configured_sessionmaker: sessionmaker):
     assert result.type == expected_result.type
     assert result.data == expected_result.data
 
-    with pytest.raises(RecordAlreadyExistsError):
+    with pytest.raises(fastapi.HTTPException) as exc:
         operation_function(create_data, interface)
+    assert exc.value.status_code == 303
 
 
 def test_create_bids(configured_sessionmaker: sessionmaker):

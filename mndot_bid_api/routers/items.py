@@ -1,7 +1,6 @@
 import fastapi
 
 from mndot_bid_api import db, operations
-from mndot_bid_api.exceptions import RecordAlreadyExistsError
 from mndot_bid_api.operations import schema
 
 router = fastapi.APIRouter(prefix="/item", tags=["item"])
@@ -40,16 +39,7 @@ def api_create_item(
     data: schema.ItemCreateData, item_interface=fastapi.Depends(db.get_item_interface)
 ) -> schema.Item:
 
-    try:
-        item_result = operations.items.create_item(data, item_interface)
-        return item_result
-
-    except RecordAlreadyExistsError as exc:
-        item_id = exc.args[0]["id"]
-        raise fastapi.HTTPException(
-            status_code=fastapi.status.HTTP_303_SEE_OTHER,
-            detail=f"Item already exists at ID {item_id}",
-        )
+    return operations.items.create_item(data, item_interface)
 
 
 @router.patch(
