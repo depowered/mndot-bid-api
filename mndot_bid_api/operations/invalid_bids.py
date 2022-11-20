@@ -1,8 +1,6 @@
 import fastapi
-from mndot_bid_api.exceptions import (
-    RecordAlreadyExistsException,
-    RecordNotFoundException,
-)
+
+from mndot_bid_api.exceptions import RecordAlreadyExistsError, RecordNotFoundError
 from mndot_bid_api.operations import schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
@@ -22,7 +20,7 @@ def read_invalid_bid_by_id(
     try:
         record = invalid_bid_interface.read_by_id(invalid_bid_id)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Invalid bid record at ID {invalid_bid_id} not found",
@@ -39,7 +37,7 @@ def create_invalid_bid(
     try:
         record = invalid_bid_interface.create(data.dict())
 
-    except RecordAlreadyExistsException as exc:
+    except RecordAlreadyExistsError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_303_SEE_OTHER,
             detail=f"Invalid bid record already exists at ID {exc.args[0]['id']}",
@@ -60,7 +58,7 @@ def update_invalid_bid(
             invalid_bid_id, data.dict(exclude_none=True)
         )
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Invalid bid record at ID {invalid_bid_id} not found",
@@ -77,7 +75,7 @@ def delete_invalid_bid(
     try:
         invalid_bid_interface.delete(invalid_bid_id)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"Invalid bid record at ID {invalid_bid_id} not found",
@@ -96,7 +94,7 @@ def query_invalid_bid(
     try:
         records = invalid_bid_interface.read_all_by_kwargs(**kwargs)
 
-    except RecordNotFoundException as exc:
+    except RecordNotFoundError as exc:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
             detail=f"No Invalid Bids found matching the provided query parameters",

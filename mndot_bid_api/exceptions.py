@@ -1,10 +1,10 @@
-class RecordNotFoundException(Exception):
+class RecordNotFoundError(Exception):
     pass
 
 
-class RecordAlreadyExistsException(Exception):
+class RecordAlreadyExistsError(Exception):
     pass
 
 
-class InvalidBidExecption(Exception):
+class InvalidBidError(Exception):
     pass
