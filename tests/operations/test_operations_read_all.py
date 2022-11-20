@@ -2,10 +2,9 @@ from typing import Callable
 
 from sqlalchemy.orm import sessionmaker
 
-from mndot_bid_api import operations
+from mndot_bid_api import operations, schema
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface
-from mndot_bid_api.operations import schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 from tests.data import sample_record_dicts
 

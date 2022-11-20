@@ -1,5 +1,4 @@
-from mndot_bid_api import exceptions
-from mndot_bid_api.operations import schema
+from mndot_bid_api import exceptions, schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 

@@ -4,11 +4,10 @@ import fastapi
 import pytest
 from sqlalchemy.orm import sessionmaker
 
-from mndot_bid_api import operations
+from mndot_bid_api import enums, operations, schema
 from mndot_bid_api.db import models
 from mndot_bid_api.db.interface import DBModelInterface
-from mndot_bid_api.exceptions import InvalidBidError, RecordAlreadyExistsError
-from mndot_bid_api.operations import enums, schema
+from mndot_bid_api.exceptions import InvalidBidError
 
 
 def test_create_bidders(configured_sessionmaker: sessionmaker):

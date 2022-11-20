@@ -1,7 +1,6 @@
 import fastapi
 
-from mndot_bid_api import db, exceptions, operations
-from mndot_bid_api.operations import enums, schema
+from mndot_bid_api import db, enums, exceptions, operations, schema
 
 router = fastapi.APIRouter(prefix="/bid", tags=["bid"])
 
