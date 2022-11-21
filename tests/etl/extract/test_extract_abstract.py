@@ -61,10 +61,13 @@ def test_read_abstract_csv(abstract_csv_content):
     abstract_data = abstract.read_abstract_csv(abstract_csv_content)
 
     assert abstract_data.raw_contract.shape == (1, 6)
-    df_schemas.RawContract(abstract_data.raw_contract)
+    df_schemas.RawContract.validate(abstract_data.raw_contract)
 
-    assert abstract_data.raw_bids.shape == (53, 20)
-    df_schemas.RawBids(abstract_data.raw_bids)
+    assert abstract_data.raw_bids.shape == (53, 11)
+    df_schemas.RawBids.validate(abstract_data.raw_bids)
 
-    assert abstract_data.raw_bidders.shape == (3, 3)
-    df_schemas.RawBidders(abstract_data.raw_bidders)
+    assert abstract_data.raw_bidders.shape == (3, 2)
+    df_schemas.RawBidders.validate(abstract_data.raw_bidders)
+
+    assert abstract_data.contract_id == "220005"
+    assert abstract_data.winning_bidder_id == "0000207897"
