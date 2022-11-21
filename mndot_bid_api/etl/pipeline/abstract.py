@@ -5,11 +5,11 @@ from mndot_bid_api.etl.transform import (
     transform_bids,
     transform_contract,
 )
-from mndot_bid_api.etl.types import FilePathOrBuffer
+from mndot_bid_api.etl.types import CSVBuffer
 from mndot_bid_api.schema import AbstractETL
 
 
-def abstract_pipeline(filepath_or_buffer: FilePathOrBuffer) -> AbstractETL:
+def abstract_pipeline(filepath_or_buffer: CSVBuffer) -> AbstractETL:
 
     abstract_data = read_abstract_csv(filepath_or_buffer)
 

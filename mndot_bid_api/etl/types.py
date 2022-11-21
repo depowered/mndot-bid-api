@@ -8,7 +8,7 @@ from mndot_bid_api.etl import df_schemas
 
 ############################################################################
 
-FilePathOrBuffer = FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]
+CSVBuffer = FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]
 
 ############################################################################
 
@@ -19,7 +19,7 @@ RawItemsDF = pa.typing.DataFrame[df_schemas.RawItems]
 
 RawEntitiesDF = RawBiddersDF | RawBidsDF | RawContractDF | RawItemsDF
 
-ExtractFunction = Callable[[FilePathOrBuffer], RawEntitiesDF]
+ExtractFunction = Callable[[CSVBuffer], RawEntitiesDF]
 
 ############################################################################
 
