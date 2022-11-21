@@ -4,7 +4,15 @@ from pandera.typing import Series
 
 
 class RawItems(pa.SchemaModel):
-    ...
+    item_number: Series[pd.StringDtype] = pa.Field(alias="Item Number")
+    short_description: Series[pd.StringDtype] = pa.Field(alias="Short Description")
+    long_description: Series[pd.StringDtype] = pa.Field(alias="Long Description")
+    unit_abbreviation: Series[pd.StringDtype] = pa.Field(alias="Unit Name")
+    unit: Series[pd.StringDtype] = pa.Field(alias="Plan Unit Description")
+    spec_year: Series[pd.StringDtype] = pa.Field(alias="Spec Year")
+
+    class Config:
+        strict = "filter"  # drop columns not defined in schema
 
 
 class TransformedItems(pa.SchemaModel):
@@ -18,6 +26,9 @@ class RawContract(pa.SchemaModel):
     sp_number: Series[pd.StringDtype] = pa.Field(alias="SP Number")
     district: Series[pd.StringDtype] = pa.Field(alias="District")
     county: Series[pd.StringDtype] = pa.Field(alias="County")
+
+    class Config:
+        strict = "filter"  # drop columns not defined in schema
 
 
 class TransformedContract(pa.SchemaModel):

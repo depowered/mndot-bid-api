@@ -145,3 +145,14 @@ def abstract_csv_file():
 @pytest.fixture(scope="function")
 def abstract_csv_content(abstract_csv_file):
     return abstract_csv_file.read().decode()
+
+
+@pytest.fixture(scope="function")
+def item_list_csv_file():
+    with open("./tests/data/item_list_2016.csv", "rb") as f:
+        yield f
+
+
+@pytest.fixture(scope="function")
+def item_list_csv_content(item_list_csv_file):
+    return item_list_csv_file.read().decode()
