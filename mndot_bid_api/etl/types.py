@@ -1,9 +1,18 @@
 from typing import Callable
 
-import pandera as pa
+from pandera.typing import DataFrame
 
 from mndot_bid_api import schema
-from mndot_bid_api.etl import df_schemas
+from mndot_bid_api.etl.df_schemas import (
+    RawBidders,
+    RawBids,
+    RawContract,
+    RawItems,
+    TransformedBidders,
+    TransformedBids,
+    TransformedContract,
+    TransformedItems,
+)
 
 ############################################################################
 
@@ -11,10 +20,10 @@ CSVContent = str
 
 ############################################################################
 
-RawBiddersDF = pa.typing.DataFrame[df_schemas.RawBidders]
-RawBidsDF = pa.typing.DataFrame[df_schemas.RawBids]
-RawContractDF = pa.typing.DataFrame[df_schemas.RawContract]
-RawItemsDF = pa.typing.DataFrame[df_schemas.RawItems]
+RawBiddersDF = DataFrame[RawBidders]
+RawBidsDF = DataFrame[RawBids]
+RawContractDF = DataFrame[RawContract]
+RawItemsDF = DataFrame[RawItems]
 
 RawEntitiesDF = RawBiddersDF | RawBidsDF | RawContractDF | RawItemsDF
 
@@ -22,10 +31,10 @@ ExtractFunction = Callable[[CSVContent], RawEntitiesDF]
 
 ############################################################################
 
-TransformedBiddersDF = pa.typing.DataFrame[df_schemas.TransformedBidders]
-TransformedBidsDF = pa.typing.DataFrame[df_schemas.TransformedBids]
-TransformedContractDF = pa.typing.DataFrame[df_schemas.TransformedContract]
-TransformedItemsDF = pa.typing.DataFrame[df_schemas.TransformedItems]
+TransformedBiddersDF = DataFrame[TransformedBidders]
+TransformedBidsDF = DataFrame[TransformedBids]
+TransformedContractDF = DataFrame[TransformedContract]
+TransformedItemsDF = DataFrame[TransformedItems]
 
 TransformedEntitiesDF = (
     TransformedBiddersDF

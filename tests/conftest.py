@@ -134,3 +134,14 @@ def test_client(
     # Itialize and return the test client
     test_client = TestClient(test_app)
     return test_client
+
+
+@pytest.fixture(scope="function")
+def abstract_csv_file():
+    with open("./tests/data/220005.csv", "rb") as f:
+        yield f
+
+
+@pytest.fixture(scope="function")
+def abstract_csv_content(abstract_csv_file):
+    return abstract_csv_file.read().decode()
