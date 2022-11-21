@@ -1,13 +1,17 @@
+from fastapi import UploadFile
+
 from mndot_bid_api.etl.extract import read_item_list_csv
 from mndot_bid_api.etl.load import load_items
 from mndot_bid_api.etl.transform import transform_items
-from mndot_bid_api.etl.types import CSVBuffer
+from mndot_bid_api.etl.types import CSVContent
 from mndot_bid_api.schema import ItemListETL
 
 
-def item_list_pipeline(filepath_or_buffer: CSVBuffer) -> ItemListETL:
+def item_list_pipeline(csv: UploadFile) -> ItemListETL:
 
-    item_list_data = read_item_list_csv(filepath_or_buffer)
+    csv_content: CSVContent = str(csv.read())
+
+    item_list_data = read_item_list_csv(csv_content)
 
     transformed_items = transform_items(item_list_data.raw_items)
 

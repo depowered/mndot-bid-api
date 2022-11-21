@@ -1,3 +1,5 @@
+from fastapi import UploadFile
+
 from mndot_bid_api.etl.extract import read_abstract_csv
 from mndot_bid_api.etl.load import load_bidders, load_bids, load_contract
 from mndot_bid_api.etl.transform import (
@@ -5,13 +7,15 @@ from mndot_bid_api.etl.transform import (
     transform_bids,
     transform_contract,
 )
-from mndot_bid_api.etl.types import CSVBuffer
+from mndot_bid_api.etl.types import CSVContent
 from mndot_bid_api.schema import AbstractETL
 
 
-def abstract_pipeline(filepath_or_buffer: CSVBuffer) -> AbstractETL:
+def abstract_pipeline(csv: UploadFile) -> AbstractETL:
 
-    abstract_data = read_abstract_csv(filepath_or_buffer)
+    csv_content: CSVContent = str(csv.read())
+
+    abstract_data = read_abstract_csv(csv_content)
 
     transformed_bidders = transform_bidders(abstract_data.raw_bidders)
     bidder_load_results = load_bidders(transformed_bidders)

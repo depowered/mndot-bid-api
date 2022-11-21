@@ -1,14 +1,13 @@
 from typing import Callable
 
 import pandera as pa
-from pandas._typing import FilePath, ReadCsvBuffer
 
 from mndot_bid_api import schema
 from mndot_bid_api.etl import df_schemas
 
 ############################################################################
 
-CSVBuffer = FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str]
+CSVContent = str
 
 ############################################################################
 
@@ -19,7 +18,7 @@ RawItemsDF = pa.typing.DataFrame[df_schemas.RawItems]
 
 RawEntitiesDF = RawBiddersDF | RawBidsDF | RawContractDF | RawItemsDF
 
-ExtractFunction = Callable[[CSVBuffer], RawEntitiesDF]
+ExtractFunction = Callable[[CSVContent], RawEntitiesDF]
 
 ############################################################################
 
