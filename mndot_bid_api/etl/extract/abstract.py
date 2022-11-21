@@ -41,15 +41,15 @@ def _split_csv(csv_content: CSVContent) -> list[str]:
 
 
 def _read_contract_csv(csv_content: CSVContent) -> RawContractDF:
-    df = pd.read_csv(StringIO(csv_content), dtype=pd.StringDtype.name, escapechar="\\")
+    df = pd.read_csv(StringIO(csv_content), dtype=str, escapechar="\\")
     return RawContract.validate(df)
 
 
 def _read_bidders_csv(csv_content: CSVContent) -> RawBiddersDF:
-    df = pd.read_csv(StringIO(csv_content), dtype=pd.StringDtype.name, escapechar="\\")
+    df = pd.read_csv(StringIO(csv_content), dtype=str, escapechar="\\")
     return RawBidders.validate(df)
 
 
 def _read_bids_csv(csv_content: CSVContent) -> RawBidsDF:
-    df = pd.read_csv(StringIO(csv_content), dtype=pd.StringDtype.name, escapechar="\\")
+    df = pd.read_csv(StringIO(csv_content), dtype=str, escapechar="\\")
     return RawBids.validate(df)

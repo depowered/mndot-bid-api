@@ -17,6 +17,6 @@ class ItemListData:
 
 
 def read_item_list_csv(csv_content: CSVContent) -> ItemListData:
-    df = pd.read_csv(StringIO(csv_content), dtype=pd.StringDtype.name, quotechar="'")
+    df = pd.read_csv(StringIO(csv_content), dtype=str, quotechar="'")
     validated_df = RawItems.validate(df)
     return ItemListData(validated_df)
