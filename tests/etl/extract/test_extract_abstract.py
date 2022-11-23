@@ -69,5 +69,5 @@ def test_read_abstract_csv(abstract_csv_content):
     assert abstract_data.raw_bidders.shape == (3, 2)
     df_schemas.RawBidders.validate(abstract_data.raw_bidders)
 
-    assert abstract_data.contract_id == "220005"
-    assert abstract_data.winning_bidder_id == "0000207897"
+    assert abstract_data.contract_id == 220005
+    assert abstract_data.winning_bidder_id == 207897

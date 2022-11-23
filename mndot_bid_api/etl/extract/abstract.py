@@ -16,11 +16,11 @@ class AbstractData:
 
     @property
     def contract_id(self) -> int:
-        return self.raw_contract.at[0, "Contract Id"]
+        return int(self.raw_contract.at[0, "Contract Id"])
 
     @property
     def winning_bidder_id(self) -> int:
-        return self.raw_bidders.at[0, "Bidder Number"]
+        return int(self.raw_bidders.at[0, "Bidder Number"])
 
 
 def read_abstract_csv(csv_content: CSVContent) -> AbstractData:
