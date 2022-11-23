@@ -1,3 +1,6 @@
+from typing import Optional
+
+import pandas as pd
 import pandera as pa
 from pandera.typing import Series
 
@@ -15,7 +18,43 @@ class RawItems(pa.SchemaModel):
 
 
 class TransformedItems(pa.SchemaModel):
-    ...
+    spec_code: Series[str]
+    unit_code: Series[str]
+    item_code: Series[str]
+    short_description: Series[str]
+    long_description: Series[str]
+    unit: Series[str]
+    unit_abbreviation: Series[str]
+    in_spec_2016: Optional[Series[bool]]
+    in_spec_2018: Optional[Series[bool]]
+    in_spec_2020: Optional[Series[bool]]
+    in_spec_2022: Optional[Series[bool]]
+
+    @pa.check("[a-z]+_code", regex=True)
+    @classmethod
+    def verify_is_numeric(cls, series: Series[str]) -> Series[bool]:
+        return series.str.isnumeric()
+
+    @pa.check("[a-z]+_code", regex=True)
+    @classmethod
+    def verify_code_length(cls, series: Series[str]) -> Series[bool]:
+        if series.name == "spec_code":
+            return series.str.len().eq(4).all()
+        if series.name == "unit_code":
+            return series.str.len().eq(3).all()
+        if series.name == "item_code":
+            return series.str.len().eq(5).all()
+
+    @pa.dataframe_check
+    @classmethod
+    def verify_in_spec_column_exists(cls, df: pd.DataFrame) -> bool:
+        in_spec_columns = [
+            "in_spec_2016",
+            "in_spec_2018",
+            "in_spec_2020",
+            "in_spec_2022",
+        ]
+        return df.columns.isin(in_spec_columns).any()
 
 
 class RawContract(pa.SchemaModel):
