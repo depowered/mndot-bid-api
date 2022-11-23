@@ -1,8 +1,11 @@
+from datetime import datetime
 from typing import Optional
 
 import pandas as pd
 import pandera as pa
 from pandera.typing import Series
+
+from mndot_bid_api import enums
 
 
 class RawItems(pa.SchemaModel):
@@ -70,7 +73,23 @@ class RawContract(pa.SchemaModel):
 
 
 class TransformedContract(pa.SchemaModel):
-    ...
+    id: Series[int]
+    letting_date: Series[datetime]
+    sp_number: Series[str]
+    district: Series[str]
+    county: Series[str]
+    description: Series[str]
+    winning_bidder_id: Series[int]
+
+    @pa.check("district")
+    @classmethod
+    def verify_value_in_district_enum(cls, series: Series[str]) -> Series[bool]:
+        return series.isin(enums.District.values())
+
+    @pa.check("county")
+    @classmethod
+    def verify_value_in_county_enum(cls, series: Series[str]) -> Series[bool]:
+        return series.isin(enums.County.values())
 
 
 class RawBidders(pa.SchemaModel):

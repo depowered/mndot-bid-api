@@ -1,6 +1,12 @@
 import enum
 
 
+class ExtendedEnum(enum.Enum):
+    @classmethod
+    def values(cls) -> list[str]:
+        return [member.value for member in cls]
+
+
 class SpecYear(str, enum.Enum):
     SPEC_2016 = "2016"
     SPEC_2018 = "2018"
@@ -70,7 +76,7 @@ class Unit(str, enum.Enum):
     VINE = "VINE"
 
 
-class District(str, enum.Enum):
+class District(str, ExtendedEnum):
     BAXTER = "Baxter"
     BEMIDJI = "Bemidji"
     DETROIT_LAKES = "Detroit Lakes"
@@ -81,7 +87,7 @@ class District(str, enum.Enum):
     WILLMAR = "Willmar"
 
 
-class County(str, enum.Enum):
+class County(str, ExtendedEnum):
     AITKIN = "Aitkin"
     ANOKA = "Anoka"
     BECKER = "Becker"
