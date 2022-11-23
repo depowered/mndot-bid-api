@@ -59,6 +59,18 @@ class TransformedItems(pa.SchemaModel):
         ]
         return df.columns.isin(in_spec_columns).any()
 
+    @pa.check("unit")
+    @classmethod
+    def verify_value_in_unit_enum(cls, series: Series[str]) -> Series[bool]:
+        return series.isin(enums.Unit.values())
+
+    @pa.check("unit_abbreviation")
+    @classmethod
+    def verify_value_in_unit_abbreviation_enum(
+        cls, series: Series[str]
+    ) -> Series[bool]:
+        return series.isin(enums.UnitAbbreviation.values())
+
 
 class RawContract(pa.SchemaModel):
     letting_date: Series[str] = pa.Field(alias="Letting Date")

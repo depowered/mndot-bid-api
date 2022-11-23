@@ -42,6 +42,18 @@ def test_transform_items(item_list_csv_content):
     with pytest.raises(pa.errors.SchemaError):
         TransformedItems.validate(invalid_code_length_df)
 
+    # Test verify_value_in_unit_enum check raises
+    invalid_unit_df = df.copy()
+    invalid_unit_df["unit"][0] = "NOT A UNIT"
+    with pytest.raises(pa.errors.SchemaError):
+        TransformedItems.validate(invalid_unit_df)
+
+    # Test verify_value_in_unit_enum check raises
+    invalid_unit_abbr_df = df.copy()
+    invalid_unit_abbr_df["unit_abbreviation"][0] = "NOT A UNIT"
+    with pytest.raises(pa.errors.SchemaError):
+        TransformedItems.validate(invalid_unit_abbr_df)
+
     # Test verify_in_spec_column_exists check raises
     missing_in_spec_column = df.drop(columns="in_spec_2016")
     with pytest.raises(pa.errors.SchemaError):
