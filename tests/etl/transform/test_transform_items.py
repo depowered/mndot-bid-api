@@ -36,12 +36,6 @@ def test_transform_items(item_list_csv_content):
     with pytest.raises(pa.errors.SchemaError):
         TransformedItems.validate(invalid_code_length_df)
 
-    # Test verify_code_length check raises
-    invalid_code_length_df = df.copy()
-    invalid_code_length_df["unit_code"][0] = "22"
-    with pytest.raises(pa.errors.SchemaError):
-        TransformedItems.validate(invalid_code_length_df)
-
     # Test verify_value_in_unit_enum check raises
     invalid_unit_df = df.copy()
     invalid_unit_df["unit"][0] = "NOT A UNIT"
