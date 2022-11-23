@@ -33,12 +33,12 @@ class TransformedItems(pa.SchemaModel):
     in_spec_2020: Optional[Series[bool]]
     in_spec_2022: Optional[Series[bool]]
 
-    @pa.check("[a-z]+_code", regex=True)
+    @pa.check(r"\w+_code", regex=True)
     @classmethod
     def verify_is_numeric(cls, series: Series[str]) -> Series[bool]:
         return series.str.isnumeric()
 
-    @pa.check("[a-z]+_code", regex=True)
+    @pa.check(r"\w+_code", regex=True)
     @classmethod
     def verify_code_length(cls, series: Series[str]) -> Series[bool]:
         if series.name == "spec_code":
@@ -131,4 +131,40 @@ class RawBids(pa.SchemaModel):
 
 
 class TransformedBids(pa.SchemaModel):
-    ...
+    contract_id: Series[int]
+    bidder_id: Series[int]
+    item_spec_code: Series[str]
+    item_unit_code: Series[str]
+    item_item_code: Series[str]
+    item_long_description: Series[str]
+    item_unit_abbreviation: Series[str]
+    quantity: Series[float]
+    unit_price: Series[int]
+    bid_type: Series[str]
+
+    @pa.check(r"\w+_code", regex=True)
+    @classmethod
+    def verify_is_numeric(cls, series: Series[str]) -> Series[bool]:
+        return series.str.isnumeric()
+
+    @pa.check(r"\w+_code", regex=True)
+    @classmethod
+    def verify_code_length(cls, series: Series[str]) -> Series[bool]:
+        if series.name == "item_spec_code":
+            return series.str.len().eq(4).all()
+        if series.name == "item_unit_code":
+            return series.str.len().eq(3).all()
+        if series.name == "item_item_code":
+            return series.str.len().eq(5).all()
+
+    @pa.check("item_unit_abbreviation")
+    @classmethod
+    def verify_value_in_unit_abbreviation_enum(
+        cls, series: Series[str]
+    ) -> Series[bool]:
+        return series.isin(enums.UnitAbbreviation.values())
+
+    @pa.check("bid_type")
+    @classmethod
+    def verify_value_in_bid_type_enum(cls, series: Series[str]) -> Series[bool]:
+        return series.isin(enums.BidType.values())
