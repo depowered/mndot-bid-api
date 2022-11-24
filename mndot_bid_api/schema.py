@@ -215,14 +215,24 @@ class ItemCollection(BaseModel):
 
 #############################################################################
 
+ModelCreateData = ContractCreateData | BidderCreateData | BidCreateData | ItemCreateData
+ModelUpdateData = (
+    ContractUpdateData
+    | BidderUpdateData
+    | BidUpdateData
+    | InvalidBidUpdateData
+    | ItemUpdateData
+)
+SingleRecord = Contract | Bidder | Bid | InvalidBid | Item
+
 
 class LoadResult(BaseModel):
-    route: str
-    method: str
-    status_code: int
+    model: str
+    operation: str
+    status_code: int | None = None
     message: str | None = None
-    request_body: dict[str, Any] | None = None
-    response_body: dict[str, Any] | None = None
+    input_data: ModelCreateData | ModelUpdateData | None = None
+    record_data: SingleRecord | None = None
 
 
 class ItemListETL(BaseModel):
