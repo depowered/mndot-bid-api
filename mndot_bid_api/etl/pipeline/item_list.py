@@ -9,7 +9,7 @@ from mndot_bid_api.schema import ItemListETL
 
 def item_list_pipeline(csv: UploadFile) -> ItemListETL:
 
-    csv_content: CSVContent = str(csv.read())
+    csv_content: CSVContent = csv.file.read().decode()
 
     item_list_data = read_item_list_csv(csv_content)
 

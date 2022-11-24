@@ -13,7 +13,7 @@ from mndot_bid_api.schema import AbstractETL
 
 def abstract_pipeline(csv: UploadFile) -> AbstractETL:
 
-    csv_content: CSVContent = str(csv.read())
+    csv_content: CSVContent = csv.file.read().decode()
 
     abstract_data = read_abstract_csv(csv_content)
 
