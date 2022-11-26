@@ -28,12 +28,12 @@ def test_transform_contract(abstract_csv_content):
 
     # Test verify_value_in_district_enum raises
     invalid_district = df.copy()
-    invalid_district["district"][0] = "abc"
+    invalid_district.at[0, "district"] = "abc"
     with pytest.raises(pa.errors.SchemaError):
         TransformedContract.validate(invalid_district)
 
     # Test verify_value_in_county_enum raises
     invalid_county = df.copy()
-    invalid_county["county"][0] = "abc"
+    invalid_county.at[0, "county"] = "abc"
     with pytest.raises(pa.errors.SchemaError):
         TransformedContract.validate(invalid_county)

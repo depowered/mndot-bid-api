@@ -26,25 +26,25 @@ def test_transform_items(item_list_csv_content):
 
     # Test verify_is_numeric check raises
     non_numeric_code_df = df.copy()
-    non_numeric_code_df["spec_code"][0] = "abcd"
+    non_numeric_code_df.at[0, "spec_code"] = "abcd"
     with pytest.raises(pa.errors.SchemaError):
         TransformedItems.validate(non_numeric_code_df)
 
     # Test verify_code_length check raises
     invalid_code_length_df = df.copy()
-    invalid_code_length_df["unit_code"][0] = "22"
+    invalid_code_length_df.at[0, "unit_code"] = "22"
     with pytest.raises(pa.errors.SchemaError):
         TransformedItems.validate(invalid_code_length_df)
 
     # Test verify_value_in_unit_enum check raises
     invalid_unit_df = df.copy()
-    invalid_unit_df["unit"][0] = "NOT A UNIT"
+    invalid_unit_df.at[0, "unit"] = "NOT A UNIT"
     with pytest.raises(pa.errors.SchemaError):
         TransformedItems.validate(invalid_unit_df)
 
     # Test verify_value_in_unit_enum check raises
     invalid_unit_abbr_df = df.copy()
-    invalid_unit_abbr_df["unit_abbreviation"][0] = "NOT A UNIT"
+    invalid_unit_abbr_df.at[0, "unit_abbreviation"] = "NOT A UNIT"
     with pytest.raises(pa.errors.SchemaError):
         TransformedItems.validate(invalid_unit_abbr_df)
 

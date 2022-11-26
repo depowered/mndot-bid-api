@@ -28,12 +28,12 @@ def transform_bids(raw_bids: RawBidsDF, winning_bidder_id: int) -> TransformedBi
     # Filter for the bidder's unit prices
     bidder_unit_prices_df = raw_bids.filter(regex=r"\d+\s\(Unit Price\)")
     # Strip the column names to just bidder_id (str)
-    bidder_unit_prices_df.rename(
-        columns=lambda x: x.strip().split(" ")[0], inplace=True
+    renamed_bidder_unit_prices_df = bidder_unit_prices_df.rename(
+        columns=_format_bidder_unit_price_column_name,
     )
 
     # Join the bidder's unit price colums to the partially transformed df
-    df_with_bidder_unit_prices = pd.concat([df, bidder_unit_prices_df], axis=1)
+    df_with_bidder_unit_prices = pd.concat([df, renamed_bidder_unit_prices_df], axis=1)
 
     melt_df = df_with_bidder_unit_prices.melt(
         id_vars=[
@@ -67,6 +67,10 @@ def transform_bids(raw_bids: RawBidsDF, winning_bidder_id: int) -> TransformedBi
 def _format_price(price: str) -> int:
     cleaned_str = price.strip().replace("$", "").replace(",", "")
     return int(float(cleaned_str) * 100)
+
+
+def _format_bidder_unit_price_column_name(column_name: str) -> str:
+    return column_name.strip().split(" ")[0]
 
 
 def _assign_bid_type(bidder_id: int, winning_bidder_id: int) -> str:
