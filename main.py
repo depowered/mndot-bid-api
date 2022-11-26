@@ -12,7 +12,7 @@ PRODUCTION_DATABASE_URL = "sqlite:///data/prod-api.db"
 DEVELOPMENT_MODE = True
 
 
-app = FastAPI()
+app = FastAPI(swagger_ui_parameters={"defaultModelsExpandDepth": -1})
 
 
 @app.on_event("startup")
