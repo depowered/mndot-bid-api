@@ -24,7 +24,7 @@ contracts = [
         letting_date=datetime(year=2022, month=1, day=28),
         sp_number="5625-20",
         district="Detroit Lakes",
-        county="OTTER TAIL",
+        county="Otter Tail",
         description="LOCATED ON T.H. 108 FROM 420' WEST OF EB T.H. 94 RAMP TO 9TH ST NW.",
         winning_bidder_id=bidders[1].id,
     ),
