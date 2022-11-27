@@ -146,3 +146,45 @@ def test_load_invalid_bids_already_in_db(
         )
         assert load_result.input_data is not None
         assert load_result.record_data is None
+
+
+def test_load_bids_counts(
+    abstract_csv_content: str, configured_sessionmaker: sessionmaker
+):
+    # Setup CRUD Interface
+    bid_interface = DBModelInterface(models.Bid, configured_sessionmaker)
+    item_interface = DBModelInterface(models.Item, configured_sessionmaker)
+    invalid_bid_interface = DBModelInterface(models.InvalidBid, configured_sessionmaker)
+
+    # Extract and transform data
+    abstract_data = read_abstract_csv(abstract_csv_content)
+    transformed_df = transform_bids(
+        abstract_data.raw_bids, abstract_data.winning_bidder_id
+    )
+
+    assert transformed_df.shape == (318, 10)
+
+    # Load the data
+    load_results = load_bids(
+        transformed_df, bid_interface, item_interface, invalid_bid_interface
+    )
+
+    assert len(load_results) == 318
+
+    # Count the model values in the LoadResults list
+    bid_model_count = 0
+    invalid_bid_model_count = 0
+    for result in load_results:
+        if result.model == "Bid":
+            bid_model_count += 1
+        if result.model == "InvalidBid":
+            invalid_bid_model_count += 1
+
+    assert bid_model_count == 12
+    assert invalid_bid_model_count == 306
+
+    # The database record counts for each table should match as well
+    db_bid_record_count = len(bid_interface.read_all())
+    assert db_bid_record_count == 12
+    db_invalid_bid_record_count = len(invalid_bid_interface.read_all())
+    assert db_invalid_bid_record_count == 306

@@ -100,6 +100,6 @@ def test_load_items_counts(
     assert status_200_count == 2
     assert status_201_count == 8030
 
-    # The database should have the same number of item records as the transformed df
-    db_item_record_count = len(interface.read_all())
-    assert db_item_record_count == 8032
+    # The database should have the same number of records as the transformed df
+    db_record_count = len(interface.read_all())
+    assert db_record_count == 8032

@@ -12,6 +12,7 @@ def test_load_bidders(abstract_csv_content: str, configured_sessionmaker: sessio
     # Setup CRUD Interface
     model = models.Bidder
     interface = DBModelInterface(model, configured_sessionmaker)
+    preload_db_record_count = len(interface.read_all())
 
     # Extract and transform data
     abstract_data = read_abstract_csv(abstract_csv_content)
@@ -52,3 +53,8 @@ def test_load_bidders(abstract_csv_content: str, configured_sessionmaker: sessio
     assert len(load_results) == 3
     first_load_result = load_results[0]
     assert first_load_result == new_record_load_result
+
+    # The database should have the same number of records as at the start of the
+    # test since the sample data already covers the bidders in 220005
+    postload_db_record_count = len(interface.read_all())
+    assert postload_db_record_count == preload_db_record_count
