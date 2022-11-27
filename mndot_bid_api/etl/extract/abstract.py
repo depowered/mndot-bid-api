@@ -3,7 +3,9 @@ from dataclasses import dataclass
 from io import StringIO
 
 import pandas as pd
+import pandera as pa
 
+from mndot_bid_api import exceptions
 from mndot_bid_api.etl.df_schemas import RawBidders, RawBids, RawContract
 from mndot_bid_api.etl.types import CSVContent, RawBiddersDF, RawBidsDF, RawContractDF
 
@@ -25,7 +27,10 @@ class AbstractData:
 
 def read_abstract_csv(csv_content: CSVContent) -> AbstractData:
 
-    contract_csv, bids_csv, bidders_csv = _split_csv(csv_content)
+    try:
+        contract_csv, bids_csv, bidders_csv = _split_csv(csv_content)
+    except exceptions.ParseAbstractCSVError as exc:
+        raise exc
 
     raw_contract = _read_contract_csv(contract_csv)
     raw_bidders = _read_bidders_csv(bidders_csv)
@@ -37,6 +42,11 @@ def read_abstract_csv(csv_content: CSVContent) -> AbstractData:
 def _split_csv(csv_content: CSVContent) -> list[str]:
     """Splits the csv data by blank lines to divide into its three subtables."""
     blank_line_regex = r"(?:\r?\n){2,}"
+    split_content = re.split(blank_line_regex, csv_content)
+
+    if len(split_content) != 3:
+        raise exceptions.ParseAbstractCSVError("Failed to split absract csv content.")
+
     return re.split(blank_line_regex, csv_content)
 
 

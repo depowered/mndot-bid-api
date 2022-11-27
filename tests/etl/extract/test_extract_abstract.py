@@ -1,6 +1,7 @@
 import pandera as pa
 import pytest
 
+from mndot_bid_api import exceptions
 from mndot_bid_api.etl import df_schemas
 from mndot_bid_api.etl.extract import abstract
 
@@ -13,6 +14,11 @@ def test_split_csv(abstract_csv_content: str):
     assert split_csv[0].startswith('"Letting Date"')
     assert split_csv[1].startswith('"ContractId"')
     assert split_csv[2].startswith('"Bidder Number"')
+
+
+def test_split_csv_raises(item_list_csv_content: str):
+    with pytest.raises(exceptions.ParseAbstractCSVError):
+        abstract._split_csv(item_list_csv_content)
 
 
 def test_read_contract_csv(abstract_csv_content: str):

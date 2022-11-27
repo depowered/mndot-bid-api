@@ -13,6 +13,10 @@ class InvalidBidError(Exception):
     pass
 
 
+class ParseAbstractCSVError(Exception):
+    pass
+
+
 def raise_http_404(model_name: str, id: int, exc: Exception) -> None:
     """Raises a fastapi.HTTPException with the following properties
     - status_code: 404 Not Found
