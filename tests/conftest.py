@@ -149,7 +149,7 @@ def abstract_csv_content(abstract_csv_file):
 
 @pytest.fixture(scope="function")
 def item_list_csv_file():
-    with open("./tests/data/item_list_2016.csv", "rb") as f:
+    with open("./tests/data/item_list_2018.csv", "rb") as f:
         yield f
 
 

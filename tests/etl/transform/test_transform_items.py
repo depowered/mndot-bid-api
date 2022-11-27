@@ -16,11 +16,11 @@ def test_transform_items(item_list_csv_content):
     api_create_schema = ItemCreateData
 
     df = transform_items(input_df, spec_year)
-    assert df.shape == (7713, 8)
+    assert df.shape == (8032, 8)
 
     # Test pa.check_types raises on invalid input
     invalid_input = input_df.drop(columns=input_df.columns[0])
-    assert invalid_input.shape == (7713, 5)
+    assert invalid_input.shape == (8032, 5)
     with pytest.raises(pa.errors.SchemaError):
         transform_items(invalid_input, spec_year)
 
@@ -49,7 +49,7 @@ def test_transform_items(item_list_csv_content):
         TransformedItems.validate(invalid_unit_abbr_df)
 
     # Test verify_in_spec_column_exists check raises
-    missing_in_spec_column = df.drop(columns="in_spec_2016")
+    missing_in_spec_column = df.drop(columns="in_spec_2018")
     with pytest.raises(pa.errors.SchemaError):
         TransformedItems.validate(missing_in_spec_column)
 
