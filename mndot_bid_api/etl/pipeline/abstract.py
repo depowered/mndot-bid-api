@@ -1,5 +1,8 @@
+import pandas as pd
+import pandera as pa
 from fastapi import UploadFile
 
+from mndot_bid_api import exceptions
 from mndot_bid_api.etl.extract import read_abstract_csv
 from mndot_bid_api.etl.load import load_bidders, load_bids, load_contract
 from mndot_bid_api.etl.transform import (
@@ -8,23 +11,45 @@ from mndot_bid_api.etl.transform import (
     transform_contract,
 )
 from mndot_bid_api.etl.types import CSVContent
+from mndot_bid_api.operations.crud_interface import CRUDInterface
 from mndot_bid_api.schema import AbstractETL
 
 
-def abstract_pipeline(csv: UploadFile) -> AbstractETL:
+def abstract_etl_pipeline(
+    csv: UploadFile,
+    contract_interface: CRUDInterface,
+    bid_interface: CRUDInterface,
+    invalid_bid_interface: CRUDInterface,
+    bidder_interface: CRUDInterface,
+    item_interface: CRUDInterface,
+) -> AbstractETL:
 
-    csv_content: CSVContent = csv.file.read().decode()
+    csv_content: CSVContent = csv.read().decode()
 
-    abstract_data = read_abstract_csv(csv_content)
+    try:
+        abstract_data = read_abstract_csv(csv_content)
 
-    transformed_bidders = transform_bidders(abstract_data.raw_bidders)
-    bidder_load_results = load_bidders(transformed_bidders)
+        transformed_contract = transform_contract(
+            abstract_data.raw_contract, abstract_data.winning_bidder_id
+        )
+        contract_load_results = load_contract(transformed_contract, contract_interface)
 
-    transformed_bids = transform_bids(abstract_data.raw_bids)
-    bid_load_results = load_bids(transformed_bids)
+        transformed_bids = transform_bids(
+            abstract_data.raw_bids, abstract_data.winning_bidder_id
+        )
+        bid_load_results = load_bids(
+            transformed_bids, bid_interface, item_interface, invalid_bid_interface
+        )
 
-    transformed_contract = transform_contract(abstract_data.raw_contract)
-    contract_load_results = load_contract(transformed_contract)
+        transformed_bidders = transform_bidders(abstract_data.raw_bidders)
+        bidder_load_results = load_bidders(transformed_bidders, bidder_interface)
+
+    except pa.errors.SchemaError as exc:
+        raise exc
+    except pd.errors.ParserError as exc:
+        raise exc
+    except exceptions.ParseAbstractCSVError as exc:
+        raise exc
 
     abstract_etl = AbstractETL(
         contract_id=abstract_data.contract_id,
