@@ -21,7 +21,7 @@ def test_load_bidders(abstract_csv_content: str, configured_sessionmaker: sessio
     # Expected result when record already exists
     input_data = schema.BidderCreateData(id=207897, name="Central Specialties, Inc.")
     record_data = schema.Bidder(data=schema.BidderResult(**input_data.dict()))
-    already_exists_load_result = schema.LoadResult(
+    already_exists_load_result = schema.BidderLoadResult(
         model="Bidder",
         operation="create",
         status_code=303,
@@ -38,7 +38,7 @@ def test_load_bidders(abstract_csv_content: str, configured_sessionmaker: sessio
 
     # Expected load result when record doesn't already exist
     record_data = schema.Bidder(data=schema.BidderResult(**input_data.dict()))
-    new_record_load_result = schema.LoadResult(
+    new_record_load_result = schema.BidderLoadResult(
         model="Bidder",
         operation="create",
         status_code=201,

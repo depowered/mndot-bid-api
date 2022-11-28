@@ -33,7 +33,7 @@ def test_load_contract(
         description="LOCATED ON T.H. 108 FROM 420' WEST OF EB T.H. 94 RAMP TO 9TH ST NW.",
         winning_bidder_id=207897,
     )
-    already_exists_load_result = schema.LoadResult(
+    already_exists_load_result = schema.ContractLoadResult(
         model="Contract",
         operation="create",
         status_code=303,
@@ -50,7 +50,7 @@ def test_load_contract(
 
     # Expected load result when record doesn't already exist
     record_data = schema.Contract(data=schema.ContractResult(**input_data.dict()))
-    new_record_load_result = schema.LoadResult(
+    new_record_load_result = schema.ContractLoadResult(
         model="Contract",
         operation="create",
         status_code=201,

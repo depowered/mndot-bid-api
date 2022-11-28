@@ -7,13 +7,13 @@ from mndot_bid_api.etl.df_schemas import TransformedItems
 from mndot_bid_api.etl.types import TransformedItemsDF
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 from mndot_bid_api.operations.items import create_item, update_item
-from mndot_bid_api.schema import ItemCreateData, ItemUpdateData, LoadResult
+from mndot_bid_api.schema import ItemCreateData, ItemLoadResult, ItemUpdateData
 
 
 @pa.check_input(TransformedItems.to_schema())
 def load_items(
     transformed_items: TransformedItemsDF, item_interface: CRUDInterface
-) -> list[LoadResult]:
+) -> list[ItemLoadResult]:
 
     entries: list[dict[str, Any]] = [
         row._asdict() for row in transformed_items.itertuples(index=False, name="Item")
@@ -23,7 +23,7 @@ def load_items(
 
     for entry in entries:
         create_data = ItemCreateData(**entry)
-        load_result = LoadResult(
+        load_result = ItemLoadResult(
             model="Item", operation="create", input_data=create_data
         )
         try:

@@ -2,7 +2,6 @@ from typing import Callable
 
 from pandera.typing import DataFrame
 
-from mndot_bid_api import schema
 from mndot_bid_api.etl.df_schemas import (
     RawBidders,
     RawBids,
@@ -44,9 +43,3 @@ TransformedEntitiesDF = (
 )
 
 TransformFunction = Callable[[RawEntitiesDF], TransformedEntitiesDF]
-
-############################################################################
-
-LoadResults = list[schema.LoadResult]
-
-LoadFunction = Callable[[TransformedEntitiesDF], LoadResults]

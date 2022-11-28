@@ -8,7 +8,7 @@ from mndot_bid_api.etl.types import TransformedBidsDF
 from mndot_bid_api.operations.bids import create_bid
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 from mndot_bid_api.operations.invalid_bids import create_invalid_bid
-from mndot_bid_api.schema import BidCreateData, LoadResult
+from mndot_bid_api.schema import BidCreateData, BidLoadResult
 
 
 @pa.check_io(transformed_bids=TransformedBids.to_schema())
@@ -17,7 +17,7 @@ def load_bids(
     bid_interface: CRUDInterface,
     item_interface: CRUDInterface,
     invalid_bid_interface: CRUDInterface,
-) -> list[LoadResult]:
+) -> list[BidLoadResult]:
 
     entries: list[dict[str, Any]] = [
         row._asdict() for row in transformed_bids.itertuples(index=False, name="Bid")
@@ -27,7 +27,7 @@ def load_bids(
 
     for entry in entries:
         create_data = BidCreateData(**entry)
-        load_result = LoadResult(
+        load_result = BidLoadResult(
             model="Bid", operation="create", input_data=create_data
         )
         try:

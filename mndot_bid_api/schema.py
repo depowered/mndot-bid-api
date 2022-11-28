@@ -1,5 +1,4 @@
 from datetime import date
-from typing import Any
 
 from pydantic import BaseModel, constr
 
@@ -45,6 +44,15 @@ class ContractCollection(BaseModel):
     data: list[ContractResult]
 
 
+class ContractLoadResult(BaseModel):
+    model: str = "Contract"
+    operation: str
+    status_code: int | None = None
+    message: str | None = None
+    input_data: ContractCreateData
+    record_data: Contract | None = None
+
+
 #############################################################################
 
 
@@ -70,6 +78,15 @@ class Bidder(BaseModel):
 class BidderCollection(BaseModel):
     type: str = "BidderCollection"
     data: list[BidderResult]
+
+
+class BidderLoadResult(BaseModel):
+    model: str = "Bidder"
+    operation: str
+    status_code: int | None = None
+    message: str | None = None
+    input_data: BidderCreateData
+    record_data: Bidder | None = None
 
 
 #############################################################################
@@ -117,6 +134,15 @@ class BidCollection(BaseModel):
     data: list[BidResult]
 
 
+class BidLoadResult(BaseModel):
+    model: str = "Bid"
+    operation: str
+    status_code: int | None = None
+    message: str | None = None
+    input_data: BidCreateData
+    record_data: Bid | None = None
+
+
 #############################################################################
 
 
@@ -155,6 +181,15 @@ class InvalidBid(BaseModel):
 class InvalidBidCollection(BaseModel):
     type: str = "InvalidBidCollection"
     data: list[InvalidBidResult]
+
+
+class InvalidBidLoadResult(BaseModel):
+    model: str = "InvalidBid"
+    operation: str
+    status_code: int | None = None
+    message: str | None = None
+    input_data: BidCreateData
+    record_data: InvalidBid | None = None
 
 
 #############################################################################
@@ -213,35 +248,25 @@ class ItemCollection(BaseModel):
     data: list[ItemResult]
 
 
-#############################################################################
-
-ModelCreateData = ContractCreateData | BidderCreateData | BidCreateData | ItemCreateData
-ModelUpdateData = (
-    ContractUpdateData
-    | BidderUpdateData
-    | BidUpdateData
-    | InvalidBidUpdateData
-    | ItemUpdateData
-)
-SingleRecord = Contract | Bidder | Bid | InvalidBid | Item
-
-
-class LoadResult(BaseModel):
+class ItemLoadResult(BaseModel):
     model: str
     operation: str
     status_code: int | None = None
     message: str | None = None
-    input_data: ModelCreateData | ModelUpdateData | None = None
-    record_data: SingleRecord | None = None
+    input_data: ItemCreateData
+    record_data: Item | None = None
+
+
+#############################################################################
 
 
 class ItemListETL(BaseModel):
     spec_year: str
-    item_results: list[LoadResult]
+    item_results: list[ItemLoadResult]
 
 
 class AbstractETL(BaseModel):
     contract_id: int
-    contract_results: list[LoadResult]
-    bidder_results: list[LoadResult]
-    bid_results: list[LoadResult]
+    contract_results: list[ContractLoadResult]
+    bidder_results: list[BidderLoadResult]
+    bid_results: list[BidLoadResult | InvalidBidLoadResult]
