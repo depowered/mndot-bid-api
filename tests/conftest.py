@@ -3,6 +3,8 @@ Adapted from:
     https://stackoverflow.com/questions/58660378/how-use-pytest-to-unit-test-sqlalchemy-orm-classes
     https://gist.github.com/kissgyorgy/e2365f25a213de44b9a2
 """
+import io
+
 import fastapi
 import pytest
 from fastapi.testclient import TestClient
@@ -147,21 +149,23 @@ def test_client(
 
 @pytest.fixture(scope="function")
 def abstract_csv_file():
-    with open("./tests/data/220005.csv", "rb") as f:
-        yield f
+    with open("./tests/data/220005.csv", "rb", io.DEFAULT_BUFFER_SIZE) as f:
+        upload_file = fastapi.UploadFile(filename="220005.csv", file=f)
+        yield upload_file
 
 
 @pytest.fixture(scope="function")
 def abstract_csv_content(abstract_csv_file):
-    return abstract_csv_file.read().decode()
+    return abstract_csv_file.file.read().decode()
 
 
 @pytest.fixture(scope="function")
 def item_list_csv_file():
-    with open("./tests/data/item_list_2018.csv", "rb") as f:
-        yield f
+    with open("./tests/data/item_list_2018.csv", "rb", io.DEFAULT_BUFFER_SIZE) as f:
+        upload_file = fastapi.UploadFile(filename="item_list_2018.csv", file=f)
+        yield upload_file
 
 
 @pytest.fixture(scope="function")
 def item_list_csv_content(item_list_csv_file):
-    return item_list_csv_file.read().decode()
+    return item_list_csv_file.file.read().decode()

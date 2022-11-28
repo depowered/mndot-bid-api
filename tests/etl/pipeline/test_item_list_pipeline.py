@@ -1,5 +1,6 @@
 import io
 
+import fastapi
 import pytest
 
 from mndot_bid_api import exceptions
@@ -25,7 +26,10 @@ def test_item_list_etl_pipeline_raises(abstract_csv_file, configured_sessionmake
     with pytest.raises(exceptions.HTTPException):
         item_list_etl_pipeline(abstract_csv_file, item_interface)
 
-    with pytest.raises(exceptions.HTTPException):
-        invalid_utf8_bytestring = b"\x80"
-        bytes_io = io.BytesIO(invalid_utf8_bytestring)
-        item_list_etl_pipeline(bytes_io, item_interface)
+    with pytest.raises(exceptions.HTTPException) as err:
+        with open(
+            "./tests/data/not_a_valid_csv.jpg", "rb", io.DEFAULT_BUFFER_SIZE
+        ) as f:
+            invalid_csv = fastapi.UploadFile(filename="invalid.csv", file=f)
+            item_list_etl_pipeline(invalid_csv, item_interface)
+    assert err.value.detail["error"] == "UnicodeDecodeError"

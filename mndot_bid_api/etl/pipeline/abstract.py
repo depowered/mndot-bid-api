@@ -23,7 +23,7 @@ def abstract_etl_pipeline(
 ) -> AbstractETL:
 
     try:
-        csv_content: CSVContent = csv.read().decode()
+        csv_content: CSVContent = csv.file.read().decode()
     except UnicodeDecodeError as err:
         exceptions.raise_http_422_decode_error(err)
 
