@@ -1,3 +1,4 @@
+import pytest
 from sqlalchemy.orm import sessionmaker
 
 from mndot_bid_api.db import models
@@ -71,6 +72,10 @@ def test_load_items_already_in_db(
         assert result.record_data is not None
 
 
+@pytest.mark.skipif(
+    "not config.getoption('--run-slow')",
+    reason="Only run when --run-slow is given",
+)
 def test_load_items_counts(
     item_list_csv_content: str, configured_sessionmaker: sessionmaker
 ):

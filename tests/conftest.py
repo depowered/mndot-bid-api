@@ -14,6 +14,15 @@ from mndot_bid_api.db import interface, models
 from tests.data import sample_db_records
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--run-slow",
+        action="store_true",
+        default=False,
+        help="Run slow tests",
+    )
+
+
 @pytest.fixture(scope="session")
 def engine():
     return create_engine(
