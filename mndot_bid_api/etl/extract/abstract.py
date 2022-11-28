@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from io import StringIO
 
 import pandas as pd
-import pandera as pa
 
 from mndot_bid_api import exceptions
 from mndot_bid_api.etl.df_schemas import RawBidders, RawBids, RawContract
@@ -27,10 +26,7 @@ class AbstractData:
 
 def read_abstract_csv(csv_content: CSVContent) -> AbstractData:
 
-    try:
-        contract_csv, bids_csv, bidders_csv = _split_csv(csv_content)
-    except exceptions.ParseAbstractCSVError as exc:
-        raise exc
+    contract_csv, bids_csv, bidders_csv = _split_csv(csv_content)
 
     raw_contract = _read_contract_csv(contract_csv)
     raw_bidders = _read_bidders_csv(bidders_csv)

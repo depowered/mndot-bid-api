@@ -1,6 +1,6 @@
-import pandera as pa
 import pytest
 
+from mndot_bid_api import exceptions
 from mndot_bid_api.etl.extract.abstract import read_abstract_csv
 from mndot_bid_api.etl.transform.bidders import transform_bidders
 from mndot_bid_api.schema import BidderCreateData
@@ -21,5 +21,5 @@ def test_transform_bidders(abstract_csv_content):
 
     invalid_input = input_df.drop(columns=input_df.columns[0])
     assert invalid_input.shape == (3, 1)
-    with pytest.raises(pa.errors.SchemaError):
+    with pytest.raises(exceptions.SchemaError):
         transform_bidders(invalid_input)

@@ -37,7 +37,7 @@ def test_abstract_etl_pipeline_raises(item_list_csv_file, configured_sessionmake
     bidder_interface = DBModelInterface(models.Bidder, configured_sessionmaker)
     item_interface = DBModelInterface(models.Item, configured_sessionmaker)
 
-    with pytest.raises(exceptions.ParseAbstractCSVError):
+    with pytest.raises(exceptions.HTTPException):
         abstract_etl_pipeline(
             item_list_csv_file,
             contract_interface,

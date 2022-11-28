@@ -1,6 +1,6 @@
-import pandera as pa
 import pytest
 
+from mndot_bid_api import exceptions
 from mndot_bid_api.etl.df_schemas import TransformedContract
 from mndot_bid_api.etl.extract.abstract import read_abstract_csv
 from mndot_bid_api.etl.transform.contract import transform_contract
@@ -23,17 +23,17 @@ def test_transform_contract(abstract_csv_content):
 
     invalid_input = input_df.drop(columns=input_df.columns[0])
     assert invalid_input.shape == (1, 5)
-    with pytest.raises(pa.errors.SchemaError):
+    with pytest.raises(exceptions.SchemaError):
         transform_contract(invalid_input, winning_bidder_id)
 
     # Test verify_value_in_district_enum raises
     invalid_district = df.copy()
     invalid_district.at[0, "district"] = "abc"
-    with pytest.raises(pa.errors.SchemaError):
+    with pytest.raises(exceptions.SchemaError):
         TransformedContract.validate(invalid_district)
 
     # Test verify_value_in_county_enum raises
     invalid_county = df.copy()
     invalid_county.at[0, "county"] = "abc"
-    with pytest.raises(pa.errors.SchemaError):
+    with pytest.raises(exceptions.SchemaError):
         TransformedContract.validate(invalid_county)

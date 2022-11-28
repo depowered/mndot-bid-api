@@ -1,4 +1,3 @@
-import pandera as pa
 import pytest
 
 from mndot_bid_api import exceptions
@@ -31,7 +30,7 @@ def test_read_contract_csv(abstract_csv_content: str):
 
     invalid_df = df.drop(columns="Letting Date")
     assert invalid_df.shape == (1, 5)
-    with pytest.raises(pa.errors.SchemaError):
+    with pytest.raises(exceptions.SchemaError):
         df_schemas.RawContract.validate(invalid_df)
 
 
@@ -45,7 +44,7 @@ def test_read_bids_csv(abstract_csv_content: str):
 
     invalid_df = df.drop(columns="Engineers (Unit Price)")
     assert invalid_df.shape == (53, 10)
-    with pytest.raises(pa.errors.SchemaError):
+    with pytest.raises(exceptions.SchemaError):
         df_schemas.RawBids.validate(invalid_df)
 
 
@@ -59,7 +58,7 @@ def test_read_bidders_csv(abstract_csv_content: str):
 
     invalid_df = df.drop(columns="Bidder Name")
     assert invalid_df.shape == (3, 1)
-    with pytest.raises(pa.errors.SchemaError):
+    with pytest.raises(exceptions.SchemaError):
         df_schemas.RawBidders.validate(invalid_df)
 
 

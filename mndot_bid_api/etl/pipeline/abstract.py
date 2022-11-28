@@ -1,5 +1,3 @@
-import pandas as pd
-import pandera as pa
 from fastapi import UploadFile
 
 from mndot_bid_api import exceptions
@@ -24,7 +22,10 @@ def abstract_etl_pipeline(
     item_interface: CRUDInterface,
 ) -> AbstractETL:
 
-    csv_content: CSVContent = csv.read().decode()
+    try:
+        csv_content: CSVContent = csv.read().decode()
+    except UnicodeDecodeError as err:
+        exceptions.raise_http_422_decode_error(err)
 
     try:
         abstract_data = read_abstract_csv(csv_content)
@@ -32,24 +33,23 @@ def abstract_etl_pipeline(
         transformed_contract = transform_contract(
             abstract_data.raw_contract, abstract_data.winning_bidder_id
         )
-        contract_load_results = load_contract(transformed_contract, contract_interface)
-
         transformed_bids = transform_bids(
             abstract_data.raw_bids, abstract_data.winning_bidder_id
         )
-        bid_load_results = load_bids(
-            transformed_bids, bid_interface, item_interface, invalid_bid_interface
-        )
-
         transformed_bidders = transform_bidders(abstract_data.raw_bidders)
-        bidder_load_results = load_bidders(transformed_bidders, bidder_interface)
 
-    except pa.errors.SchemaError as exc:
-        raise exc
-    except pd.errors.ParserError as exc:
-        raise exc
-    except exceptions.ParseAbstractCSVError as exc:
-        raise exc
+    except exceptions.SchemaError as err:
+        exceptions.raise_http_422_schema_error(err)
+    except exceptions.ParserError as err:
+        exceptions.raise_http_422_parser_error(err)
+    except exceptions.ParseAbstractCSVError as err:
+        exceptions.raise_http_422_parser_error(err)
+
+    contract_load_results = load_contract(transformed_contract, contract_interface)
+    bid_load_results = load_bids(
+        transformed_bids, bid_interface, item_interface, invalid_bid_interface
+    )
+    bidder_load_results = load_bidders(transformed_bidders, bidder_interface)
 
     abstract_etl = AbstractETL(
         contract_id=abstract_data.contract_id,

@@ -1,4 +1,6 @@
 from fastapi import HTTPException, status
+from pandas.errors import ParserError
+from pandera.errors import SchemaError
 
 
 class RecordNotFoundError(Exception):
@@ -55,3 +57,21 @@ def raise_http_400_empty_query() -> None:
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=f"Provide at least one query parameter",
     )
+
+
+def raise_http_422_schema_error(err: SchemaError):
+    raise HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.args[0]
+    ) from err
+
+
+def raise_http_422_parser_error(err: ParserError):
+    raise HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.args[0]
+    ) from err
+
+
+def raise_http_422_decode_error(err: UnicodeDecodeError):
+    raise HTTPException(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.reason
+    ) from err
