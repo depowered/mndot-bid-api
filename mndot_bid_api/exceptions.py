@@ -60,18 +60,21 @@ def raise_http_400_empty_query() -> None:
 
 
 def raise_http_422_schema_error(err: SchemaError):
+    detail = {"error": "SchemaError", "message": err.args[0]}
     raise HTTPException(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.args[0]
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail
     ) from err
 
 
 def raise_http_422_parser_error(err: ParserError):
+    detail = {"error": "ParserError", "message": err.args[0]}
     raise HTTPException(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.args[0]
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail
     ) from err
 
 
 def raise_http_422_decode_error(err: UnicodeDecodeError):
+    detail = {"error": "UnicodeDecodeError", "message": err.reason}
     raise HTTPException(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=err.reason
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail
     ) from err

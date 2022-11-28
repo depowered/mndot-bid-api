@@ -37,7 +37,7 @@ def test_abstract_etl_pipeline_raises(item_list_csv_file, configured_sessionmake
     bidder_interface = DBModelInterface(models.Bidder, configured_sessionmaker)
     item_interface = DBModelInterface(models.Item, configured_sessionmaker)
 
-    with pytest.raises(exceptions.HTTPException):
+    with pytest.raises(exceptions.HTTPException) as err:
         abstract_etl_pipeline(
             item_list_csv_file,
             contract_interface,
@@ -46,3 +46,5 @@ def test_abstract_etl_pipeline_raises(item_list_csv_file, configured_sessionmake
             bidder_interface,
             item_interface,
         )
+    assert err.value.status_code == 422
+    assert err.value.detail["error"] == "ParserError"

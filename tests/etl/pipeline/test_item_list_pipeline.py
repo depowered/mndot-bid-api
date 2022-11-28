@@ -32,4 +32,5 @@ def test_item_list_etl_pipeline_raises(abstract_csv_file, configured_sessionmake
         ) as f:
             invalid_csv = fastapi.UploadFile(filename="invalid.csv", file=f)
             item_list_etl_pipeline(invalid_csv, item_interface)
+    assert err.value.status_code == 422
     assert err.value.detail["error"] == "UnicodeDecodeError"
