@@ -4,7 +4,8 @@ from pathlib import Path
 from fastapi import FastAPI
 
 from mndot_bid_api import routers
-from mndot_bid_api.db import database, sample_data
+from mndot_bid_api.db import database
+from mndot_bid_api.db.load_sample_records import load_sample_records
 
 DEVELOPMENT_DATABASE_URL = "sqlite:///data/dev-api.db"
 PRODUCTION_DATABASE_URL = "sqlite:///data/prod-api.db"
@@ -22,7 +23,7 @@ def startup_event():
     if DEVELOPMENT_MODE:
         database.init_sqlite_db(url=DEVELOPMENT_DATABASE_URL)
         if not dev_db_exists:
-            sample_data.load_sample_data()
+            load_sample_records()
     else:
         database.init_sqlite_db(url=PRODUCTION_DATABASE_URL)
 
