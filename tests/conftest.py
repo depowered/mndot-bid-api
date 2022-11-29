@@ -7,11 +7,12 @@ import io
 
 import fastapi
 import pytest
+from fastapi.security import APIKeyHeader
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from mndot_bid_api import db, routers
+from mndot_bid_api import auth, db, routers
 from mndot_bid_api.db import interface, models
 from tests.data import sample_db_records
 
@@ -101,13 +102,20 @@ def get_item_interface_override(configured_sessionmaker: sessionmaker):
     return lambda: interface.DBModelInterface(models.Item, configured_sessionmaker)
 
 
-@pytest.fixture(scope="function")  # Or function?
+@pytest.fixture(scope="function")
+def authorize_api_key_override():
+    # Don't require an api token header in route tests.
+    return APIKeyHeader(name="access_token", auto_error=False)
+
+
+@pytest.fixture(scope="function")
 def test_client(
     get_bidder_interface_override,
     get_contract_interface_override,
     get_bid_interface_override,
     get_invalid_bid_interface_override,
     get_item_interface_override,
+    authorize_api_key_override,
 ) -> TestClient:
     # Initilize test_app instance
     test_app = fastapi.FastAPI()
@@ -128,6 +136,9 @@ def test_client(
     ] = get_invalid_bid_interface_override
 
     test_app.dependency_overrides[db.get_item_interface] = get_item_interface_override
+
+    # Override security function
+    test_app.dependency_overrides[auth.authorize_api_key] = authorize_api_key_override
 
     # Duplicate root path from main
     @test_app.get("/", include_in_schema=False)
