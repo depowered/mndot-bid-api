@@ -78,7 +78,6 @@ def api_delete_item(
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_query_item(
-    item_interface=fastapi.Depends(db.get_item_interface),
     spec_code: str | None = None,
     unit_code: str | None = None,
     item_code: str | None = None,
@@ -90,12 +89,16 @@ def api_query_item(
     in_spec_2018: bool | None = None,
     in_spec_2020: bool | None = None,
     in_spec_2022: bool | None = None,
+    item_interface=fastapi.Depends(db.get_item_interface),
+    limit: int = 100,
 ) -> schema.ItemCollection:
     kwargs = locals()
 
     # Filter for non-None keyword arguments to pass to the query function
     filtered_kwargs = {
-        key: value for key, value in kwargs.items() if value and key != "item_interface"
+        key: value
+        for key, value in kwargs.items()
+        if value and key not in ["item_interface", "limit"]
     }
 
-    return operations.items.query_item(item_interface, **filtered_kwargs)
+    return operations.items.query_item(item_interface, limit, **filtered_kwargs)

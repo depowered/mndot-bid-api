@@ -79,7 +79,9 @@ def api_delete_bidder(
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_query_bidder(
-    name: str | None = None, bidder_interface=fastapi.Depends(db.get_bidder_interface)
+    name: str | None = None,
+    bidder_interface=fastapi.Depends(db.get_bidder_interface),
+    limit: int = 100,
 ) -> schema.BidderCollection:
     kwargs = locals()
 
@@ -87,7 +89,7 @@ def api_query_bidder(
     filtered_kwargs = {
         key: value
         for key, value in kwargs.items()
-        if value and key != "bidder_interface"
+        if value and key not in ["bidder_interface", "limit"]
     }
 
-    return operations.bidders.query_bidder(bidder_interface, **filtered_kwargs)
+    return operations.bidders.query_bidder(bidder_interface, limit, **filtered_kwargs)

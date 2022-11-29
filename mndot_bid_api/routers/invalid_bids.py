@@ -85,7 +85,6 @@ def api_delete_invalid_bid(
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_query_invalid_bid(
-    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
     contract_id: int | None = None,
     bidder_id: int | None = None,
     item_spec_code: str | None = None,
@@ -96,6 +95,8 @@ def api_query_invalid_bid(
     quantity: float | None = None,
     unit_price: int | None = None,
     bid_type: enums.BidType | None = None,
+    invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
+    limit: int = 100,
 ) -> schema.InvalidBidCollection:
     kwargs = locals()
 
@@ -103,9 +104,9 @@ def api_query_invalid_bid(
     filtered_kwargs = {
         key: value
         for key, value in kwargs.items()
-        if value and key != "invalid_bid_interface"
+        if value and key not in ["invalid_bid_interface", "limit"]
     }
 
     return operations.invalid_bids.query_invalid_bid(
-        invalid_bid_interface, **filtered_kwargs
+        invalid_bid_interface, limit, **filtered_kwargs
     )

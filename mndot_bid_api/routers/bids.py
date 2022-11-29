@@ -93,12 +93,15 @@ def api_query_bid(
     bidder_id: int | None = None,
     bid_type: enums.BidType | None = None,
     bid_interface=fastapi.Depends(db.get_bid_interface),
+    limit: int = 100,
 ) -> schema.BidCollection:
     kwargs = locals()
 
     # Filter for non-None keyword arguments to pass to the query function
     filtered_kwargs = {
-        key: value for key, value in kwargs.items() if value and key != "bid_interface"
+        key: value
+        for key, value in kwargs.items()
+        if value and key not in ["bid_interface", "limit"]
     }
 
-    return operations.bids.query_bid(bid_interface, **filtered_kwargs)
+    return operations.bids.query_bid(bid_interface, limit, **filtered_kwargs)
