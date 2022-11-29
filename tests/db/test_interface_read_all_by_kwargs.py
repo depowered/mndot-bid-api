@@ -33,6 +33,14 @@ def test_read_all_by_kwargs_bidders(configured_sessionmaker: sessionmaker):
     with pytest.raises(InvalidRequestError):
         interface.read_all_by_kwargs(invalid_key=100)
 
+    # Test positive limit; expect one record
+    record_dicts = interface.read_all_by_kwargs(limit=1, name=None)
+    assert len(record_dicts) == 1
+
+    # Test negative limit; expect no records
+    record_dicts = interface.read_all_by_kwargs(limit=-1, name=None)
+    assert len(record_dicts) == 0
+
 
 def test_read_all_by_kwargs_contracts(configured_sessionmaker: sessionmaker):
     model = models.Contract
@@ -56,6 +64,14 @@ def test_read_all_by_kwargs_contracts(configured_sessionmaker: sessionmaker):
     # Invalid kwarg
     with pytest.raises(InvalidRequestError):
         interface.read_all_by_kwargs(invalid_key=100)
+
+    # Test positive limit; expect one record
+    record_dicts = interface.read_all_by_kwargs(limit=1, sp_number="5625-20")
+    assert len(record_dicts) == 1
+
+    # Test negative limit; expect no records
+    record_dicts = interface.read_all_by_kwargs(limit=-1, sp_number="5625-20")
+    assert len(record_dicts) == 0
 
 
 def test_read_all_by_kwargs_items(configured_sessionmaker: sessionmaker):
@@ -83,6 +99,14 @@ def test_read_all_by_kwargs_items(configured_sessionmaker: sessionmaker):
     with pytest.raises(InvalidRequestError):
         interface.read_all_by_kwargs(invalid_key=100)
 
+    # Test positive limit; expect one record
+    record_dicts = interface.read_all_by_kwargs(limit=1, in_spec_2020=True)
+    assert len(record_dicts) == 1
+
+    # Test negative limit; expect no records
+    record_dicts = interface.read_all_by_kwargs(limit=-1, in_spec_2020=True)
+    assert len(record_dicts) == 0
+
 
 def test_read_all_by_kwargs_bids(configured_sessionmaker: sessionmaker):
     model = models.Bid
@@ -107,6 +131,14 @@ def test_read_all_by_kwargs_bids(configured_sessionmaker: sessionmaker):
     # Invalid kwarg
     with pytest.raises(InvalidRequestError):
         interface.read_all_by_kwargs(invalid_key=100)
+
+    # Test positive limit; expect one record
+    record_dicts = interface.read_all_by_kwargs(limit=1, bid_type="losing")
+    assert len(record_dicts) == 1
+
+    # Test negative limit; expect no records
+    record_dicts = interface.read_all_by_kwargs(limit=-1, bid_type="losing")
+    assert len(record_dicts) == 0
 
 
 def test_read_all_by_kwargs_invalid_bids(configured_sessionmaker: sessionmaker):
@@ -133,3 +165,11 @@ def test_read_all_by_kwargs_invalid_bids(configured_sessionmaker: sessionmaker):
     # Invalid kwarg
     with pytest.raises(InvalidRequestError):
         interface.read_all_by_kwargs(invalid_key=100)
+
+    # Test positive limit; expect one record
+    record_dicts = interface.read_all_by_kwargs(limit=1, bid_type="losing")
+    assert len(record_dicts) == 1
+
+    # Test negative limit; expect no records
+    record_dicts = interface.read_all_by_kwargs(limit=-1, bid_type="losing")
+    assert len(record_dicts) == 0

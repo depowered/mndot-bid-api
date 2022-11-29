@@ -58,10 +58,23 @@ class DBModelInterface:
 
             return models.to_dict(record)
 
-    def read_all_by_kwargs(self, **kwargs) -> list[RecordDict]:
-        """Returns the all existing database records that match the given keyward arguments."""
+    def read_all_by_kwargs(self, limit: int = 0, **kwargs) -> list[RecordDict]:
+        """Returns the all existing database records that match the given keyward arguments.
+
+        Limit values:
+         - Negative: Returns no records
+         - Zero: Returns all records (default)
+         - Positive: Returns a number of records equal to the limit
+        """
+        if limit < 0:
+            return []
+
         with self.configured_sessionmaker() as db:
-            records = db.query(self.model).filter_by(**kwargs).all()
+            records = None
+            if limit > 0:
+                records = db.query(self.model).filter_by(**kwargs).limit(limit).all()
+            else:
+                records = db.query(self.model).filter_by(**kwargs).all()
             if not records:
                 raise RecordNotFoundError()
 
