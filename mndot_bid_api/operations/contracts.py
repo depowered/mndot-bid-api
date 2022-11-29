@@ -66,13 +66,13 @@ def delete_contract(contract_id: int, contract_interface: CRUDInterface) -> None
 
 
 def query_contract(
-    contract_interface: CRUDInterface, **kwargs
+    contract_interface: CRUDInterface, limit: int, **kwargs
 ) -> schema.ContractCollection:
     if not kwargs:
         exceptions.raise_http_400_empty_query()
 
     try:
-        records = contract_interface.read_all_by_kwargs(**kwargs)
+        records = contract_interface.read_all_by_kwargs(limit=limit, **kwargs)
 
     except exceptions.RecordNotFoundError as exc:
         exceptions.raise_http_404_query(model_name="Contract", exc=exc)

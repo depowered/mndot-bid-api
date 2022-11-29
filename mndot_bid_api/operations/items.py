@@ -58,12 +58,14 @@ def delete_item(item_id: int, item_interface: CRUDInterface) -> None:
         exceptions.raise_http_404(model_name="Item", id=item_id, exc=exc)
 
 
-def query_item(item_interface: CRUDInterface, **kwargs) -> schema.ItemCollection:
+def query_item(
+    item_interface: CRUDInterface, limit: int, **kwargs
+) -> schema.ItemCollection:
     if not kwargs:
         exceptions.raise_http_400_empty_query()
 
     try:
-        records = item_interface.read_all_by_kwargs(**kwargs)
+        records = item_interface.read_all_by_kwargs(limit=limit, **kwargs)
 
     except exceptions.RecordNotFoundError as exc:
         exceptions.raise_http_404_query(model_name="Item", exc=exc)

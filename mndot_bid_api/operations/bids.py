@@ -84,13 +84,15 @@ def delete_bid(bid_id: int, bid_interface: CRUDInterface) -> None:
         exceptions.raise_http_404(model_name="Bid", id=bid_id, exc=exc)
 
 
-def query_bid(bid_interface: CRUDInterface, **kwargs) -> schema.BidCollection:
+def query_bid(
+    bid_interface: CRUDInterface, limit: int, **kwargs
+) -> schema.BidCollection:
 
     if not kwargs:
         exceptions.raise_http_400_empty_query()
 
     try:
-        records = bid_interface.read_all_by_kwargs(**kwargs)
+        records = bid_interface.read_all_by_kwargs(limit=limit, **kwargs)
 
     except exceptions.RecordNotFoundError as exc:
         exceptions.raise_http_404_query(model_name="Bid", exc=exc)

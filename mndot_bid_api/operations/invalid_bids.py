@@ -70,13 +70,13 @@ def delete_invalid_bid(
 
 
 def query_invalid_bid(
-    invalid_bid_interface: CRUDInterface, **kwargs
+    invalid_bid_interface: CRUDInterface, limit: int, **kwargs
 ) -> schema.InvalidBidCollection:
     if not kwargs:
         exceptions.raise_http_400_empty_query()
 
     try:
-        records = invalid_bid_interface.read_all_by_kwargs(**kwargs)
+        records = invalid_bid_interface.read_all_by_kwargs(limit=limit, **kwargs)
 
     except exceptions.RecordNotFoundError as exc:
         exceptions.raise_http_404_query(model_name="Invalid Bid", exc=exc)

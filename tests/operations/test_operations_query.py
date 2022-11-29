@@ -36,16 +36,27 @@ def generic_query_test(
     ]
     expected_result = result_schema(data=expected_result_data)
 
-    result = operation_function(interface, **query_kwargs)
+    # Test with high limit; expect all records
+    result = operation_function(interface, limit=100, **query_kwargs)
     assert result.type == expected_result.type
     assert result.data == expected_result.data
 
+    # Test with positive limit; expect one record
+    result = operation_function(interface, limit=1, **query_kwargs)
+    assert len(result.data) == 1
+
+    # Test with negative limit; expect no records
+    result = operation_function(interface, limit=-1, **query_kwargs)
+    assert len(result.data) == 0
+
+    # Test no kwargs raises
     with pytest.raises(fastapi.HTTPException) as exc:
-        operation_function(interface)
+        operation_function(interface, limit=100)
     assert exc.value.status_code == 400
 
+    # Test invalid kwarg value raises
     with pytest.raises(fastapi.HTTPException) as exc:
-        operation_function(interface, id=-7)
+        operation_function(interface, limit=100, id=-7)
     assert exc.value.status_code == 404
 
 
