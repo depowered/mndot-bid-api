@@ -13,10 +13,11 @@ contract_router = fastapi.APIRouter(prefix="/contract", tags=["contract"])
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_contracts(
+    limit: int = 100,
     contract_interface=fastapi.Depends(db.get_contract_interface),
 ) -> schema.ContractCollection:
 
-    return operations.contracts.read_all_contracts(contract_interface)
+    return operations.contracts.read_all_contracts(limit, contract_interface)
 
 
 @contract_router.get(

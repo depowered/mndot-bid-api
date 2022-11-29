@@ -11,10 +11,11 @@ invalid_bid_router = fastapi.APIRouter(prefix="/invalid_bid", tags=["invalid_bid
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_invalid_bids(
+    limit: int = 100,
     invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
 ) -> schema.InvalidBidCollection:
 
-    return operations.invalid_bids.read_all_invalid_bids(invalid_bid_interface)
+    return operations.invalid_bids.read_all_invalid_bids(limit, invalid_bid_interface)
 
 
 @invalid_bid_router.get(

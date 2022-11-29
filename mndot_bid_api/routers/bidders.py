@@ -11,10 +11,11 @@ bidder_router = fastapi.APIRouter(prefix="/bidder", tags=["bidder"])
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_bidders(
+    limit: int = 100,
     bidder_interface=fastapi.Depends(db.get_bidder_interface),
 ) -> schema.BidderCollection:
 
-    return operations.bidders.read_all_bidders(bidder_interface)
+    return operations.bidders.read_all_bidders(limit, bidder_interface)
 
 
 @bidder_router.get(

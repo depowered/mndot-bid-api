@@ -11,10 +11,11 @@ item_router = fastapi.APIRouter(prefix="/item", tags=["item"])
     status_code=fastapi.status.HTTP_200_OK,
 )
 def api_read_all_items(
+    limit: int = 100,
     item_interface=fastapi.Depends(db.get_item_interface),
 ) -> schema.ItemCollection:
 
-    return operations.items.read_all_items(item_interface)
+    return operations.items.read_all_items(limit, item_interface)
 
 
 @item_router.get(
