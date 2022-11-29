@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api import db, operations, schema
+from mndot_bid_api import auth, db, operations, schema
 
 bidder_router = fastapi.APIRouter(prefix="/bidder", tags=["bidder"])
 
@@ -38,6 +38,7 @@ def api_read_bidder(
 def api_create_bidder(
     data: schema.BidderCreateData,
     bidder_interface=fastapi.Depends(db.get_bidder_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.Bidder:
 
     return operations.bidders.create_bidder(data, bidder_interface)
@@ -52,6 +53,7 @@ def api_update_bidder(
     bidder_id: int,
     data: schema.BidderUpdateData,
     bidder_interface=fastapi.Depends(db.get_bidder_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.Bidder:
 
     return operations.bidders.update_bidder(bidder_id, data, bidder_interface)
@@ -64,6 +66,7 @@ def api_update_bidder(
 def api_delete_bidder(
     bidder_id: int,
     bidder_interface=fastapi.Depends(db.get_bidder_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
 
     return operations.bidders.delete_bidder(bidder_id, bidder_interface)
