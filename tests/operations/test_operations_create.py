@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 import fastapi
@@ -54,6 +55,28 @@ def test_create_contracts(configured_sessionmaker: sessionmaker):
     result = operation_function(create_data, interface)
     assert result.type == expected_result.type
     assert result.data == expected_result.data
+
+    with pytest.raises(fastapi.HTTPException) as exc:
+        operation_function(create_data, interface)
+    assert exc.value.status_code == 303
+
+
+def test_create_contracts_raises_303(configured_sessionmaker: sessionmaker):
+    model = models.Contract
+    interface = DBModelInterface(model, configured_sessionmaker)
+    operation_function = operations.contracts.create_contract
+
+    create_data_dict = {
+        "id": 220005,
+        "letting_date": "2022-01-28",
+        "sp_number": "5625-20",
+        "district": "Detroit Lakes",
+        "county": "Otter Tail",
+        "description": "LOCATED ON T.H. 108 FROM 420' WEST OF EB T.H. 94 RAMP TO 9TH ST NW.",
+        "winning_bidder_id": 207897,
+    }
+
+    create_data = schema.ContractCreateData.parse_raw(json.dumps(create_data_dict))
 
     with pytest.raises(fastapi.HTTPException) as exc:
         operation_function(create_data, interface)

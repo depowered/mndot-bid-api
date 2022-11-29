@@ -5,3 +5,13 @@ Build and run a container that rebuilds and restarts when it detects any code ch
 ```
 docker-compose -f docker-compose.dev.yaml up --build
 ```
+
+### Test Suite
+Run all tests
+```
+$ pytest --run-slow
+```
+Skip slow tests
+```
+$ pytest
+```

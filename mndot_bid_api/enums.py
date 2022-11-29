@@ -1,22 +1,28 @@
 import enum
 
 
-class SpecYear(str, enum.Enum):
+class ExtendedEnum(enum.Enum):
+    @classmethod
+    def values(cls) -> list[str]:
+        return [member.value for member in cls]
+
+
+class SpecYear(str, ExtendedEnum):
     SPEC_2016 = "2016"
     SPEC_2018 = "2018"
     SPEC_2020 = "2020"
     SPEC_2022 = "2022"
 
 
-class BidType(str, enum.Enum):
+class BidType(str, ExtendedEnum):
     ENGINEER = "engineer"
     WINNING = "winning"
     LOSING = "losing"
 
 
-class UnitAbbreviation(str, enum.Enum):
+class UnitAbbreviation(str, ExtendedEnum):
     ACRE = "ACRE"
-    ASMY = "ASMY"
+    AMBY = "AMBY"
     CY = "CY"
     DAY = "DAY"
     DOL = "DOL"
@@ -40,9 +46,10 @@ class UnitAbbreviation(str, enum.Enum):
     TREE = "TREE"
     UDAY = "UDAY"
     VINE = "VINE"
+    WEEK = "WEEK"
 
 
-class Unit(str, enum.Enum):
+class Unit(str, ExtendedEnum):
     ACRE = "ACRE"
     ASSEMBLY = "ASSEMBLY"
     CU_YD = "CU YD"
@@ -68,9 +75,10 @@ class Unit(str, enum.Enum):
     TREE = "TREE"
     UNIT_DAY = "UNIT DAY"
     VINE = "VINE"
+    WEEK = "WEEK"
 
 
-class District(str, enum.Enum):
+class District(str, ExtendedEnum):
     BAXTER = "Baxter"
     BEMIDJI = "Bemidji"
     DETROIT_LAKES = "Detroit Lakes"
@@ -81,7 +89,7 @@ class District(str, enum.Enum):
     WILLMAR = "Willmar"
 
 
-class County(str, enum.Enum):
+class County(str, ExtendedEnum):
     AITKIN = "Aitkin"
     ANOKA = "Anoka"
     BECKER = "Becker"

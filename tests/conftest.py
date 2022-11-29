@@ -3,6 +3,8 @@ Adapted from:
     https://stackoverflow.com/questions/58660378/how-use-pytest-to-unit-test-sqlalchemy-orm-classes
     https://gist.github.com/kissgyorgy/e2365f25a213de44b9a2
 """
+import io
+
 import fastapi
 import pytest
 from fastapi.testclient import TestClient
@@ -12,6 +14,15 @@ from sqlalchemy.orm import Session, sessionmaker
 from mndot_bid_api import db, routers
 from mndot_bid_api.db import interface, models
 from tests.data import sample_db_records
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--run-slow",
+        action="store_true",
+        default=False,
+        help="Run slow tests",
+    )
 
 
 @pytest.fixture(scope="session")
@@ -129,7 +140,32 @@ def test_client(
     test_app.include_router(routers.bid_router)
     test_app.include_router(routers.invalid_bid_router)
     test_app.include_router(routers.item_router)
+    test_app.include_router(routers.etl_router)
 
     # Itialize and return the test client
     test_client = TestClient(test_app)
     return test_client
+
+
+@pytest.fixture(scope="function")
+def abstract_csv_file():
+    with open("./tests/data/220005.csv", "rb", io.DEFAULT_BUFFER_SIZE) as f:
+        upload_file = fastapi.UploadFile(filename="220005.csv", file=f)
+        yield upload_file
+
+
+@pytest.fixture(scope="function")
+def abstract_csv_content(abstract_csv_file):
+    return abstract_csv_file.file.read().decode()
+
+
+@pytest.fixture(scope="function")
+def item_list_csv_file():
+    with open("./tests/data/item_list_2018.csv", "rb", io.DEFAULT_BUFFER_SIZE) as f:
+        upload_file = fastapi.UploadFile(filename="item_list_2018.csv", file=f)
+        yield upload_file
+
+
+@pytest.fixture(scope="function")
+def item_list_csv_content(item_list_csv_file):
+    return item_list_csv_file.file.read().decode()
