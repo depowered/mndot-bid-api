@@ -11,11 +11,20 @@ def generic_read_all_test(
     expected_result: list[RecordDict],
 ) -> None:
     interface = DBModelInterface(model, configured_sessionmaker)
+
+    # Test limit default; expect all records
     record_dicts = interface.read_all()
     assert len(record_dicts) == len(expected_result)
-
     for record_dict in record_dicts:
         assert record_dict in expected_result
+
+    # Test positive limit; expect one record
+    record_dicts = interface.read_all(limit=1)
+    assert len(record_dicts) == 1
+
+    # Test negative limit; expect no records
+    record_dicts = interface.read_all(limit=-1)
+    assert len(record_dicts) == 0
 
 
 def test_read_all_bidders(configured_sessionmaker: sessionmaker):

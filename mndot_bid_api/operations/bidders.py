@@ -2,8 +2,10 @@ from mndot_bid_api import exceptions, schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
-def read_all_bidders(bidder_interface: CRUDInterface) -> schema.BidderCollection:
-    records = bidder_interface.read_all()
+def read_all_bidders(
+    limit: int, bidder_interface: CRUDInterface
+) -> schema.BidderCollection:
+    records = bidder_interface.read_all(limit)
     results = [schema.BidderResult(**record) for record in records]
 
     return schema.BidderCollection(data=results)
@@ -60,12 +62,14 @@ def delete_bidder(bidder_id: int, bidder_interface: CRUDInterface) -> None:
         exceptions.raise_http_404(model_name="Bidder", id=bidder_id, exc=exc)
 
 
-def query_bidder(bidder_interface: CRUDInterface, **kwargs) -> schema.BidderCollection:
+def query_bidder(
+    bidder_interface: CRUDInterface, limit: int, **kwargs
+) -> schema.BidderCollection:
     if not kwargs:
         exceptions.raise_http_400_empty_query()
 
     try:
-        records = bidder_interface.read_all_by_kwargs(**kwargs)
+        records = bidder_interface.read_all_by_kwargs(limit=limit, **kwargs)
 
     except exceptions.RecordNotFoundError as exc:
         exceptions.raise_http_404_query(model_name="Bidder", exc=exc)
