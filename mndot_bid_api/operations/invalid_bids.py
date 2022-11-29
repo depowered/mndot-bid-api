@@ -3,9 +3,10 @@ from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
 def read_all_invalid_bids(
+    limit: int,
     invalid_bid_interface: CRUDInterface,
 ) -> schema.InvalidBidCollection:
-    records = invalid_bid_interface.read_all()
+    records = invalid_bid_interface.read_all(limit)
     results = [schema.InvalidBidResult(**record) for record in records]
 
     return schema.InvalidBidCollection(data=results)

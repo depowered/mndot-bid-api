@@ -2,8 +2,10 @@ from mndot_bid_api import exceptions, schema
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
-def read_all_bidders(bidder_interface: CRUDInterface) -> schema.BidderCollection:
-    records = bidder_interface.read_all()
+def read_all_bidders(
+    limit: int, bidder_interface: CRUDInterface
+) -> schema.BidderCollection:
+    records = bidder_interface.read_all(limit)
     results = [schema.BidderResult(**record) for record in records]
 
     return schema.BidderCollection(data=results)

@@ -4,7 +4,7 @@ RecordDict = dict[str, Any]
 
 
 class CRUDInterface(Protocol):
-    def read_all(self) -> list[RecordDict]:
+    def read_all(self, limit: int = 0) -> list[RecordDict]:
         ...
 
     def read_by_id(self, id: int) -> RecordDict:

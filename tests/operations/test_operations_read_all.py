@@ -38,11 +38,23 @@ def generic_read_all_test(
     ]
     expected_result = result_schema(data=expected_result_data)
 
-    result = operation_function(interface)
+    # Test valid limit
+    limit = 100
+    result = operation_function(limit, interface)
     assert result.type == expected_result.type
     assert len(result.data) == len(expected_result.data)
     for item in result.data:
         assert item in expected_result.data
+
+    # Test limit of zero returns all records
+    limit = 0
+    result = operation_function(limit, interface)
+    assert len(result.data) == len(expected_result.data)
+
+    # Test negative limit returns no records
+    limit = -500
+    result = operation_function(limit, interface)
+    assert len(result.data) == 0
 
 
 def test_read_all_bidders(configured_sessionmaker: sessionmaker):
