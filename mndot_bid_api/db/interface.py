@@ -17,10 +17,24 @@ class DBModelInterface:
         self.model = model
         self.configured_sessionmaker = configured_sessionmaker
 
-    def read_all(self) -> list[RecordDict]:
-        """Returns all existing database records from the associated table."""
+    def read_all(self, limit: int = 0) -> list[RecordDict]:
+        """Returns all existing database records from the associated table.
+
+        Limit values:
+         - Negative: Returns no records
+         - Zero: Returns all records (default)
+         - Positive: Returns a number of records equal to the limit
+        """
+        if limit < 0:
+            return []
+
         with self.configured_sessionmaker() as db:
-            records = db.query(self.model).all()
+            records = None
+            if limit > 0:
+                records = db.query(self.model).limit(limit).all()
+            else:
+                records = db.query(self.model).all()
+
             if not records:
                 return []
 
