@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api import db, enums, operations, schema
+from mndot_bid_api import auth, db, enums, operations, schema
 
 invalid_bid_router = fastapi.APIRouter(prefix="/invalid_bid", tags=["invalid_bid"])
 
@@ -40,6 +40,7 @@ def api_read_invalid_bid_by_id(
 def api_create_invalid_bid(
     data: schema.BidCreateData,
     invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.InvalidBid:
 
     return operations.invalid_bids.create_invalid_bid(data, invalid_bid_interface)
@@ -54,6 +55,7 @@ def api_update_invalid_bid(
     invalid_bid_id: int,
     data: schema.InvalidBidUpdateData,
     invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.InvalidBid:
 
     return operations.invalid_bids.update_invalid_bid(
@@ -68,6 +70,7 @@ def api_update_invalid_bid(
 def api_delete_invalid_bid(
     invalid_bid_id: int,
     invalid_bid_interface=fastapi.Depends(db.get_invalid_bid_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> None:
 
     return operations.invalid_bids.delete_invalid_bid(

@@ -78,3 +78,9 @@ def raise_http_422_decode_error(err: UnicodeDecodeError):
     raise HTTPException(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail
     ) from err
+
+
+def raise_http_403_forbidden():
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN, detail="Not authenticated"
+    )

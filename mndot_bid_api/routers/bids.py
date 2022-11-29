@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api import db, enums, exceptions, operations, schema
+from mndot_bid_api import auth, db, enums, exceptions, operations, schema
 
 bid_router = fastapi.APIRouter(prefix="/bid", tags=["bid"])
 
@@ -39,6 +39,7 @@ def api_create_bid(
     data: schema.BidCreateData,
     bid_interface=fastapi.Depends(db.get_bid_interface),
     item_interface=fastapi.Depends(db.get_item_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.Bid | fastapi.responses.RedirectResponse:
 
     try:
@@ -61,6 +62,7 @@ def api_update_bid(
     bid_id: int,
     data: schema.BidUpdateData,
     bid_interface=fastapi.Depends(db.get_bid_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.Bid:
 
     return operations.bids.update_bid(bid_id, data, bid_interface)
@@ -73,6 +75,7 @@ def api_update_bid(
 def api_delete_bid(
     bid_id: int,
     bid_interface=fastapi.Depends(db.get_bid_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
 
     return operations.bids.delete_bid(bid_id, bid_interface)

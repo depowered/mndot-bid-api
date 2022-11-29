@@ -1,4 +1,4 @@
-import json
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -7,10 +7,10 @@ from mndot_bid_api import routers
 from mndot_bid_api.db import database
 from mndot_bid_api.db.load_sample_records import load_sample_records
 
-DEVELOPMENT_DATABASE_URL = "sqlite:///data/dev-api.db"
-PRODUCTION_DATABASE_URL = "sqlite:///data/prod-api.db"
+DEVELOPMENT_DATABASE_URL = os.getenv("DEVELOPMENT_DATABASE_URL")
+PRODUCTION_DATABASE_URL = os.getenv("PRODUCTION_DATABASE_URL")
 
-DEVELOPMENT_MODE = False
+DEVELOPMENT_MODE = True
 
 
 app = FastAPI(swagger_ui_parameters={"defaultModelsExpandDepth": -1})
@@ -39,6 +39,3 @@ app.include_router(routers.bid_router)
 app.include_router(routers.invalid_bid_router)
 app.include_router(routers.item_router)
 app.include_router(routers.etl_router)
-
-with open("./openapi.json", "w") as f:
-    f.write(json.dumps(app.openapi()))

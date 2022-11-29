@@ -2,7 +2,7 @@ from datetime import date
 
 import fastapi
 
-from mndot_bid_api import db, operations, schema
+from mndot_bid_api import auth, db, operations, schema
 
 contract_router = fastapi.APIRouter(prefix="/contract", tags=["contract"])
 
@@ -40,6 +40,7 @@ def api_read_contract(
 def api_create_contract(
     data: schema.ContractCreateData,
     contract_interface=fastapi.Depends(db.get_contract_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.Contract:
 
     return operations.contracts.create_contract(data, contract_interface)
@@ -54,6 +55,7 @@ def api_update_contract(
     contract_id: int,
     data: schema.ContractUpdateData,
     contract_interface=fastapi.Depends(db.get_contract_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.Contract:
 
     return operations.contracts.update_contract(contract_id, data, contract_interface)
@@ -66,6 +68,7 @@ def api_update_contract(
 def api_delete_contract(
     contract_id: int,
     contract_interface=fastapi.Depends(db.get_contract_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
 
     return operations.contracts.delete_contract(contract_id, contract_interface)
