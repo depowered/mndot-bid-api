@@ -10,7 +10,7 @@ from mndot_bid_api.db.load_sample_records import load_sample_records
 DEVELOPMENT_DATABASE_URL = "sqlite:///data/dev-api.db"
 PRODUCTION_DATABASE_URL = "sqlite:///data/prod-api.db"
 
-DEVELOPMENT_MODE = True
+DEVELOPMENT_MODE = False
 
 
 app = FastAPI(swagger_ui_parameters={"defaultModelsExpandDepth": -1})
