@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api import db, operations, schema
+from mndot_bid_api import auth, db, operations, schema
 
 item_router = fastapi.APIRouter(prefix="/item", tags=["item"])
 
@@ -35,7 +35,9 @@ def api_read_item_by_id(
     status_code=fastapi.status.HTTP_201_CREATED,
 )
 def api_create_item(
-    data: schema.ItemCreateData, item_interface=fastapi.Depends(db.get_item_interface)
+    data: schema.ItemCreateData,
+    item_interface=fastapi.Depends(db.get_item_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.Item:
 
     return operations.items.create_item(data, item_interface)
@@ -50,6 +52,7 @@ def api_update_item(
     item_id: int,
     data: schema.ItemUpdateData,
     item_interface=fastapi.Depends(db.get_item_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> schema.Item:
 
     return operations.items.update_item(item_id, data, item_interface)
@@ -62,6 +65,7 @@ def api_update_item(
 def api_delete_item(
     item_id: int,
     item_interface=fastapi.Depends(db.get_item_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ) -> None:
 
     return operations.items.delete_item(item_id, item_interface)
