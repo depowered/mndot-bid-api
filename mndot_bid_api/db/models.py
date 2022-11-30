@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Index, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -49,6 +49,17 @@ class Bid(Base):
     item = relationship("Item")
 
 
+Index(
+    "ix_invalidbid_definition",
+    Bid.contract_id,
+    Bid.bidder_id,
+    Bid.item_id,
+    Bid.quantity,
+    Bid.unit_price,
+    Bid.bid_type,
+)
+
+
 class InvalidBid(Base):
     __tablename__ = "invalid_bid"
 
@@ -69,6 +80,21 @@ class InvalidBid(Base):
     bidder = relationship("Bidder")
 
 
+Index(
+    "ix_bid_definition",
+    InvalidBid.contract_id,
+    InvalidBid.bidder_id,
+    InvalidBid.item_spec_code,
+    InvalidBid.item_unit_code,
+    InvalidBid.item_item_code,
+    InvalidBid.item_long_description,
+    InvalidBid.item_unit_abbreviation,
+    InvalidBid.quantity,
+    InvalidBid.unit_price,
+    InvalidBid.bid_type,
+)
+
+
 class Item(Base):
     __tablename__ = "item"
 
@@ -84,3 +110,24 @@ class Item(Base):
     in_spec_2018 = Column(Boolean, nullable=False, default=False)
     in_spec_2020 = Column(Boolean, nullable=False, default=False)
     in_spec_2022 = Column(Boolean, nullable=False, default=False)
+
+
+Index(
+    "ix_item_definition",
+    Item.spec_code,
+    Item.unit_code,
+    Item.item_code,
+    Item.short_description,
+    Item.long_description,
+    Item.unit,
+    Item.unit_abbreviation,
+)
+
+Index(
+    "ix_create_bid_search",
+    Item.spec_code,
+    Item.unit_code,
+    Item.item_code,
+    Item.long_description,
+    Item.unit_abbreviation,
+)
