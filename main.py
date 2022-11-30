@@ -7,10 +7,9 @@ from mndot_bid_api import routers
 from mndot_bid_api.db import database
 from mndot_bid_api.db.load_sample_records import load_sample_records
 
+MODE = os.getenv("MODE")
 DEVELOPMENT_DATABASE_URL = os.getenv("DEVELOPMENT_DATABASE_URL")
 PRODUCTION_DATABASE_URL = os.getenv("PRODUCTION_DATABASE_URL")
-
-DEVELOPMENT_MODE = True
 
 
 app = FastAPI(swagger_ui_parameters={"defaultModelsExpandDepth": -1})
@@ -20,12 +19,17 @@ app = FastAPI(swagger_ui_parameters={"defaultModelsExpandDepth": -1})
 def startup_event():
     dev_db_exists = Path("./data/dev-api.db").exists()
 
-    if DEVELOPMENT_MODE:
+    if not MODE or MODE not in ["development", "production"]:
+        raise ValueError(
+            "Environment variable MODE is invalid. Valid values: development, production"
+        )
+
+    if MODE == "development":
         database.init_sqlite_db(url=DEVELOPMENT_DATABASE_URL)
         if not dev_db_exists:
             load_sample_records()
-    else:
-        database.init_sqlite_db(url=PRODUCTION_DATABASE_URL)
+
+    database.init_sqlite_db(url=PRODUCTION_DATABASE_URL)
 
 
 @app.get("/", include_in_schema=False)
