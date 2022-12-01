@@ -31,8 +31,8 @@ def startup_event():
         database.init_sqlite_db(url=development_database_url)
         if not dev_db_exists:
             load_sample_records()
-
-    database.init_sqlite_db(url=production_database_url)
+    else:
+        database.init_sqlite_db(url=production_database_url)
 
 
 @app.get("/", include_in_schema=False)
