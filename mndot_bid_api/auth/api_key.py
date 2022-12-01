@@ -9,7 +9,7 @@ from fastapi.security.api_key import APIKeyHeader
 from mndot_bid_api import exceptions
 
 API_KEY = os.getenv("API_KEY")
-API_KEY_NAME = "access_token"
+API_KEY_NAME = "Access-Token"
 
 api_key_header = APIKeyHeader(name=API_KEY_NAME)
 
