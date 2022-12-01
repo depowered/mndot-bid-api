@@ -10,7 +10,7 @@ from mndot_bid_api.db.load_sample_records import load_sample_records
 MODE = os.getenv("MODE")
 ENGINE_DIALECT = "sqlite:///"
 DEVELOPMENT_DATABASE_PATH = str(os.getenv("DEVELOPMENT_DATABASE_PATH"))
-PRODUCTION_DATABASE_PATH = str(os.getenv("DEVELOPMENT_DATABASE_PATH"))
+PRODUCTION_DATABASE_PATH = str(os.getenv("PRODUCTION_DATABASE_PATH"))
 
 development_database_url = ENGINE_DIALECT + DEVELOPMENT_DATABASE_PATH
 production_database_url = ENGINE_DIALECT + PRODUCTION_DATABASE_PATH
