@@ -1,0 +1,19 @@
+version: "0.1"
+services:
+  dev-backend:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../mnt/sqlite:/app/data:rw
+    env_file:
+      - ../mnt/config/.env.dev
+
+  prod-backend:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../mnt/sqlite:/app/data:rw
+    env_file:
+      - ../mnt/config/.env.prod
