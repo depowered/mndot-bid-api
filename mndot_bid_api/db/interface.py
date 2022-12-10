@@ -83,12 +83,22 @@ class DBModelInterface:
     def create(self, data: RecordDict) -> RecordDict:
         """Creates a new record in the database."""
         with self.configured_sessionmaker() as db:
+            record = None
+
             if isinstance(self.model(), models.Item):
+                # Query with a subset of fields in data
                 self._raise_if_item_record_exists(**data)
-            else:
+            elif isinstance(self.model(), models.Bid) or isinstance(
+                self.model(), models.InvalidBid
+            ):
+                # Query with all fields of data
                 record = db.query(self.model).filter_by(**data).first()
-                if record:
-                    raise RecordAlreadyExistsError({"id": record.id})
+            else:
+                # Query by id
+                record = db.query(self.model).filter_by(id=data.get("id")).first()
+
+            if record:
+                raise RecordAlreadyExistsError({"id": record.id})
 
             new_record = self.model(**data)
             db.add(new_record)

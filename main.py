@@ -1,31 +1,52 @@
 import os
-from pathlib import Path
 
 from fastapi import FastAPI
 
 from mndot_bid_api import routers
 from mndot_bid_api.db import database
-from mndot_bid_api.db.load_sample_records import load_sample_records
 
-DEVELOPMENT_DATABASE_URL = os.getenv("DEVELOPMENT_DATABASE_URL")
-PRODUCTION_DATABASE_URL = os.getenv("PRODUCTION_DATABASE_URL")
+DB_FILE = str(os.getenv("DB_FILE"))
+DB_URL = f"sqlite:///data/{DB_FILE}"
 
-DEVELOPMENT_MODE = True
+description = """
+### Purpose
+Backend service for extracting bid information from MnDOT's published 
+[abstracts](https://www.dot.state.mn.us/bidlet/abstract.html) and providing 
+create, read, update and delete operations to manage the extracted data.
+
+### Route Categories
+**contract**: General project data for a particular abstract including letting date, 
+SP Number, MnDOT District, etc.
+
+**bidder**: ID and name of prime contractors that have submitted a bid proposal that 
+was ranked as the three lowest bid proposals.
+
+**bid**: Invididual bid records including engineers estimates, winning bidder, and losing bidders.
+
+**invalid_bid**: Bid records for items that do not conform to the MnDOT Standard Specifications.
+
+**item**: Items defined in the MnDOT Standard Specifications.
+
+**etl**: Extract, Transform, Load operations that modify the database records based on CSV uploads 
+for MnDOT Standard Specification item lists or published abstracts.
+
+### Contract
+Created and maintained by: [devin@powergeospatial.xyz](mailto:devin@powergeospatial.xyz)
+
+"""
 
 
-app = FastAPI(swagger_ui_parameters={"defaultModelsExpandDepth": -1})
+app = FastAPI(
+    title="MnDOT Bid API",
+    description=description,
+    version="0.2.0",
+    swagger_ui_parameters={"defaultModelsExpandDepth": -1},
+)
 
 
 @app.on_event("startup")
 def startup_event():
-    dev_db_exists = Path("./data/dev-api.db").exists()
-
-    if DEVELOPMENT_MODE:
-        database.init_sqlite_db(url=DEVELOPMENT_DATABASE_URL)
-        if not dev_db_exists:
-            load_sample_records()
-    else:
-        database.init_sqlite_db(url=PRODUCTION_DATABASE_URL)
+    database.init_sqlite_db(url=DB_URL)
 
 
 @app.get("/", include_in_schema=False)

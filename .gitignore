@@ -1,4 +1,7 @@
-/data
+# Ignore all content in the data directory
+/data/*
+# Do not ignore the empty placeholder file so that the directory is tracked
+!/data/.dataplaceholder
 
 # ignore settings
 .vscode
