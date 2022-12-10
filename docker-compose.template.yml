@@ -1,0 +1,21 @@
+version: "0.2"
+services:
+  dev-backend:
+    image: imageName
+    ports:
+      - "ip.to.host.server:hostport:8080"
+    volumes:
+      - /path/to/sqlite:/app/data:rw
+    env_file:
+      - /path/to/.env.dev
+    restart: unless-stopped
+
+  prod-backend:
+    image: imageName
+    ports:
+      - "ip.to.host.server:hostport:8080"
+    volumes:
+      - /path/to/sqlite:/app/data:rw
+    env_file:
+      - /path/to/.env.prod
+    restart: unless-stopped
