@@ -1,1 +1,1 @@
-from . import bidders, bids, contracts, invalid_bids, items
+from . import bidders, bids, contracts, invalid_bids, items, views
