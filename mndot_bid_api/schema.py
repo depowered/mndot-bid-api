@@ -275,9 +275,9 @@ class AbstractETL(BaseModel):
 #############################################################################
 
 
-class AverageBidPrice(BaseModel):
+class WeightedAvgUnitPrice(BaseModel):
     item_id: int
     year: int
     bid_type: enums.BidType
-    avg_unit_price: float
+    weighted_avg_unit_price: float
     occurances: int
