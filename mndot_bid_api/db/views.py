@@ -1,8 +1,8 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
 
-from mndot_bid_api.schema import WeightedAvgUnitPrice
 from mndot_bid_api.db import database, models
+from mndot_bid_api.schema import WeightedAvgUnitPrice
 
 
 class ViewInterface:
@@ -29,6 +29,12 @@ class ViewInterface:
         with self.configured_sessionmaker() as session:
             results = session.execute(view.where(models.Bid.item_id == item_id))
             return [WeightedAvgUnitPrice(**row) for row in results.all()]
+
+    def all_contract_ids(self) -> list[int]:
+        query = sa.select(models.Contract.id.label("contract_id"))
+        with self.configured_sessionmaker() as session:
+            results = session.execute(query)
+            return [row.contract_id for row in results.all()]
 
 
 def get_view_interface() -> ViewInterface:

@@ -8,3 +8,6 @@ class ViewInterface(Protocol):
         self, item_id: int
     ) -> list[schema.WeightedAvgUnitPrice]:
         ...
+
+    def all_contract_ids(self) -> list[int]:
+        ...

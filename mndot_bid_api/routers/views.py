@@ -16,3 +16,11 @@ def api_weighted_avg_bid_prices_by_year(
 ) -> list[schema.WeightedAvgUnitPrice]:
 
     return operations.views.weighted_avg_bid_prices_by_year(item_id, view_interface)
+
+
+@view_router.get("/all_contract_ids/", status_code=fastapi.status.HTTP_200_OK)
+def api_all_contract_ids(
+    view_interface=fastapi.Depends(db.get_view_interface),
+) -> list[int]:
+
+    return operations.views.all_contract_ids(view_interface)
