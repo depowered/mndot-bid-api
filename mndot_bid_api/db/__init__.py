@@ -5,3 +5,4 @@ from .interface import (
     get_invalid_bid_interface,
     get_item_interface,
 )
+from .views import get_view_interface

@@ -270,3 +270,14 @@ class AbstractETL(BaseModel):
     contract_results: list[ContractLoadResult]
     bidder_results: list[BidderLoadResult]
     bid_results: list[BidLoadResult | InvalidBidLoadResult]
+
+
+#############################################################################
+
+
+class WeightedAvgUnitPrice(BaseModel):
+    item_id: int
+    year: int
+    bid_type: enums.BidType
+    weighted_avg_unit_price: float
+    occurances: int
