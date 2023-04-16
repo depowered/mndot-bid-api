@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
 
@@ -7,6 +8,11 @@ from mndot_bid_api.db import database
 
 DB_FILE = str(os.getenv("DB_FILE"))
 DB_URL = f"sqlite:///data/{DB_FILE}"
+
+# Verify that the CSV directory exists before startup
+CSV_DIR = Path(os.getenv("CSV_DIR"))
+if not CSV_DIR.exists() and not CSV_DIR.is_dir():
+    raise FileNotFoundError(f"CSV Directory does not exist at: {CSV_DIR}")
 
 description = """
 ### Purpose
