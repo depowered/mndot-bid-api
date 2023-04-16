@@ -1,8 +1,12 @@
+import os
+from pathlib import Path
+
 from fastapi import UploadFile
 
 from mndot_bid_api import exceptions
 from mndot_bid_api.etl.extract import read_abstract_csv
 from mndot_bid_api.etl.load import load_bidders, load_bids, load_contract
+from mndot_bid_api.etl.scrape import download_abstract_csv
 from mndot_bid_api.etl.transform import (
     transform_bidders,
     transform_bids,
@@ -21,7 +25,6 @@ def abstract_etl_pipeline(
     bidder_interface: CRUDInterface,
     item_interface: CRUDInterface,
 ) -> AbstractETL:
-
     try:
         csv_content: CSVContent = csv.file.read().decode()
     except UnicodeDecodeError as err:
@@ -59,3 +62,15 @@ def abstract_etl_pipeline(
     )
 
     return abstract_etl
+
+
+async def async_abstract_etl_pipeline(
+    etl_id: int, contract_id: int, abstract_etl_status_interface: CRUDInterface
+) -> None:
+    # Download the csv if it does not exist
+    csv_dir = Path(os.getenv("CSV_DIR"))
+    csv_file = csv_dir / f"{contract_id}.csv"
+    if not csv_file.exists():
+        download_abstract_csv(contract_id)
+    # Update the etl status
+    abstract_etl_status_interface.update(id=etl_id, data={"csv_downloaded": True})

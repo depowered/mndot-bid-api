@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api import auth, db, schema, operations
+from mndot_bid_api import auth, db, operations, schema
 from mndot_bid_api.etl.pipeline.abstract import abstract_etl_pipeline
 from mndot_bid_api.etl.pipeline.item_list import item_list_etl_pipeline
 from mndot_bid_api.operations.crud_interface import CRUDInterface
@@ -18,7 +18,6 @@ def api_item_list_etl(
     item_interface: CRUDInterface = fastapi.Depends(db.get_item_interface),
     api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
-
     return item_list_etl_pipeline(csv, item_interface)
 
 
@@ -38,7 +37,6 @@ def api_abstract_etl(
     item_interface: CRUDInterface = fastapi.Depends(db.get_item_interface),
     api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
-
     return abstract_etl_pipeline(
         csv,
         contract_interface,
@@ -52,12 +50,33 @@ def api_abstract_etl(
 @etl_router.get(
     "/abstract/status/{etl_id}",
     status_code=fastapi.status.HTTP_200_OK,
-    response_model=schema.AbstractETLStatusResult
+    response_model=schema.AbstractETLStatusResult,
 )
 def api_read_abstract_etl_status(
     etl_id: int,
-    abstract_etl_status_interface: CRUDInterface = fastapi.Depends(db.get_abstract_etl_status_interface),
-    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key)
+    abstract_etl_status_interface: CRUDInterface = fastapi.Depends(
+        db.get_abstract_etl_status_interface
+    ),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
+    return operations.etl.read_abstract_etl_status(
+        etl_id, abstract_etl_status_interface
+    )
 
-    return operations.etl.read_abstract_etl_status(etl_id, abstract_etl_status_interface)
+
+@etl_router.get(
+    "/abstract/process/{contract_id}",
+    status_code=fastapi.status.HTTP_200_OK,
+    response_model=schema.AbstractETLStatusResult,
+)
+def api_dispatch_abstract_etl(
+    contract_id: int,
+    background_tasks: fastapi.BackgroundTasks,
+    abstract_etl_status_interface: CRUDInterface = fastapi.Depends(
+        db.get_abstract_etl_status_interface
+    ),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
+):
+    return operations.etl.dispatch_abstract_etl(
+        contract_id, background_tasks, abstract_etl_status_interface
+    )
