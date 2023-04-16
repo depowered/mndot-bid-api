@@ -187,3 +187,8 @@ def get_invalid_bid_interface() -> DBModelInterface:
 def get_item_interface() -> DBModelInterface:
     """Return a DBModelInterface configured for Item model operations."""
     return DBModelInterface(models.Item, database.DBSession)
+
+
+def get_abstract_etl_status_interface() -> DBModelInterface:
+    """Return a DBModelInterface configured for ETLStatus model operations."""
+    return DBModelInterface(models.AbstractETLStatus, database.DBSession)

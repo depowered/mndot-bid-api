@@ -4,5 +4,6 @@ from .interface import (
     get_contract_interface,
     get_invalid_bid_interface,
     get_item_interface,
+    get_abstract_etl_status_interface,
 )
 from .views import get_view_interface
