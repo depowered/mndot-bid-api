@@ -23,6 +23,11 @@ def dispatch_abstract_etl(
     contract_id: int,
     background_tasks: fastapi.BackgroundTasks,
     abstract_etl_status_interface: CRUDInterface,
+    contract_interface: CRUDInterface,
+    bid_interface: CRUDInterface,
+    invalid_bid_interface: CRUDInterface,
+    bidder_interface: CRUDInterface,
+    item_interface: CRUDInterface,
 ) -> schema.AbstractETLStatusResult:
     # Create initial status record
     etl_status = abstract_etl_status_interface.create(data={"contract_id": contract_id})
@@ -33,6 +38,11 @@ def dispatch_abstract_etl(
         etl_id=etl_status["id"],
         contract_id=contract_id,
         abstract_etl_status_interface=abstract_etl_status_interface,
+        contract_interface=contract_interface,
+        bid_interface=bid_interface,
+        invalid_bid_interface=invalid_bid_interface,
+        bidder_interface=bidder_interface,
+        item_interface=item_interface,
     )
 
     return schema.AbstractETLStatusResult(**etl_status)

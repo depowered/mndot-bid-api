@@ -75,8 +75,22 @@ def api_dispatch_abstract_etl(
     abstract_etl_status_interface: CRUDInterface = fastapi.Depends(
         db.get_abstract_etl_status_interface
     ),
+    contract_interface: CRUDInterface = fastapi.Depends(db.get_contract_interface),
+    bid_interface: CRUDInterface = fastapi.Depends(db.get_bid_interface),
+    invalid_bid_interface: CRUDInterface = fastapi.Depends(
+        db.get_invalid_bid_interface
+    ),
+    bidder_interface: CRUDInterface = fastapi.Depends(db.get_bidder_interface),
+    item_interface: CRUDInterface = fastapi.Depends(db.get_item_interface),
     api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
     return operations.etl.dispatch_abstract_etl(
-        contract_id, background_tasks, abstract_etl_status_interface
+        contract_id,
+        background_tasks,
+        abstract_etl_status_interface,
+        contract_interface,
+        bid_interface,
+        invalid_bid_interface,
+        bidder_interface,
+        item_interface,
     )
