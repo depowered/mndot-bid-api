@@ -14,7 +14,6 @@ from mndot_bid_api.schema import ContractCreateData, ContractLoadResult
 def load_contract(
     transformed_contract: TransformedContractDF, contract_interface: CRUDInterface
 ) -> list[ContractLoadResult]:
-
     entries: list[dict[str, Any]] = [
         row._asdict()
         for row in transformed_contract.itertuples(index=False, name="Contract")
@@ -38,3 +37,20 @@ def load_contract(
         load_results.append(load_result)
 
     return load_results
+
+
+@pa.check_io(transformed_contract=TransformedContract.to_schema())
+def load_contract_quiet(
+    transformed_contract: TransformedContractDF, contract_interface: CRUDInterface
+) -> None:
+    entries: list[dict[str, Any]] = [
+        row._asdict()
+        for row in transformed_contract.itertuples(index=False, name="Contract")
+    ]
+
+    for entry in entries:
+        create_data = ContractCreateData(**entry)
+        try:
+            _ = create_contract(create_data, contract_interface)
+        except exceptions.HTTPException:
+            pass  # TODO: Add logging

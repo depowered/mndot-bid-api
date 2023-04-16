@@ -18,7 +18,6 @@ def load_bids(
     item_interface: CRUDInterface,
     invalid_bid_interface: CRUDInterface,
 ) -> list[BidLoadResult]:
-
     entries: list[dict[str, Any]] = [
         row._asdict() for row in transformed_bids.itertuples(index=False, name="Bid")
     ]
@@ -51,3 +50,27 @@ def load_bids(
         load_results.append(load_result)
 
     return load_results
+
+
+@pa.check_io(transformed_bids=TransformedBids.to_schema())
+def load_bids_quiet(
+    transformed_bids: TransformedBidsDF,
+    bid_interface: CRUDInterface,
+    item_interface: CRUDInterface,
+    invalid_bid_interface: CRUDInterface,
+) -> None:
+    entries: list[dict[str, Any]] = [
+        row._asdict() for row in transformed_bids.itertuples(index=False, name="Bid")
+    ]
+
+    for entry in entries:
+        create_data = BidCreateData(**entry)
+        try:
+            _ = create_bid(create_data, bid_interface, item_interface)
+        except exceptions.HTTPException:
+            pass  # TODO Add logging
+        except exceptions.InvalidBidError:
+            try:
+                _ = create_invalid_bid(create_data, invalid_bid_interface)
+            except exceptions.HTTPException:
+                pass  # TODO Add logging
