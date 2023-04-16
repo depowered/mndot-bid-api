@@ -1,6 +1,17 @@
-from sqlalchemy import Boolean, Column, Date, Float, ForeignKey, Index, Integer, String, DateTime
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 Base = declarative_base()
 
@@ -137,7 +148,9 @@ class AbstractETLStatus(Base):
     __tablename__ = "etlstatus"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(DateTime, nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
     contract_id = Column(Integer, nullable=False)
     csv_downloaded = Column(Boolean, nullable=True)
     extracted = Column(Boolean, nullable=True)
