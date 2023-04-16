@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, constr
 
@@ -255,6 +255,21 @@ class ItemLoadResult(BaseModel):
     message: str | None = None
     input_data: ItemCreateData
     record_data: Item | None = None
+
+
+#############################################################################
+
+
+class AbstractETLStatusResult(BaseModel):
+    id: int
+    created_at: datetime
+    contract_id: int
+    csv_downloaded: bool | None
+    extracted: bool | None
+    transformed: bool | None
+    loaded: bool | None
+    successful: bool | None
+    error_msg: str | None
 
 
 #############################################################################

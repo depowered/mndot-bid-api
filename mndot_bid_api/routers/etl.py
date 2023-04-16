@@ -1,6 +1,6 @@
 import fastapi
 
-from mndot_bid_api import auth, db, schema
+from mndot_bid_api import auth, db, schema, operations
 from mndot_bid_api.etl.pipeline.abstract import abstract_etl_pipeline
 from mndot_bid_api.etl.pipeline.item_list import item_list_etl_pipeline
 from mndot_bid_api.operations.crud_interface import CRUDInterface
@@ -47,3 +47,17 @@ def api_abstract_etl(
         bidder_interface,
         item_interface,
     )
+
+
+@etl_router.get(
+    "/abstract/status/{etl_id}",
+    status_code=fastapi.status.HTTP_200_OK,
+    response_model=schema.AbstractETLStatusResult
+)
+def api_read_abstract_etl_status(
+    etl_id: int,
+    abstract_etl_status_interface: CRUDInterface = fastapi.Depends(db.get_abstract_etl_status_interface),
+    api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key)
+):
+
+    return operations.etl.read_abstract_etl_status(etl_id, abstract_etl_status_interface)
