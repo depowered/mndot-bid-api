@@ -1,1 +1,1 @@
-from .abstract import download_abstract_csv, scrape_contract_ids
+from .abstract import get_abstract_csv_path, scrape_contract_ids

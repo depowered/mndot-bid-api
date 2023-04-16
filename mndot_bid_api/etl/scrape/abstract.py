@@ -4,6 +4,7 @@ from pathlib import Path
 import httpx
 import pandas as pd
 
+
 def scrape_contract_ids(year: int) -> list[int]:
     # Form data is copied from the request produced by naviating to the page in Firefox
     form_data = {
@@ -16,30 +17,51 @@ def scrape_contract_ids(year: int) -> list[int]:
         "ctl00$MainContent$rdAbstractSearch": "0",
         "ctl00$MainContent$drpLettingYear": year,
         "ctl00$MainContent$drpLettingMonth": "0",
-        "ctl00$MainContent$drpPage": "20000"
+        "ctl00$MainContent$drpPage": "20000",
     }
     url = "https://transport.dot.state.mn.us/PostLetting/Abstract.aspx"
     r = httpx.post(url, data=form_data)
     r.raise_for_status()  # Raises an HTTPStatusError if unsucessfull
 
-    dfs = pd.read_html(r.text, flavor="bs4")  # Parse the tables (2) in the DOM into DataFrames
+    dfs = pd.read_html(
+        r.text, flavor="bs4"
+    )  # Parse the tables (2) in the DOM into DataFrames
     df = dfs[1]  # The second table has desired content
-    df = df[:-1]  # Drop last row which is always the text "Total number of record(s) found = n"
+    df = df[
+        :-1
+    ]  # Drop last row which is always the text "Total number of record(s) found = n"
 
     return df["Contract Id"].astype(int).to_list()
 
-def download_abstract_csv(contract_id: int) -> None:
+
+def download_abstract_csv(contract_id: int, file_path: Path) -> None:
+    try:
+        url = f"https://transport.dot.state.mn.us/PostLetting/abstractCSV.aspx?ContractId={contract_id}"
+        r = httpx.get(url)
+        r.raise_for_status()  # Raises an HTTPStatusError if unsucessfull
+    except httpx.HTTPStatusError as err:
+        raise err
+
+    # Write csv to filesystem
+    with open(file_path, "w") as f:
+        f.write(r.text)
+
+
+def get_abstract_csv_path(contract_id: int) -> Path:
     # Get CSV Directory environment variable and verify that it exists
     csv_dir = Path(os.getenv("CSV_DIR"))
     if not csv_dir.exists() and not csv_dir.is_dir():
         raise FileNotFoundError(f"CSV Directory does not exist at: {csv_dir}")
 
-    # Request the csv file
-    url = f"https://transport.dot.state.mn.us/PostLetting/abstractCSV.aspx?ContractId={contract_id}"
-    r = httpx.get(url)
-    r.raise_for_status()  # Raises an HTTPStatusError if unsucessfull
-
-    # Write csv to filesystem
+    # Return early if abstract csv already exists
     file_path = csv_dir / f"{contract_id}.csv"
-    with open(file_path, "w") as f:
-        f.write(r.text)
+    if file_path.exists():
+        return file_path
+
+    # Download CSV
+    try:
+        download_abstract_csv(contract_id, file_path)
+    except httpx.HTTPStatusError as err:
+        raise err
+
+    return file_path
