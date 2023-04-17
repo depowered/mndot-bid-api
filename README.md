@@ -33,6 +33,7 @@ $ docker push depowered/mndot-bid-api:tagname
     ```
     API_KEY     # key for authenticating ETL, create, update, and delete routes
     DB_FILE     # sqlite file name
+    CSV_DIR     # directory to store downloaded abstract csv files
     ```
 
 2. Rename the docker-compose.template.yml to docker-compose.yml
