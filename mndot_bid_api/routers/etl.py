@@ -66,7 +66,7 @@ def api_read_abstract_etl_status(
 
 @etl_router.get(
     "/abstract/process/{contract_id}",
-    status_code=fastapi.status.HTTP_200_OK,
+    status_code=fastapi.status.HTTP_202_ACCEPTED,
     response_model=schema.AbstractETLStatusResult,
 )
 def api_dispatch_abstract_etl(
@@ -94,3 +94,12 @@ def api_dispatch_abstract_etl(
         bidder_interface,
         item_interface,
     )
+
+
+@etl_router.get(
+    "/abstract/scrape/{year}",
+    status_code=fastapi.status.HTTP_200_OK,
+    response_model=schema.ScrapeAbstractResult,
+)
+def api_scrape_abstracts(year: int):
+    return operations.etl.scrape_abstracts(year)

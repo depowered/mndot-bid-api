@@ -272,6 +272,14 @@ class AbstractETLStatusResult(BaseModel):
     error_msg: str | None
 
 
+class ScrapeAbstractResult(BaseModel):
+    year: int
+    total_abstract_count: int
+    new_count: int
+    abstracts_downloaded: list[int]
+    failed_to_download: list[int]
+
+
 #############################################################################
 
 
