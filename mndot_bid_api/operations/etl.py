@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import fastapi
 import httpx
@@ -7,6 +6,7 @@ from mndot_bid_api import exceptions, schema
 from mndot_bid_api.etl.pipeline.abstract import async_abstract_etl_pipeline
 from mndot_bid_api.etl.scrape.abstract import download_abstract_csv, scrape_contract_ids
 from mndot_bid_api.operations.crud_interface import CRUDInterface
+from mndot_bid_api.core.config import CSV_DIR
 
 
 def read_abstract_etl_status(
@@ -57,7 +57,7 @@ def scrape_abstracts(year: int) -> schema.ScrapeAbstractResult:
     scraped_contract_ids = set(scrape_contract_ids(year))
 
     # Get a list of all csvs in the in the CSV_DIR
-    csv_dir = Path(os.getenv("CSV_DIR"))
+    csv_dir_path = Path(CSV_DIR)
     existing_contract_ids = {int(f.stem) for f in csv_dir.glob("*.csv")}
 
     # Download the missing csvs

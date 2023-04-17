@@ -1,15 +1,11 @@
 """
 Adapted from: https://nilsdebruin.medium.com/fastapi-authentication-revisited-enabling-api-key-authentication-122dc5975680
 """
-import os
-
 from fastapi import Security
 from fastapi.security.api_key import APIKeyHeader
 
+from mndot_bid_api.core.config import API_KEY, API_KEY_NAME
 from mndot_bid_api import exceptions
-
-API_KEY = os.getenv("API_KEY")
-API_KEY_NAME = "Access-Token"
 
 api_key_header = APIKeyHeader(name=API_KEY_NAME)
 

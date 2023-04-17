@@ -13,6 +13,7 @@ APP_VERSION = (
 )
 
 API_KEY = config("API_KEY", cast=Secret)
+API_KEY_NAME = "Access-Token"
 
 DB_DIR = config("DB_DIR", default="./data")
 DB_FILE = config("DB_FILE", default="dev-api.db")

@@ -1,8 +1,9 @@
-import os
 from pathlib import Path
 
 import httpx
 import pandas as pd
+
+from mndot_bid_api.core.config import CSV_DIR
 
 
 def scrape_contract_ids(year: int) -> list[int]:
@@ -49,12 +50,12 @@ def download_abstract_csv(contract_id: int, file_path: Path) -> None:
 
 def get_abstract_csv_path(contract_id: int) -> Path:
     # Get CSV Directory environment variable and verify that it exists
-    csv_dir = Path(os.getenv("CSV_DIR"))
-    if not csv_dir.exists() and not csv_dir.is_dir():
-        raise FileNotFoundError(f"CSV Directory does not exist at: {csv_dir}")
+    csv_dir_path = Path(CSV_DIR)
+    if not csv_dir_path.exists() and not csv_dir_path.is_dir():
+        raise FileNotFoundError(f"CSV Directory does not exist at: {csv_dir_path}")
 
     # Return early if abstract csv already exists
-    file_path = csv_dir / f"{contract_id}.csv"
+    file_path = csv_dir_path / f"{contract_id}.csv"
     if file_path.exists():
         return file_path
 
