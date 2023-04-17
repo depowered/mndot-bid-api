@@ -1,7 +1,3 @@
-import os
-from functools import partial
-from pathlib import Path
-
 import httpx
 from fastapi import UploadFile
 
