@@ -20,4 +20,6 @@ __pycache__
 *.db
 
 # Ignore dotenv
-.env
+.env.*
+# Keep the template
+!.env.template

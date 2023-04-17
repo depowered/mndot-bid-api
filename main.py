@@ -1,17 +1,13 @@
-import os
 from pathlib import Path
 
 from fastapi import FastAPI
 
 from mndot_bid_api import routers
 from mndot_bid_api.db import database
-
-DB_FILE = str(os.getenv("DB_FILE"))
-DB_URL = f"sqlite:///data/{DB_FILE}"
+from mndot_bid_api.core.config import DB_URL, CSV_DIR, APP_TITLE, APP_VERSION
 
 # Verify that the CSV directory exists before startup
-CSV_DIR = Path(os.getenv("CSV_DIR"))
-if not CSV_DIR.exists() and not CSV_DIR.is_dir():
+if not Path(CSV_DIR).exists() and not Path(CSV_DIR).is_dir():
     raise FileNotFoundError(f"CSV Directory does not exist at: {CSV_DIR}")
 
 description = """
@@ -43,9 +39,9 @@ Created and maintained by: [devin@powergeospatial.xyz](mailto:devin@powergeospat
 
 
 app = FastAPI(
-    title="MnDOT Bid API",
+    title=APP_TITLE,
     description=description,
-    version="0.2.0",
+    version=APP_VERSION,
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
 )
 
