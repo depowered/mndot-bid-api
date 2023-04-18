@@ -11,7 +11,7 @@ api_key_header = APIKeyHeader(name=API_KEY_NAME)
 
 
 def authorize_api_key(api_key_header: str = Security(api_key_header)) -> str:
-    if api_key_header and api_key_header == API_KEY:
+    if api_key_header and api_key_header == str(API_KEY):
         return api_key_header
     else:
         exceptions.raise_http_403_forbidden()
