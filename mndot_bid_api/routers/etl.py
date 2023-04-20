@@ -55,7 +55,7 @@ def api_abstract_etl(
 def api_read_abstract_etl_status(
     contract_id: int,
     abstract_etl_status_interface: CRUDInterface = fastapi.Depends(
-        db.get_abstract_etl_status_interface
+        db.get_abstract_etl_interface
     ),
     api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
@@ -73,7 +73,7 @@ def api_dispatch_abstract_etl(
     contract_id: int,
     background_tasks: fastapi.BackgroundTasks,
     abstract_etl_status_interface: CRUDInterface = fastapi.Depends(
-        db.get_abstract_etl_status_interface
+        db.get_abstract_etl_interface
     ),
     contract_interface: CRUDInterface = fastapi.Depends(db.get_contract_interface),
     bid_interface: CRUDInterface = fastapi.Depends(db.get_bid_interface),
