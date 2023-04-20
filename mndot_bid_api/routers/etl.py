@@ -48,26 +48,26 @@ def api_abstract_etl(
 
 
 @etl_router.get(
-    "/abstract/status/{etl_id}",
+    "/abstract_etl_status/{contract_id}",
     status_code=fastapi.status.HTTP_200_OK,
-    response_model=schema.AbstractETLStatusResult,
+    response_model=schema.AbstractETLResult,
 )
 def api_read_abstract_etl_status(
-    etl_id: int,
+    contract_id: int,
     abstract_etl_status_interface: CRUDInterface = fastapi.Depends(
         db.get_abstract_etl_status_interface
     ),
     api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
     return operations.etl.read_abstract_etl_status(
-        etl_id, abstract_etl_status_interface
+        contract_id, abstract_etl_status_interface
     )
 
 
 @etl_router.get(
     "/abstract/process/{contract_id}",
     status_code=fastapi.status.HTTP_202_ACCEPTED,
-    response_model=schema.AbstractETLStatusResult,
+    response_model=schema.AbstractETLResult,
 )
 def api_dispatch_abstract_etl(
     contract_id: int,

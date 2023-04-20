@@ -10,15 +10,15 @@ from mndot_bid_api.core.config import CSV_DIR
 
 
 def read_abstract_etl_status(
-    etl_id: int, abstract_etl_status_interface: CRUDInterface
-) -> schema.AbstractETLStatusResult:
+    contract_id: int, abstract_etl_status_interface: CRUDInterface
+) -> schema.AbstractETLResult:
     try:
-        record = abstract_etl_status_interface.read_by_id(etl_id)
+        record = abstract_etl_status_interface.read_by_id(contract_id)
 
     except exceptions.RecordNotFoundError as exc:
-        exceptions.raise_http_404(model_name="AbstractETLStatus", id=etl_id, exc=exc)
+        exceptions.raise_http_404(model_name="AbstractETL", id=contract_id, exc=exc)
 
-    result = schema.AbstractETLStatusResult(**record)
+    result = schema.AbstractETLResult(**record)
 
     return result
 
@@ -32,7 +32,7 @@ def dispatch_abstract_etl(
     invalid_bid_interface: CRUDInterface,
     bidder_interface: CRUDInterface,
     item_interface: CRUDInterface,
-) -> schema.AbstractETLStatusResult:
+) -> schema.AbstractETLResult:
     # Create initial status record
     etl_status = abstract_etl_status_interface.create(data={"contract_id": contract_id})
 
@@ -49,7 +49,7 @@ def dispatch_abstract_etl(
         item_interface=item_interface,
     )
 
-    return schema.AbstractETLStatusResult(**etl_status)
+    return schema.AbstractETLResult(**etl_status)
 
 
 def scrape_abstracts(year: int) -> schema.ScrapeAbstractResult:

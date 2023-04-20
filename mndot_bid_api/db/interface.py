@@ -191,4 +191,4 @@ def get_item_interface() -> DBModelInterface:
 
 def get_abstract_etl_status_interface() -> DBModelInterface:
     """Return a DBModelInterface configured for ETLStatus model operations."""
-    return DBModelInterface(models.AbstractETLStatus, database.DBSession)
+    return DBModelInterface(models.AbstractETL, database.DBSession)

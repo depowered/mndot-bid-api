@@ -144,17 +144,17 @@ Index(
 )
 
 
-class AbstractETLStatus(Base):
-    __tablename__ = "etlstatus"
+class AbstractETL(Base):
+    __tablename__ = "abstractetl"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    contract_id = Column(Integer, nullable=False)
-    csv_downloaded = Column(Boolean, nullable=True)
-    extracted = Column(Boolean, nullable=True)
-    transformed = Column(Boolean, nullable=True)
-    loaded = Column(Boolean, nullable=True)
+    contract_id = Column(Integer, ForeignKey("contract.id"), nullable=False)
+    stage = Column(String, nullable=True)
     successful = Column(Boolean, nullable=True)
     error_msg = Column(String, nullable=True)
+
+    # Relationships
+    contract = relationship("Contract")

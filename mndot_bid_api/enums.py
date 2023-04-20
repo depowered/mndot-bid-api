@@ -7,6 +7,14 @@ class ExtendedEnum(enum.Enum):
         return [member.value for member in cls]
 
 
+class AbstractETLStage(str, ExtendedEnum):
+    FETCH = "FETCH"
+    EXTRACT = "EXTRACT"
+    TRANSFORM = "TRANSFORM"
+    LOAD = "LOAD"
+    COMPLETE = "COMPLETE"
+
+
 class SpecYear(str, ExtendedEnum):
     SPEC_2016 = "2016"
     SPEC_2018 = "2018"

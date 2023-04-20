@@ -260,17 +260,13 @@ class ItemLoadResult(BaseModel):
 #############################################################################
 
 
-class AbstractETLStatusResult(BaseModel):
+class AbstractETLResult(BaseModel):
     id: int
     created_at: datetime
     contract_id: int
-    csv_downloaded: bool | None
-    extracted: bool | None
-    transformed: bool | None
-    loaded: bool | None
+    stage: enums.AbstractETLStage | None
     successful: bool | None
     error_msg: str | None
-
 
 class ScrapeAbstractResult(BaseModel):
     year: int
