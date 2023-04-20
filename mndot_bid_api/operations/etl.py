@@ -58,14 +58,14 @@ def scrape_abstracts(year: int) -> schema.ScrapeAbstractResult:
 
     # Get a list of all csvs in the in the CSV_DIR
     csv_dir_path = Path(CSV_DIR)
-    existing_contract_ids = {int(f.stem) for f in csv_dir.glob("*.csv")}
+    existing_contract_ids = {int(f.stem) for f in csv_dir_path.glob("*.csv")}
 
     # Download the missing csvs
     new_contract_ids = scraped_contract_ids - existing_contract_ids
     abstracts_downloaded = []
     failed_to_download = []
     for contract_id in new_contract_ids:
-        file_path = csv_dir / f"{contract_id}.csv"
+        file_path = csv_dir_path / f"{contract_id}.csv"
         try:
             download_abstract_csv(contract_id, file_path)
             abstracts_downloaded.append(contract_id)

@@ -96,8 +96,8 @@ def api_dispatch_abstract_etl(
     )
 
 
-@etl_router.get(
-    "/abstract/scrape/{year}",
+@etl_router.post(
+    "/scrape_abstracts",
     status_code=fastapi.status.HTTP_200_OK,
     response_model=schema.ScrapeAbstractResult,
 )
