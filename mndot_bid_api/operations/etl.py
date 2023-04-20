@@ -4,7 +4,7 @@ import httpx
 
 from mndot_bid_api import exceptions, schema
 from mndot_bid_api.etl.pipeline.abstract import async_abstract_etl_pipeline
-from mndot_bid_api.etl.scrape.abstract import download_abstract_csv, scrape_contract_ids
+from mndot_bid_api.etl.scrape.abstract import download_abstract_to_csv_dir, scrape_contract_ids
 from mndot_bid_api.operations.crud_interface import CRUDInterface
 from mndot_bid_api.core.config import CSV_DIR
 
@@ -67,7 +67,7 @@ def scrape_abstracts(year: int) -> schema.ScrapeAbstractResult:
     for contract_id in new_contract_ids:
         file_path = csv_dir_path / f"{contract_id}.csv"
         try:
-            download_abstract_csv(contract_id, file_path)
+            download_abstract_to_csv_dir(contract_id)
             abstracts_downloaded.append(contract_id)
         except httpx.HTTPStatusError:
             failed_to_download.append(contract_id)

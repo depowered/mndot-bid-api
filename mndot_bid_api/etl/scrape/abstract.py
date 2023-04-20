@@ -35,7 +35,20 @@ def scrape_contract_ids(year: int) -> list[int]:
     return df["Contract Id"].astype(int).to_list()
 
 
-def download_abstract_csv(contract_id: int, file_path: Path) -> None:
+def get_abstract_csv_path(contract_id: int) -> Path:
+    csv_dir_path = Path(CSV_DIR)
+    # Verify that the directory exists before continuting
+    if not csv_dir_path.exists() and not csv_dir_path.is_dir():
+        raise FileNotFoundError(f"CSV Directory does not exist at: {csv_dir_path}")
+
+    file_path = csv_dir_path / f"{contract_id}.csv"
+    if file_path.exists():
+        return file_path
+    else:
+        raise FileNotFoundError(f"Abstract CSV for contract_id {contract_id} not found in CSV Directory.")
+
+
+def download_abstract_to_csv_dir(contract_id: int) -> Path:
     try:
         url = f"https://transport.dot.state.mn.us/PostLetting/abstractCSV.aspx?ContractId={contract_id}"
         r = httpx.get(url)
@@ -44,25 +57,8 @@ def download_abstract_csv(contract_id: int, file_path: Path) -> None:
         raise err
 
     # Write csv to filesystem
+    file_path = Path(CSV_DIR) / f"{contract_id}.csv"
     with open(file_path, "w") as f:
         f.write(r.text)
-
-
-def get_abstract_csv_path(contract_id: int) -> Path:
-    # Get CSV Directory environment variable and verify that it exists
-    csv_dir_path = Path(CSV_DIR)
-    if not csv_dir_path.exists() and not csv_dir_path.is_dir():
-        raise FileNotFoundError(f"CSV Directory does not exist at: {csv_dir_path}")
-
-    # Return early if abstract csv already exists
-    file_path = csv_dir_path / f"{contract_id}.csv"
-    if file_path.exists():
-        return file_path
-
-    # Download CSV
-    try:
-        download_abstract_csv(contract_id, file_path)
-    except httpx.HTTPStatusError as err:
-        raise err
 
     return file_path
