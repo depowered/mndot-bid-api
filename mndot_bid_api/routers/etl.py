@@ -48,31 +48,31 @@ def api_abstract_etl(
 
 
 @etl_router.get(
-    "/abstract_etl_status/{contract_id}",
+    "/abstract_etl_status/{etl_id}",
     status_code=fastapi.status.HTTP_200_OK,
     response_model=schema.AbstractETLResult,
 )
 def api_read_abstract_etl_status(
-    contract_id: int,
+    etl_id: int,
     abstract_etl_status_interface: CRUDInterface = fastapi.Depends(
         db.get_abstract_etl_interface
     ),
     api_key: auth.APIKeyHeader = fastapi.Depends(auth.authorize_api_key),
 ):
     return operations.etl.read_abstract_etl_status(
-        contract_id, abstract_etl_status_interface
+        etl_id, abstract_etl_status_interface
     )
 
 
-@etl_router.get(
-    "/abstract/process/{contract_id}",
+@etl_router.post(
+    "/process_abstract/",
     status_code=fastapi.status.HTTP_202_ACCEPTED,
-    response_model=schema.AbstractETLResult,
+    response_model=schema.DispatchAbstractETL,
 )
 def api_dispatch_abstract_etl(
     contract_id: int,
     background_tasks: fastapi.BackgroundTasks,
-    abstract_etl_status_interface: CRUDInterface = fastapi.Depends(
+    abstract_etl_interface: CRUDInterface = fastapi.Depends(
         db.get_abstract_etl_interface
     ),
     contract_interface: CRUDInterface = fastapi.Depends(db.get_contract_interface),
@@ -87,7 +87,7 @@ def api_dispatch_abstract_etl(
     return operations.etl.dispatch_abstract_etl(
         contract_id,
         background_tasks,
-        abstract_etl_status_interface,
+        abstract_etl_interface,
         contract_interface,
         bid_interface,
         invalid_bid_interface,

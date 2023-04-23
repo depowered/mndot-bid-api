@@ -1,22 +1,24 @@
 from pathlib import Path
+
 import fastapi
 import httpx
 
 from mndot_bid_api import exceptions, schema
-from mndot_bid_api.etl.pipeline.abstract import async_abstract_etl_pipeline
-from mndot_bid_api.etl.scrape.abstract import download_abstract_to_csv_dir, scrape_contract_ids
-from mndot_bid_api.operations.crud_interface import CRUDInterface
 from mndot_bid_api.core.config import CSV_DIR
+from mndot_bid_api.etl.pipeline.abstract import async_abstract_etl_pipeline
+from mndot_bid_api.etl.scrape.abstract import (download_abstract_to_csv_dir,
+                                               scrape_contract_ids)
+from mndot_bid_api.operations.crud_interface import CRUDInterface
 
 
 def read_abstract_etl_status(
-    contract_id: int, abstract_etl_status_interface: CRUDInterface
+    etl_id: int, abstract_etl_status_interface: CRUDInterface
 ) -> schema.AbstractETLResult:
     try:
-        record = abstract_etl_status_interface.read_by_id(contract_id)
+        record = abstract_etl_status_interface.read_by_id(etl_id)
 
     except exceptions.RecordNotFoundError as exc:
-        exceptions.raise_http_404(model_name="AbstractETL", id=contract_id, exc=exc)
+        exceptions.raise_http_404(model_name="AbstractETL", id=etl_id, exc=exc)
 
     result = schema.AbstractETLResult(**record)
 
@@ -26,22 +28,23 @@ def read_abstract_etl_status(
 def dispatch_abstract_etl(
     contract_id: int,
     background_tasks: fastapi.BackgroundTasks,
-    abstract_etl_status_interface: CRUDInterface,
+    abstract_etl_interface: CRUDInterface,
     contract_interface: CRUDInterface,
     bid_interface: CRUDInterface,
     invalid_bid_interface: CRUDInterface,
     bidder_interface: CRUDInterface,
     item_interface: CRUDInterface,
-) -> schema.AbstractETLResult:
-    # Create initial status record
-    etl_status = abstract_etl_status_interface.create(data={"contract_id": contract_id})
+) -> schema.DispatchAbstractETL:
+    # Create initial abstract etl record
+    create_data = schema.AbstractELTCreateData(contract_id=contract_id)
+    record = abstract_etl_interface.create(create_data.dict())
 
     # Dispatch pipeline process
     background_tasks.add_task(
         func=async_abstract_etl_pipeline,
-        etl_id=etl_status["id"],
+        etl_id=record["id"],
         contract_id=contract_id,
-        abstract_etl_status_interface=abstract_etl_status_interface,
+        abstract_etl_interface=abstract_etl_interface,
         contract_interface=contract_interface,
         bid_interface=bid_interface,
         invalid_bid_interface=invalid_bid_interface,
@@ -49,7 +52,7 @@ def dispatch_abstract_etl(
         item_interface=item_interface,
     )
 
-    return schema.AbstractETLResult(**etl_status)
+    return schema.DispatchAbstractETL(etl_id=record["id"], contract_id=contract_id)
 
 
 def scrape_abstracts(year: int) -> schema.ScrapeAbstractResult:

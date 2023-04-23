@@ -260,6 +260,10 @@ class ItemLoadResult(BaseModel):
 #############################################################################
 
 
+class AbstractELTCreateData(BaseModel):
+    contract_id: int
+
+
 class AbstractETLResult(BaseModel):
     id: int
     created_at: datetime
@@ -267,6 +271,18 @@ class AbstractETLResult(BaseModel):
     stage: enums.AbstractETLStage | None
     successful: bool | None
     error_msg: str | None
+
+
+class AbstractETLUpdateData(BaseModel):
+    stage: enums.AbstractETLStage | None = None
+    successful: bool | None = None
+    error_msg: str | None = None
+
+
+class DispatchAbstractETL(BaseModel):
+    etl_id: int
+    contract_id: int
+    msg: str = "ETL process dispatched. GET /abstract_etl_status{etl_id} for process status."
 
 class ScrapeAbstractResult(BaseModel):
     year: int
