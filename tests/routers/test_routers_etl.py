@@ -31,4 +31,4 @@ def test_api_abstract_etl(test_client: TestClient):
     assert response_json["contract_id"] == 220005
     assert len(response_json["contract_results"]) == 1
     assert len(response_json["bid_results"]) == 318
-    assert len(response_json["bidder_results"]) == 3
+    assert len(response_json["bidder_results"]) == 5

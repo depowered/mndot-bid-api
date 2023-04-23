@@ -26,7 +26,7 @@ def test_abstract_etl_pipeline(abstract_csv_file, configured_sessionmaker):
     assert abstract_etl.contract_id == 220005
     assert len(abstract_etl.contract_results) == 1
     assert len(abstract_etl.bid_results) == 318
-    assert len(abstract_etl.bidder_results) == 3
+    assert len(abstract_etl.bidder_results) == 5
 
 
 def test_abstract_etl_pipeline_raises(item_list_csv_file, configured_sessionmaker):

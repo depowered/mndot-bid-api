@@ -20,10 +20,9 @@ def test_read_all_by_kwargs_bidders(configured_sessionmaker: sessionmaker):
     assert record_dicts[0] == expected_record_dicts[0]
 
     # One kwarg
-    record_dicts = interface.read_all_by_kwargs(name=None)
-    assert len(record_dicts) == 2
-    for record_dict in record_dicts:
-        assert record_dict in expected_record_dicts[-2:]
+    record_dicts = interface.read_all_by_kwargs(name="Central Specialties, Inc.")
+    assert len(record_dicts) == 1
+    assert record_dicts[0] == expected_record_dicts[1]
 
     # No matches
     with pytest.raises(RecordNotFoundError):
@@ -34,11 +33,11 @@ def test_read_all_by_kwargs_bidders(configured_sessionmaker: sessionmaker):
         interface.read_all_by_kwargs(invalid_key=100)
 
     # Test positive limit; expect one record
-    record_dicts = interface.read_all_by_kwargs(limit=1, name=None)
+    record_dicts = interface.read_all_by_kwargs(limit=1, name="Central Specialties, Inc.")
     assert len(record_dicts) == 1
 
     # Test negative limit; expect no records
-    record_dicts = interface.read_all_by_kwargs(limit=-1, name=None)
+    record_dicts = interface.read_all_by_kwargs(limit=-1, name="Central Specialties, Inc.")
     assert len(record_dicts) == 0
 
 
