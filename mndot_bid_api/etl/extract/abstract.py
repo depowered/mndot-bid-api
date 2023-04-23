@@ -6,7 +6,8 @@ import pandas as pd
 
 from mndot_bid_api import exceptions
 from mndot_bid_api.etl.df_schemas import RawBidders, RawBids, RawContract
-from mndot_bid_api.etl.types import CSVContent, RawBiddersDF, RawBidsDF, RawContractDF
+from mndot_bid_api.etl.types import (CSVContent, RawBiddersDF, RawBidsDF,
+                                     RawContractDF)
 
 
 @dataclass
@@ -22,6 +23,15 @@ class AbstractData:
     @property
     def winning_bidder_id(self) -> int:
         return int(self.raw_bidders.at[0, "Bidder Number"])
+
+    def get_bidder_name_to_id_mapper(self) -> dict[str, str]:
+        mapper = dict()
+        for row in self.raw_bidders.to_dict("records"):
+            bidder_name = row["Bidder Name"]
+            key = f"{bidder_name} (Unit Price) "
+            value = str(int(row["Bidder Number"])) # cast to int to strip leading zeros then back to str
+            mapper[key] = value
+        return mapper
 
 
 def read_abstract_csv(csv_content: CSVContent) -> AbstractData:

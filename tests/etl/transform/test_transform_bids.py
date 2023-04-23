@@ -15,7 +15,7 @@ def test_transform_bids(abstract_csv_content):
     winning_bidder_id = abstract_data.winning_bidder_id
     api_create_schema = BidCreateData
 
-    df = transform_bids(input_df, winning_bidder_id)
+    df = transform_bids(input_df, winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper())
     assert df.shape == (318, 10)
 
     matches_api = verify_columns_match_api(df, api_create_schema)
@@ -24,7 +24,7 @@ def test_transform_bids(abstract_csv_content):
     invalid_input = input_df.drop(columns=input_df.columns[0])
     assert invalid_input.shape == (53, 10)
     with pytest.raises(exceptions.SchemaError):
-        transform_bids(invalid_input, winning_bidder_id)
+        transform_bids(invalid_input, winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper())
 
     # Test verify_is_numeric check raises
     non_numeric_code_df = df.copy()

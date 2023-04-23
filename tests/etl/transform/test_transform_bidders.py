@@ -14,12 +14,12 @@ def test_transform_bidders(abstract_csv_content):
     api_create_schema = BidderCreateData
 
     df = transform_bidders(input_df)
-    assert df.shape == (3, 2)
+    assert df.shape == (5, 2)
 
     matches_api = verify_columns_match_api(df, api_create_schema)
     assert matches_api is True
 
     invalid_input = input_df.drop(columns=input_df.columns[0])
-    assert invalid_input.shape == (3, 1)
+    assert invalid_input.shape == (5, 1)
     with pytest.raises(exceptions.SchemaError):
         transform_bidders(invalid_input)
