@@ -8,8 +8,8 @@ sample_bidders = [
     {"id": 207897, "name": "Central Specialties, Inc."},
     {"id": 192907, "name": "NorthStar Materials, Inc. DBA Knife River Materials"},
     {"id": 857140, "name": "Anderson Brothers Construction Company of Brainerd, LLC"},
-    {"id": 215861, "name": None},
-    {"id": 197466, "name": None},
+    {"id": 215861, "name": "R.J. Zavoral & Sons, Inc."},
+    {"id": 197466, "name": "Mark Sand & Gravel Co."},
 ]
 
 sample_contracts = [

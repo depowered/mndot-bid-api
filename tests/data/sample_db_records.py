@@ -14,8 +14,8 @@ bidders = [
     models.Bidder(
         id=857140, name="Anderson Brothers Construction Company of Brainerd, LLC"
     ),
-    models.Bidder(id=215861),
-    models.Bidder(id=197466),
+    models.Bidder(id=215861, name="R.J. Zavoral & Sons, Inc."),
+    models.Bidder(id=197466, name="Mark Sand & Gravel Co."),
 ]
 
 contracts = [
