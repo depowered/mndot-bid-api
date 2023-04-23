@@ -123,8 +123,7 @@ class RawBids(pa.SchemaModel):
     item_description: Series[str] = pa.Field(alias="ItemDescription")
     quantity: Series[str] = pa.Field(alias="Quantity")
     unit_abbreviation: Series[str] = pa.Field(alias="UnitName")
-    engineers_unit_price: Series[str] = pa.Field(alias="Engineers (Unit Price)")
-    bidder_unit_price: Series[str] = pa.Field(alias=r"\d+\s\(Unit Price\)", regex=True)
+    bidder_unit_price: Series[str] = pa.Field(alias=r".+\(Unit Price\)", regex=True)
 
     class Config:
         strict = "filter"  # drop columns not defined in schema

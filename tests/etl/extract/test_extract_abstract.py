@@ -42,7 +42,7 @@ def test_read_bids_csv(abstract_csv_content: str):
     assert df.shape == (53, 11)
     df_schemas.RawBids.validate(df)
 
-    invalid_df = df.drop(columns="Engineers (Unit Price)")
+    invalid_df = df.drop(columns="UnitName")
     assert invalid_df.shape == (53, 10)
     with pytest.raises(exceptions.SchemaError):
         df_schemas.RawBids.validate(invalid_df)
@@ -53,11 +53,11 @@ def test_read_bidders_csv(abstract_csv_content: str):
     bidders_content = split_csv[2]
     df = abstract._read_bidders_csv(bidders_content)
 
-    assert df.shape == (3, 2)
+    assert df.shape == (5, 2)
     df_schemas.RawBidders.validate(df)
 
     invalid_df = df.drop(columns="Bidder Name")
-    assert invalid_df.shape == (3, 1)
+    assert invalid_df.shape == (5, 1)
     with pytest.raises(exceptions.SchemaError):
         df_schemas.RawBidders.validate(invalid_df)
 
@@ -71,7 +71,7 @@ def test_read_abstract_csv(abstract_csv_content):
     assert abstract_data.raw_bids.shape == (53, 11)
     df_schemas.RawBids.validate(abstract_data.raw_bids)
 
-    assert abstract_data.raw_bidders.shape == (3, 2)
+    assert abstract_data.raw_bidders.shape == (5, 2)
     df_schemas.RawBidders.validate(abstract_data.raw_bidders)
 
     assert abstract_data.contract_id == 220005
