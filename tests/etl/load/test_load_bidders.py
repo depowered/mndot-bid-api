@@ -32,7 +32,7 @@ def test_load_bidders(abstract_csv_content: str, configured_sessionmaker: sessio
     # Load the data
     load_results = load_bidders(transformed_df, interface)
 
-    assert len(load_results) == 3
+    assert len(load_results) == 5
     first_load_result = load_results[0]
     assert first_load_result == already_exists_load_result
 
@@ -50,7 +50,7 @@ def test_load_bidders(abstract_csv_content: str, configured_sessionmaker: sessio
     interface.delete(207897)
     load_results = load_bidders(transformed_df, interface)
 
-    assert len(load_results) == 3
+    assert len(load_results) == 5
     first_load_result = load_results[0]
     assert first_load_result == new_record_load_result
 

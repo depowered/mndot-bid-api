@@ -18,7 +18,7 @@ def test_load_valid_bids_not_in_db(
     # Extract and transform data
     abstract_data = read_abstract_csv(abstract_csv_content)
     transformed_df = transform_bids(
-        abstract_data.raw_bids, abstract_data.winning_bidder_id
+        abstract_data.raw_bids, abstract_data.winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper()
     )
 
     # Filter transformed data for bids with matching items in the test database
@@ -56,7 +56,7 @@ def test_load_valid_bids_already_in_db(
     # Extract and transform data
     abstract_data = read_abstract_csv(abstract_csv_content)
     transformed_df = transform_bids(
-        abstract_data.raw_bids, abstract_data.winning_bidder_id
+        abstract_data.raw_bids, abstract_data.winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper()
     )
 
     # Filter transformed data for bids with matching items in the test database
@@ -90,7 +90,7 @@ def test_load_invalid_bids_not_in_db(
     # Extract and transform data
     abstract_data = read_abstract_csv(abstract_csv_content)
     transformed_df = transform_bids(
-        abstract_data.raw_bids, abstract_data.winning_bidder_id
+        abstract_data.raw_bids, abstract_data.winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper()
     )
 
     # Filter transformed data for a subset of bids without matching items in the test database
@@ -124,7 +124,7 @@ def test_load_invalid_bids_already_in_db(
     # Extract and transform data
     abstract_data = read_abstract_csv(abstract_csv_content)
     transformed_df = transform_bids(
-        abstract_data.raw_bids, abstract_data.winning_bidder_id
+        abstract_data.raw_bids, abstract_data.winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper()
     )
 
     # Filter transformed data for a subset of bids with matching items in the test database
@@ -159,7 +159,7 @@ def test_load_bids_counts(
     # Extract and transform data
     abstract_data = read_abstract_csv(abstract_csv_content)
     transformed_df = transform_bids(
-        abstract_data.raw_bids, abstract_data.winning_bidder_id
+        abstract_data.raw_bids, abstract_data.winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper()
     )
 
     assert transformed_df.shape == (318, 10)
