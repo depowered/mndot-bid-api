@@ -68,7 +68,6 @@ def scrape_abstracts(year: int) -> schema.ScrapeAbstractResult:
     abstracts_downloaded = []
     failed_to_download = []
     for contract_id in new_contract_ids:
-        file_path = csv_dir_path / f"{contract_id}.csv"
         try:
             download_abstract_to_csv_dir(contract_id)
             abstracts_downloaded.append(contract_id)
