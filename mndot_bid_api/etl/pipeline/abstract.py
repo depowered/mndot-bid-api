@@ -35,7 +35,7 @@ def abstract_etl_pipeline(
             abstract_data.raw_contract, abstract_data.winning_bidder_id
         )
         transformed_bids = transform_bids(
-            abstract_data.raw_bids, abstract_data.winning_bidder_id
+            abstract_data.raw_bids, abstract_data.winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper()
         )
         transformed_bidders = transform_bidders(abstract_data.raw_bidders)
 
@@ -105,7 +105,7 @@ async def async_abstract_etl_pipeline(
             abstract_data.raw_contract, abstract_data.winning_bidder_id
         )
         transformed_bids = transform_bids(
-            abstract_data.raw_bids, abstract_data.winning_bidder_id
+            abstract_data.raw_bids, abstract_data.winning_bidder_id, abstract_data.get_bidder_name_to_id_mapper()
         )
         transformed_bidders = transform_bidders(abstract_data.raw_bidders)
     except exceptions.SchemaError as err:
